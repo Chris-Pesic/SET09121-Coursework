@@ -46,94 +46,95 @@ void Load() {
 
 }
 
-void Update(RenderWindow &window) {
+void Update(RenderWindow& window) {
 
-  // Reset clock, recalculate deltatime
-  static Clock clock;
-  float dt = clock.restart().asSeconds();
-  // check and consume events
-  Event event;
-  while (window.pollEvent(event)) {
-    if (event.type == Event::Closed) {
-        window.close();
-        return;
+    // Reset clock, recalculate deltatime
+    static Clock clock;
+    float dt = clock.restart().asSeconds();
+    // check and consume events
+    Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == Event::Closed) {
+            window.close();
+            return;
+        }
     }
-  }
-  
-  // Reset Ball falling speed
-  //ballVelocity = { 0, initialVelocityY };
 
-  if (ballVelocity.y < 100.f) {
-      ballVelocity = { 0.f, ballVelocity.y + 10 };
-  }
+    // Reset Ball falling speed
+    //ballVelocity = { 0, initialVelocityY };
 
-  // Reset Jump validity
-  canJump = false;
+    if (ballVelocity.y < 100.f) {
+        ballVelocity = { 0.f, ballVelocity.y + 10 };
+    }
 
-  
-  //ball.move(ballVelocity * dt);
-  
-  // Quit Via ESC Key
-  if (Keyboard::isKeyPressed(Keyboard::Escape)) {
-    window.close();
-  }
-  
-  // handle ball movement (horizontal)
-  float direction = 0.0f;
-  if (Keyboard::isKeyPressed(controls[1])) {
-    direction--;
-  }
-  if (Keyboard::isKeyPressed(controls[2])) {
-    direction++;
-  }
-  ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
-  
-  
-  
-  // Check Collision with platform
-  
-  const float bx = ball.getPosition().x;
-  const float by = ball.getPosition().y;
-  
-  if (by > gameHeight - 11) { //bottom wall
-    // bottom wall
-    // ballVelocity.x *= velocityMultiplier;
-     ballVelocity.y *= 0.f;
-    // ball.move(Vector2f(0.f, -10.f));
-     canJump = true;
-  } else if (by < 0) { //top wall
-    // top wall
-    // ballVelocity.x *= velocityMultiplier;
-    //ballVelocity.y *= 0;
-    ball.move(Vector2f(0.f, 10.f));
-  }
+    // Reset Jump validity
+    canJump = false;
 
-  // handle ball jump
-  if (canJump == true) {
-      if (Keyboard::isKeyPressed(controls[0])) {
-          //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
-          ballVelocity = { 0.f, ballJumpSpeed };
-      }
-  }
-  
-  ball.move(ballVelocity * dt);
-  
 
-  
+    //ball.move(ballVelocity * dt);
+
+    // Quit Via ESC Key
+    if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+        window.close();
+    }
+
+    // handle ball movement (horizontal)
+    float direction = 0.0f;
+    if (Keyboard::isKeyPressed(controls[1])) {
+        direction--;
+    }
+    if (Keyboard::isKeyPressed(controls[2])) {
+        direction++;
+    }
+    ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
+
+
+
+    // Check Collision with platform
+
+    const float bx = ball.getPosition().x;
+    const float by = ball.getPosition().y;
+
+    if (by > gameHeight - 11) { //bottom wall
+        // bottom wall
+        // ballVelocity.x *= velocityMultiplier;
+        ballVelocity.y *= 0.f;
+        // ball.move(Vector2f(0.f, -10.f));
+        canJump = true;
+    }
+    else if (by < 0) { //top wall
+        // top wall
+        // ballVelocity.x *= velocityMultiplier;
+        //ballVelocity.y *= 0;
+        ball.move(Vector2f(0.f, 10.f));
+    }
+
+    // handle ball jump
+    if (canJump == true) {
+        if (Keyboard::isKeyPressed(controls[0])) {
+            //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
+            ballVelocity = { 0.f, ballJumpSpeed };
+        }
+    }
+
+    ball.move(ballVelocity * dt);
+
+
+
 }
 
-  void Render(RenderWindow &window) {
+void Render(RenderWindow& window) {
     // Draw Everything
     window.draw(platform[0]);
     window.draw(ball);
-  }
+}
 
-    int main() {
+int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "PONG");
     Load();
-	//Reset();
+    //Reset();
     while (window.isOpen()) {
-        while (dt < 1/60){}
+        while (dt < 1 / 60) {}
         window.clear();
         Update(window);
         Render(window);
