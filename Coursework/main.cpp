@@ -17,10 +17,12 @@ const int gameHeight = 600;
 const float ballRadius = 10.f;
 Vector2f ballVelocity;
 const float ballHorizontalSpeed = 400.f;
-const float ballJumpSpeed = -3000.f;
+const float ballJumpSpeed = -1000.f;
 const float initialVelocityY = 100.f;
 bool canJump = false;
 float dt;
+int jumpTime = 0;
+int hangTime = 0;
 
 CircleShape ball;
 RectangleShape platform[1];
@@ -62,10 +64,25 @@ void Update(RenderWindow &window) {
   
   // Reset Ball falling speed
   //ballVelocity = { 0, initialVelocityY };
+  
+  
+      //if (ballVelocity.y < 1000.f) {
+          //ballVelocity = { 0.f, ballVelocity.y + 1 };
+      //}
 
-  if (ballVelocity.y < 100.f) {
-      ballVelocity = { 0.f, ballVelocity.y + 10 };
+  if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
+      //kill time
+      hangTime++;
+      if (hangTime % 2 == 0) {
+          ballVelocity = { 0.f, ballVelocity.y + 1 };
+      }
   }
+  else if (ballVelocity.y < 1000.f) {
+      ballVelocity = { 0.f, ballVelocity.y + 1 };
+  }
+  
+
+  
 
   // Reset Jump validity
   canJump = false;
@@ -113,6 +130,7 @@ void Update(RenderWindow &window) {
       if (Keyboard::isKeyPressed(controls[0])) {
           //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
           ballVelocity = { 0.f, ballJumpSpeed };
+          jumpTime = 10;
       }
   }
   
