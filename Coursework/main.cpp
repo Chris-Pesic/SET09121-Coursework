@@ -185,7 +185,7 @@ void Update(RenderWindow &window) {
   }
 
     int main() {
-    RenderWindow window(VideoMode(gameWidth, gameHeight), "PONG");
+    RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
 	//Reset();
     while (window.isOpen()) {
