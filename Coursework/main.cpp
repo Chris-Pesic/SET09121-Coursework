@@ -60,6 +60,8 @@ void Load() {
 
 void Update(RenderWindow &window) {
     fps = 0.0f;
+    loops = 0;
+
   // Reset clock, recalculate deltatime
     static Clock clock;
     float dt = clock.restart().asSeconds();
@@ -80,6 +82,11 @@ void Update(RenderWindow &window) {
   text.setCharacterSize(24);
   
   Time elapsedTime = clock.restart();
+
+  if (elapsedTime.asSeconds() < 1) {
+      loops ++;
+  }
+
   if (elapsedTime.asSeconds() > 0.0f) {
      fps = static_cast<float>(loops) / elapsedTime.asSeconds();
 
@@ -167,8 +174,6 @@ void Update(RenderWindow &window) {
   }
 
   ball.move(ballVelocity * dt);
-  
-  loops++;
   
 }
 
