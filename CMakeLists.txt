@@ -25,4 +25,6 @@ add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND}
 file(GLOB_RECURSE SOURCES coursework/*.cpp coursework/*.h)
 add_executable(COURSEWORK ${SOURCES})
 target_include_directories(COURSEWORK PRIVATE ${SFML_INCS})
+
 target_link_libraries(COURSEWORK sfml-graphics)
+

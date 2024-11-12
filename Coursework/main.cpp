@@ -23,12 +23,14 @@ bool canJump = false;
 float dt;
 int jumpTime = 0;
 int hangTime = 0;
+
 Font font;
 Text text;
 int loops = 0;
 float fps = 0.0f;
 float fpsAverage = 0.0f;
 const int fpsSampleCount = 10;
+
 
 CircleShape ball;
 RectangleShape platform[1];
@@ -56,6 +58,7 @@ void Load() {
 
 
 
+
 }
 
 void Update(RenderWindow &window) {
@@ -65,6 +68,15 @@ void Update(RenderWindow &window) {
   // Reset clock, recalculate deltatime
     static Clock clock;
     float dt = clock.restart().asSeconds();
+
+}
+
+void Update(RenderWindow &window) {
+
+  // Reset clock, recalculate deltatime
+  static Clock clock;
+  float dt = clock.restart().asSeconds();
+
   // check and consume events
   Event event;
   while (window.pollEvent(event)) {
@@ -73,6 +85,7 @@ void Update(RenderWindow &window) {
         return;
     }
   }
+
 
   // Load font-face from res dir
   font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
@@ -98,12 +111,6 @@ void Update(RenderWindow &window) {
   // Keep Score Text Centered
   text.setPosition((gameWidth * .5f) - (text.getLocalBounds().width * .5f), 0);
 
-
-  
-  // Reset Ball falling speed
-  //ballVelocity = { 0, initialVelocityY };
-
-
       //if (ballVelocity.y < 1000.f) {
           //ballVelocity = { 0.f, ballVelocity.y + 1 };
       //}
@@ -120,48 +127,46 @@ void Update(RenderWindow &window) {
   }
 
 
-
-
   // Reset Jump validity
   canJump = false;
 
 
   //ball.move(ballVelocity * dt);
-
+  
   // Quit Via ESC Key
   if (Keyboard::isKeyPressed(Keyboard::Escape)) {
-      window.close();
+    window.close();
   }
-
+  
   // handle ball movement (horizontal)
   float direction = 0.0f;
   if (Keyboard::isKeyPressed(controls[1])) {
-      direction--;
+    direction--;
   }
   if (Keyboard::isKeyPressed(controls[2])) {
-      direction++;
+    direction++;
   }
   ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
-
-
-
+  
+  
+  
   // Check Collision with platform
-
+  
   const float bx = ball.getPosition().x;
   const float by = ball.getPosition().y;
-
+  
   if (by > gameHeight - 11) { //bottom wall
-      // bottom wall
-      // ballVelocity.x *= velocityMultiplier;
-      ballVelocity.y *= 0.f;
-      // ball.move(Vector2f(0.f, -10.f));
-      canJump = true;
-  }
-  else if (by < 0) { //top wall
-      // top wall
-      // ballVelocity.x *= velocityMultiplier;
-      //ballVelocity.y *= 0;
-      ball.move(Vector2f(0.f, 10.f));
+    // bottom wall
+    // ballVelocity.x *= velocityMultiplier;
+     ballVelocity.y *= 0.f;
+    // ball.move(Vector2f(0.f, -10.f));
+     canJump = true;
+  } else if (by < 0) { //top wall
+    // top wall
+    // ballVelocity.x *= velocityMultiplier;
+    //ballVelocity.y *= 0;
+    ball.move(Vector2f(0.f, 10.f));
+
   }
 
   // handle ball jump
@@ -173,8 +178,12 @@ void Update(RenderWindow &window) {
       }
   }
 
+  
   ball.move(ballVelocity * dt);
   
+
+  
+
 }
 
   void Render(RenderWindow &window) {
