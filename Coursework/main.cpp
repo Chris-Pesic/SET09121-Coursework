@@ -16,7 +16,7 @@ const int gameWidth = 800;
 const int gameHeight = 600;
 const float ballRadius = 10.f;
 Vector2f ballVelocity;
-const float ballHorizontalSpeed = 400.f;
+const float ballHorizontalSpeed = 600.f;
 const float ballJumpSpeed = -1000.f;
 const float initialVelocityY = 100.f;
 bool canJump = false;
@@ -27,8 +27,8 @@ Font font;
 Text text;
 int loops = 0;
 float fps = 0.0f;
-float fpsAverage = 0.0f;
-const int fpsSampleCount = 10;
+Time elapsedTime;
+
 
 CircleShape ball;
 RectangleShape platform[1];
@@ -58,9 +58,8 @@ void Load() {
 
 }
 
+
 void Update(RenderWindow &window) {
-    fps = 0.0f;
-    loops = 0;
 
   // Reset clock, recalculate deltatime
     static Clock clock;
@@ -73,30 +72,6 @@ void Update(RenderWindow &window) {
         return;
     }
   }
-
-  // Load font-face from res dir
-  font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
-  // Set text element to use font
-  text.setFont(font);
-  // set the character size to 24 pixels
-  text.setCharacterSize(24);
-  
-  Time elapsedTime = clock.restart();
-
-  if (elapsedTime.asSeconds() < 1) {
-      loops ++;
-  }
-
-  if (elapsedTime.asSeconds() > 0.0f) {
-     fps = static_cast<float>(loops) / elapsedTime.asSeconds();
-
-     fpsAverage = (fpsAverage * (fpsSampleCount - 1) + fps) / fpsSampleCount;
-  }
-  String str_dt = "Delta Time: " + to_string(dt) + "\nFPS: " + to_string(fpsAverage);
-  // Update Score Text
-  text.setString(str_dt);
-  // Keep Score Text Centered
-  text.setPosition((gameWidth * .5f) - (text.getLocalBounds().width * .5f), 0);
 
 
   
@@ -112,11 +87,11 @@ void Update(RenderWindow &window) {
       //kill time
       hangTime++;
       if (hangTime % 2 == 0) {
-          ballVelocity = { 0.f, ballVelocity.y + 1 };
+          ballVelocity = { 0.f, ballVelocity.y + 100 };
       }
   }
   else if (ballVelocity.y < 1000.f) {
-      ballVelocity = { 0.f, ballVelocity.y + 1 };
+      ballVelocity = { 0.f, ballVelocity.y + 100 };
   }
 
 
@@ -150,7 +125,7 @@ void Update(RenderWindow &window) {
   const float bx = ball.getPosition().x;
   const float by = ball.getPosition().y;
 
-  if (by > gameHeight - 11) { //bottom wall
+  if (by > gameHeight - 16) { //bottom wall
       // bottom wall
       // ballVelocity.x *= velocityMultiplier;
       ballVelocity.y *= 0.f;
@@ -177,23 +152,51 @@ void Update(RenderWindow &window) {
   
 }
 
-  void Render(RenderWindow &window) {
+void Render(RenderWindow &window) {
     // Draw Everything
     window.draw(platform[0]);
     window.draw(ball);
     window.draw(text);
-  }
+}
 
-    int main() {
+int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
-	//Reset();
+
+    window.setFramerateLimit(60);
+    Clock clock;
+
     while (window.isOpen()) {
-        while (dt < 1/60){}
+
+        fps = 0.f;
+        loops = 0;
+        // Load font-face from res dir
+        font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
+        // Set text element to use font
+        text.setFont(font);
+        // set the character size to 24 pixels
+        text.setCharacterSize(24);
+
+        elapsedTime = clock.restart();
+
+        if (elapsedTime.asSeconds() < 1) {
+            loops++;
+        }
+
+        if (elapsedTime.asSeconds() > 0.0f) {
+            fps = static_cast<float>(loops) / elapsedTime.asSeconds();
+        }
+        String str_dt = "Delta Time: " + to_string(dt) + "\nFPS: " + to_string(fps);
+        // Update Score Text
+        text.setString(str_dt);
+        // Keep Score Text Centered
+        text.setPosition((gameWidth * .5f) - (text.getLocalBounds().width * .5f), 0);
+
         window.clear();
         Update(window);
         Render(window);
         window.display();
+        loops++;
     }
     return 0;
 }
