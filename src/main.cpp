@@ -26,7 +26,7 @@ int hangTime = 0;
 Font font;
 Text text;
 int loops = 0;
-float fps = 0.0f;
+int fps = 0.0f;
 Time elapsedTime;
 
 
@@ -72,8 +72,6 @@ void Update(RenderWindow &window) {
         return;
     }
   }
-
-
   
   // Reset Ball falling speed
   //ballVelocity = { 0, initialVelocityY };
@@ -125,7 +123,7 @@ void Update(RenderWindow &window) {
   const float bx = ball.getPosition().x;
   const float by = ball.getPosition().y;
 
-  if (by > gameHeight - 16) { //bottom wall
+  if (by > gameHeight - ballRadius) { //bottom wall
       // bottom wall
       // ballVelocity.x *= velocityMultiplier;
       ballVelocity.y *= 0.f;
@@ -184,9 +182,9 @@ int main() {
         }
 
         if (elapsedTime.asSeconds() > 0.0f) {
-            fps = static_cast<float>(loops) / elapsedTime.asSeconds();
+            fps = loops / elapsedTime.asSeconds();
         }
-        String str_dt = "Delta Time: " + to_string(dt) + "\nFPS: " + to_string(fps);
+        String str_dt = "FPS: " + to_string(fps);
         // Update Score Text
         text.setString(str_dt);
         // Keep Score Text Centered
