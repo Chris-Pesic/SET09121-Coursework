@@ -126,7 +126,7 @@ void Update(RenderWindow &window) {
   if (by > gameHeight - ballRadius) { //bottom wall
       // bottom wall
       // ballVelocity.x *= velocityMultiplier;
-      ballVelocity.y *= 0.f;
+      ballVelocity.y == 0.f;
       // ball.move(Vector2f(0.f, -10.f));
       canJump = true;
   }
@@ -163,6 +163,7 @@ int main() {
 
     window.setFramerateLimit(60);
     Clock clock;
+    Time timeSinceStart = clock.restart();
 
     while (window.isOpen()) {
 
@@ -184,11 +185,14 @@ int main() {
         if (elapsedTime.asSeconds() > 0.0f) {
             fps = loops / elapsedTime.asSeconds();
         }
-        String str_dt = "FPS: " + to_string(fps);
-        // Update Score Text
-        text.setString(str_dt);
-        // Keep Score Text Centered
-        text.setPosition((gameWidth * .5f) - (text.getLocalBounds().width * .5f), 0);
+
+        if (timeSinceStart.asSeconds() % 50 == 0){
+            String str_fps = "FPS: " + to_string(fps);
+            // Update Score Text
+            text.setString(str_fps);
+            // Keep Score Text Centered
+            text.setPosition((gameWidth * .5f) - (text.getLocalBounds().width * .5f), 0);
+        }
 
         window.clear();
         Update(window);
