@@ -16,6 +16,7 @@ const int gameWidth = 800;
 const int gameHeight = 600;
 const float ballRadius = 10.f;
 Vector2f ballVelocity;
+
 const float ballHorizontalSpeed = 600.f;
 const float ballJumpSpeed = -1000.f;
 const float initialVelocityY = 100.f;
@@ -29,10 +30,8 @@ int loops = 0;
 int fps = 0.0f;
 Time elapsedTime;
 
-
 CircleShape ball;
 RectangleShape platform[1];
-
 
 void Load() {
 
@@ -54,8 +53,6 @@ void Load() {
     ballVelocity = { 0, initialVelocityY };
 
 
-
-
 }
 
 
@@ -64,6 +61,7 @@ void Update(RenderWindow &window) {
   // Reset clock, recalculate deltatime
     static Clock clock;
     float dt = clock.restart().asSeconds();
+
   // check and consume events
   Event event;
   while (window.pollEvent(event)) {
@@ -75,7 +73,6 @@ void Update(RenderWindow &window) {
   
   // Reset Ball falling speed
   //ballVelocity = { 0, initialVelocityY };
-
 
       //if (ballVelocity.y < 1000.f) {
           //ballVelocity = { 0.f, ballVelocity.y + 1 };
@@ -93,11 +90,8 @@ void Update(RenderWindow &window) {
   }
 
 
-
-
   // Reset Jump validity
   canJump = false;
-
 
   //ball.move(ballVelocity * dt);
 
@@ -193,11 +187,14 @@ int main() {
         // Keep Score Text Centered
         text.setPosition((gameWidth * .5f) - (text.getLocalBounds().width * .5f), 0);
 
+
         window.clear();
         Update(window);
         Render(window);
         window.display();
+
         loops++;
+
     }
     return 0;
 }
