@@ -277,6 +277,12 @@ int main() {
 
             loops++;
         }
+        else {
+            sleep(seconds(2));
+            //window.close();
+            Reset();
+            freeze = false;
+        }
     }
     return 0;
 }
