@@ -3,8 +3,6 @@
 using namespace sf;
 using namespace std;
 
-void Reset();
-
 const Keyboard::Key controls[3] = {
     Keyboard::W,   // Player1 Up
     Keyboard::A,   // Player1 Left
@@ -78,7 +76,7 @@ void Load() {
     platform[4].setPosition(Vector2f(600.f, 590.f));
 
 
-    ball.setPosition(Vector2f(gameWidth / 2.f, gameHeight / 2.f));
+    ball.setPosition(Vector2f(50, 525));
 
     // Set Ball falling speed
     if (canJump == false) {
@@ -89,9 +87,13 @@ void Load() {
 
 }
 
+void Reset(RenderWindow& window) {
+    window.clear();
+    ball.setPosition(Vector2f(50, 525));
+}
 
 void Update(RenderWindow& window) {
-
+    gameOverText.setColor(Color::Black);
     // Reset Jump validity
     canJump = false;
 
@@ -280,6 +282,7 @@ int main() {
         else {
             sleep(seconds(2));
             freeze = false;
+            Reset(window);
         }
     }
     return 0;
