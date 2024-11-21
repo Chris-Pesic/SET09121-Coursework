@@ -279,8 +279,6 @@ int main() {
         }
         else {
             sleep(seconds(2));
-            //window.close();
-            Reset();
             freeze = false;
         }
     }
