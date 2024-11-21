@@ -17,7 +17,7 @@ const int gameWidth = 800;
 const int gameHeight = 600;
 const float ballRadius = 10.f;
 Vector2f ballVelocity;
-const float ballHorizontalSpeed = 500.f;
+const float ballHorizontalSpeed = 400.f;
 const float ballJumpSpeed = -1200.f;
 const float initialVelocityY = 80.f;
 bool canJump = false;
@@ -66,11 +66,12 @@ void Load() {
 
     //GROUND PLATFORM
     platform[0].setSize(groundSize);
-    platform[0].setPosition(Vector2f(100.f, 590.f));
+    platform[0].setPosition(Vector2f(400.f, 590.f));
+    platform[0].setOrigin(groundSize.x / 2, groundSize.y / 2);
     
     //FLOATING PLATFORMS
-    platform[1].setPosition(Vector2f(100.f, 480.f));
-    platform[2].setPosition(Vector2f(100.f, 380.f));
+    platform[1].setPosition(Vector2f(200.f, 480.f));
+    platform[2].setPosition(Vector2f(300.f, 380.f));
     platform[3].setPosition(Vector2f(500.f,500.f));
 
     //LAVA PLATFORM
@@ -171,13 +172,19 @@ void Update(RenderWindow& window) {
   float pT = 0;
   float pB = 0;
 
-
-
   for (int i = 0; i < platformArray; i++) {
       pL = platform[i].getPosition().x - 100;
       pR = platform[i].getPosition().x + 100;
       pT = platform[i].getPosition().y - 10;
       pB = platform[i].getPosition().y + 10;
+
+      if (i == 0) {
+          pL = platform[i].getPosition().x - 400;
+          pR = platform[i].getPosition().x + 400;
+          pT = platform[i].getPosition().y - 10;
+          pB = platform[i].getPosition().y + 10;
+      }
+
       if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
           //if (by > pT - ballRadius && by < pB - ballRadius) {
               ballVelocity.y = 0.f;
