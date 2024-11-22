@@ -1,5 +1,15 @@
 #include <SFML/Graphics.hpp>
 
+
+/*
+
+        KNOWN ISSUES:
+        
+        if you jump while touching the edge of a lava platform, the player will respawn in the floor
+        you can still jump out so its no big deal. Or the player will fall from the ceiling, idk how any of it happens.
+
+*/
+
 using namespace sf;
 using namespace std;
 
@@ -14,6 +24,7 @@ const Vector2f groundSize(800.f, 20.f);
 const int gameWidth = 800;
 const int gameHeight = 600;
 const float ballRadius = 10.f;
+const float deggRadius = 10.f;
 Vector2f ballVelocity;
 const float ballHorizontalSpeed = 400.f;
 const float ballJumpSpeed = -1200.f;
@@ -32,6 +43,7 @@ bool freeze = false;
 
 
 CircleShape ball;
+CircleShape degg;
 RectangleShape platform[5];
 int platformArray = sizeof(platform) / sizeof(platform[0]);
 
@@ -49,18 +61,18 @@ void Load() {
 
     platform[4].setFillColor(Color::Red);
 
-    //for (int i = 0; i < 3; i++) {
-        //platform[i].setSize(platformSize);
-        //platform[i].setOrigin(platformSize / 2.f);
-        //platform[i].setFillColor(Color::Cyan);
-    //}
-
     // Set size and origin of ball
     ball.setRadius(ballRadius);
     ball.setOrigin(ballRadius, ballRadius); //Should be half the ball width and height
-    ball.setPosition(100, gameHeight/2);
+
+    degg.setRadius(deggRadius);
+    degg.setOrigin(deggRadius, deggRadius);
+
 
     // Reset positions
+
+    gameOverText.setColor(Color::Black);
+    gameOverText.setPosition(0, 600);
 
     //GROUND PLATFORM
     platform[0].setSize(groundSize);
@@ -76,7 +88,10 @@ void Load() {
     platform[4].setPosition(Vector2f(600.f, 590.f));
 
 
+    //ENTITIES
     ball.setPosition(Vector2f(50, 525));
+
+    degg.setPosition(Vector2f(500, 475));
 
     // Set Ball falling speed
     if (canJump == false) {
@@ -89,11 +104,11 @@ void Load() {
 
 void Reset(RenderWindow& window) {
     window.clear();
-    ball.setPosition(Vector2f(50, 525));
+    Load();
 }
 
 void Update(RenderWindow& window) {
-    gameOverText.setColor(Color::Black);
+
     // Reset Jump validity
     canJump = false;
 
@@ -198,7 +213,6 @@ void Update(RenderWindow& window) {
               ball.move(Vector2f(0.f, 10.f));
           }
           if (i == 4) {
-              window.clear(Color::Black);
               gameOverText.setCharacterSize(40);
               gameOverText.setFont(font);
               gameOverText.setColor(Color::Red);
@@ -237,6 +251,7 @@ void Render(RenderWindow& window) {
         window.draw(platform[i]);
     }
     window.draw(ball);
+    window.draw(degg);
     window.draw(fpstext);
     window.draw(gameOverText);
 }
