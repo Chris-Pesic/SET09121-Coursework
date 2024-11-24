@@ -26,6 +26,8 @@ const int gameHeight = 600;
 const float ballRadius = 10.f;
 const float deggRadius = 10.f;
 Vector2f ballVelocity;
+Vector2f deggVelocity;
+const float deggHorizontalspeed = 50.f;
 const float ballHorizontalSpeed = 400.f;
 const float ballJumpSpeed = -1200.f;
 const float initialVelocityY = 80.f;
@@ -36,6 +38,8 @@ int hangTime = 0;
 Font font;
 Text fpstext;
 Text gameOverText;
+int deaths = 0;
+Text deathsText;
 int loops = 0;
 int fps = 0.0f;
 Time elapsedTime;
@@ -71,8 +75,16 @@ void Load() {
 
     // Reset positions
 
+    //TEXT DISPLAYS
+
     gameOverText.setColor(Color::Black);
     gameOverText.setPosition(0, 600);
+
+    deathsText.setCharacterSize(20);
+    deathsText.setFont(font);
+    String strdeaths = to_string(deaths);
+    deathsText.setString("Deaths: " + strdeaths);
+    deathsText.setPosition(0, 0);
 
     //GROUND PLATFORM
     platform[0].setSize(groundSize);
@@ -90,7 +102,6 @@ void Load() {
 
     //ENTITIES
     ball.setPosition(Vector2f(50, 525));
-
     degg.setPosition(Vector2f(500, 475));
 
     // Set Ball falling speed
@@ -124,13 +135,6 @@ void Update(RenderWindow& window) {
         }
     }
 
-    // Reset Ball falling speed
-    //ballVelocity = { 0, initialVelocityY };
-
-
-        //if (ballVelocity.y < 1000.f) {
-            //ballVelocity = { 0.f, ballVelocity.y + 1 };
-        //}
     if (canJump == false){
         if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
             //kill time
@@ -143,6 +147,7 @@ void Update(RenderWindow& window) {
             ballVelocity = { 0.f, ballVelocity.y + 100 };
         }
     }
+
 
 
   //ball.move(ballVelocity * dt);
@@ -161,6 +166,8 @@ void Update(RenderWindow& window) {
       direction++;
   }
   ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
+
+  //degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
 
 
 
@@ -203,12 +210,12 @@ void Update(RenderWindow& window) {
       }
 
       if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
-          //if (by > pT - ballRadius && by < pB - ballRadius) {
+          
               ballVelocity.y = 0.f;
               canJump = true;
               ball.setPosition(Vector2f(bx, pT - ballRadius));
-          //}
-          /*else*/ if (by < pB + ballRadius && by > pB) {
+          
+          if (by < pB + ballRadius && by > pB) {
               ballVelocity.y = 0.f;
               ball.move(Vector2f(0.f, 10.f));
           }
@@ -217,7 +224,7 @@ void Update(RenderWindow& window) {
               gameOverText.setFont(font);
               gameOverText.setColor(Color::Red);
               gameOverText.setString("GAME OVER");
-
+              deaths++;
               gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight/2);
               freeze = true;
           }
@@ -254,6 +261,7 @@ void Render(RenderWindow& window) {
     window.draw(degg);
     window.draw(fpstext);
     window.draw(gameOverText);
+    window.draw(deathsText);
 }
 
 int main() {
@@ -266,10 +274,13 @@ int main() {
     while (window.isOpen()) {
 
         if (freeze != true) {
+
+            /*      FPS DISPLAY*/
+            
             fps = 0.f;
             loops = 0;
             // set the character size to 24 pixels
-            fpstext.setCharacterSize(24);
+            fpstext.setCharacterSize(20);
             elapsedTime = clock.restart();
             if (elapsedTime.asSeconds() < 1) {
                 loops++;
@@ -281,8 +292,7 @@ int main() {
             String str_Header = "FPS: " + str_fps;
             fpstext.setFont(font);
             fpstext.setString(str_Header);
-            fpstext.setPosition((gameWidth * .5f) - (fpstext.getLocalBounds().width * .5f), 0);
-
+            fpstext.setPosition(0, 25);
 
             window.clear();
 
