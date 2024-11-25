@@ -53,9 +53,6 @@ CircleShape ball;
 CircleShape degg;
 RectangleShape platform[7];
 
-CircleShape ball;
-RectangleShape platform[5];
-
 int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 
@@ -179,163 +176,6 @@ void Update(RenderWindow& window) {
         }
     }
 
-    if (canJump == false){
-        if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
-            //kill time
-            hangTime++;
-            if (hangTime % 2 == 0) {
-                ballVelocity = { 0.f, ballVelocity.y + 100 };
-            }
-        }
-        else if (ballVelocity.y < 1000.f) {
-            ballVelocity = { 0.f, ballVelocity.y + 100 };
-        }
-    }
-
-
-
-  //ball.move(ballVelocity * dt);
-
-  // Quit Via ESC Key
-  if (Keyboard::isKeyPressed(Keyboard::Escape)) {
-      window.close();
-  }
-
-  // handle ball movement (horizontal)
-  float direction = 0.0f;
-  if (Keyboard::isKeyPressed(controls[1])) {
-      direction--;
-  }
-  if (Keyboard::isKeyPressed(controls[2])) {
-      direction++;
-  }
-  ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
-
-  //degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
-
-
-
-  // Check Collision with platform
-
-  const float bx = ball.getPosition().x;
-  const float by = ball.getPosition().y;
-
-  if (bx > gameWidth - ballRadius) {
-      ballVelocity.x = -ballVelocity.x;
-  }
-
-  if (by > gameHeight - ballRadius) { //bottom wall
-      ballVelocity.y = 0.f;
-      canJump = true;
-  }
-  else if (by < 0) { //top wall
-      ball.move(Vector2f(0.f, 10.f));
-  }
-
-
-  float pL = 0;
-  float pR = 0;
-  float pT = 0;
-  float pB = 0;
-
-  for (int i = 0; i < platformArray; i++) {
-      pL = platform[i].getPosition().x - 100;
-      pR = platform[i].getPosition().x + 100;
-      pT = platform[i].getPosition().y - 10;
-      pB = platform[i].getPosition().y + 10;
-
-      //GROUND HITBOX
-      if (i == 0) {
-          pL = platform[i].getPosition().x - 400;
-          pR = platform[i].getPosition().x + 400;
-          pT = platform[i].getPosition().y - 10;
-          pB = platform[i].getPosition().y + 10;
-      }
-
-      //GOAL HITBOX
-      if (i == 6) {
-          pL = platform[i].getPosition().x - 10;
-          pR = platform[i].getPosition().x + 10;
-          pT = platform[i].getPosition().y - 10;
-          pB = platform[i].getPosition().y + 10;
-      }
-
-      if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
-          
-              ballVelocity.y = 0.f;
-              canJump = true;
-              ball.setPosition(Vector2f(bx, pT - ballRadius));
-          
-          if (/*by < pB + ballRadius  &&*/ by > pB) {
-              ballVelocity.y = 0.f;
-              ball.move(Vector2f(0.f, 10.f));
-          }
-          if (i == 4) {
-              gameOverText.setCharacterSize(40);
-              gameOverText.setFont(font);
-              gameOverText.setColor(Color::Red);
-              gameOverText.setString("GAME OVER");
-              deaths++;
-              gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight/2);
-              freeze = true;
-          }
-          if (i == 6) {
-              gameOverText.setCharacterSize(40);
-              gameOverText.setFont(font);
-              gameOverText.setColor(Color::Green);
-              gameOverText.setString("LEVEL COMPLETE");
-              gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
-              freeze = true;
-              complete = true;
-
-          }
-      }
-  }
-  
-
-  // handle ball jump
-  if (canJump == true) {
-      if (Keyboard::isKeyPressed(controls[0])) {
-          //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
-          ballVelocity = { 0.f, ballJumpSpeed };
-          jumpTime = 10;
-      }
-  }
-
-  ball.move(ballVelocity * dt);
-
-  if (by > gameHeight) {
-      //ball.move(Vector2f(0.f, -10.f));
-      ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
-  }
-
-
-  
-
-void Update(RenderWindow& window) {
-
-    // Reset Jump validity
-    canJump = false;
-
-    // Reset clock, recalculate deltatime
-    static Clock clock;
-    float dt = clock.restart().asSeconds();
-    // check and consume events
-    Event event;
-    while (window.pollEvent(event)) {
-        if (event.type == Event::Closed) {
-            window.close();
-            return;
-        }
-    }
-
-    // Reset Ball falling speed
-    //ballVelocity = { 0, initialVelocityY };
-
-
-        //if (ballVelocity.y < 1000.f) {
-            //ballVelocity = { 0.f, ballVelocity.y + 1 };
-        //}
     if (canJump == false) {
         if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
             //kill time
@@ -348,6 +188,7 @@ void Update(RenderWindow& window) {
             ballVelocity = { 0.f, ballVelocity.y + 100 };
         }
     }
+
 
 
     //ball.move(ballVelocity * dt);
@@ -367,6 +208,8 @@ void Update(RenderWindow& window) {
     }
     ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
 
+    //degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+
 
 
     // Check Collision with platform
@@ -374,17 +217,15 @@ void Update(RenderWindow& window) {
     const float bx = ball.getPosition().x;
     const float by = ball.getPosition().y;
 
+    if (bx > gameWidth - ballRadius) {
+        ballVelocity.x = -ballVelocity.x;
+    }
+
     if (by > gameHeight - ballRadius) { //bottom wall
-        // bottom wall
-        // ballVelocity.x *= velocityMultiplier;
         ballVelocity.y = 0.f;
-        //ball.move(Vector2f(0.f, -10.f));
         canJump = true;
     }
     else if (by < 0) { //top wall
-        // top wall
-        // ballVelocity.x *= velocityMultiplier;
-        //ballVelocity.y *= 0;
         ball.move(Vector2f(0.f, 10.f));
     }
 
@@ -400,6 +241,7 @@ void Update(RenderWindow& window) {
         pT = platform[i].getPosition().y - 10;
         pB = platform[i].getPosition().y + 10;
 
+        //GROUND HITBOX
         if (i == 0) {
             pL = platform[i].getPosition().x - 400;
             pR = platform[i].getPosition().x + 400;
@@ -407,25 +249,41 @@ void Update(RenderWindow& window) {
             pB = platform[i].getPosition().y + 10;
         }
 
+        //GOAL HITBOX
+        if (i == 6) {
+            pL = platform[i].getPosition().x - 10;
+            pR = platform[i].getPosition().x + 10;
+            pT = platform[i].getPosition().y - 10;
+            pB = platform[i].getPosition().y + 10;
+        }
+
         if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
-            //if (by > pT - ballRadius && by < pB - ballRadius) {
+
             ballVelocity.y = 0.f;
             canJump = true;
             ball.setPosition(Vector2f(bx, pT - ballRadius));
-            //}
-            /*else*/ if (by < pB + ballRadius && by > pB) {
+
+            if (/*by < pB + ballRadius  &&*/ by > pB) {
                 ballVelocity.y = 0.f;
                 ball.move(Vector2f(0.f, 10.f));
             }
             if (i == 4) {
-                window.clear(Color::Black);
                 gameOverText.setCharacterSize(40);
                 gameOverText.setFont(font);
                 gameOverText.setColor(Color::Red);
                 gameOverText.setString("GAME OVER");
-
+                deaths++;
                 gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
                 freeze = true;
+            }
+            if (i == 6) {
+                gameOverText.setCharacterSize(40);
+                gameOverText.setFont(font);
+                gameOverText.setColor(Color::Green);
+                gameOverText.setString("LEVEL COMPLETE");
+                gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+                freeze = true;
+                complete = true;
             }
         }
     }
@@ -446,11 +304,8 @@ void Update(RenderWindow& window) {
         //ball.move(Vector2f(0.f, -10.f));
         ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
-
-
-
-
 }
+
 
 void Render(RenderWindow& window) {
     // Draw Everything
@@ -463,13 +318,6 @@ void Render(RenderWindow& window) {
     window.draw(fpstext);
     window.draw(gameOverText);
     window.draw(deathsText);
-
-    for (int i = 0; i < platformArray; i++) {
-        window.draw(platform[i]);
-    }
-    window.draw(ball);
-    window.draw(fpstext);
-    window.draw(gameOverText);
 
 }
 
