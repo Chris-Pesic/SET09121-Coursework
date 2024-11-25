@@ -21,6 +21,7 @@ const Keyboard::Key controls[3] = {
 
 const Vector2f platformSize(200.f, 20.f);
 const Vector2f groundSize(800.f, 20.f);
+const Vector2f goalHitbox(20, 20);
 const int gameWidth = 800;
 const int gameHeight = 600;
 const float ballRadius = 10.f;
@@ -44,11 +45,12 @@ int loops = 0;
 int fps = 0.0f;
 Time elapsedTime;
 bool freeze = false;
+bool complete = false;
 
 
 CircleShape ball;
 CircleShape degg;
-RectangleShape platform[5];
+RectangleShape platform[7];
 int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 
@@ -69,8 +71,8 @@ void Load() {
     ball.setRadius(ballRadius);
     ball.setOrigin(ballRadius, ballRadius); //Should be half the ball width and height
 
-    degg.setRadius(deggRadius);
-    degg.setOrigin(deggRadius, deggRadius);
+    //degg.setRadius(deggRadius);
+    //degg.setOrigin(deggRadius, deggRadius);
 
 
     // Reset positions
@@ -90,11 +92,18 @@ void Load() {
     platform[0].setSize(groundSize);
     platform[0].setPosition(Vector2f(400.f, 590.f));
     platform[0].setOrigin(groundSize.x / 2, groundSize.y / 2);
-    
+
+    //GOAL HITBOX
+    platform[6].setPosition(Vector2f(550.f, 120.f));
+    platform[6].setSize(Vector2f(20, 20));
+    platform[6].setFillColor(Color::Cyan);
+    platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
+
     //FLOATING PLATFORMS
     platform[1].setPosition(Vector2f(200.f, 480.f));
     platform[2].setPosition(Vector2f(300.f, 380.f));
-    platform[3].setPosition(Vector2f(500.f,500.f));
+    platform[3].setPosition(Vector2f(400.f, 250.f));
+    platform[5].setPosition(Vector2f(500.f, 140.f));
 
     //LAVA PLATFORM
     platform[4].setPosition(Vector2f(600.f, 590.f));
@@ -102,7 +111,7 @@ void Load() {
 
     //ENTITIES
     ball.setPosition(Vector2f(50, 525));
-    degg.setPosition(Vector2f(500, 475));
+    //degg.setPosition(Vector2f(500, 475));
 
     // Set Ball falling speed
     if (canJump == false) {
@@ -176,17 +185,15 @@ void Update(RenderWindow& window) {
   const float bx = ball.getPosition().x;
   const float by = ball.getPosition().y;
 
+  if (bx > gameWidth - ballRadius) {
+      ballVelocity.x = -ballVelocity.x;
+  }
+
   if (by > gameHeight - ballRadius) { //bottom wall
-      // bottom wall
-      // ballVelocity.x *= velocityMultiplier;
       ballVelocity.y = 0.f;
-      //ball.move(Vector2f(0.f, -10.f));
       canJump = true;
   }
   else if (by < 0) { //top wall
-      // top wall
-      // ballVelocity.x *= velocityMultiplier;
-      //ballVelocity.y *= 0;
       ball.move(Vector2f(0.f, 10.f));
   }
 
@@ -202,9 +209,18 @@ void Update(RenderWindow& window) {
       pT = platform[i].getPosition().y - 10;
       pB = platform[i].getPosition().y + 10;
 
+      //GROUND HITBOX
       if (i == 0) {
           pL = platform[i].getPosition().x - 400;
           pR = platform[i].getPosition().x + 400;
+          pT = platform[i].getPosition().y - 10;
+          pB = platform[i].getPosition().y + 10;
+      }
+
+      //GOAL HITBOX
+      if (i == 6) {
+          pL = platform[i].getPosition().x - 10;
+          pR = platform[i].getPosition().x + 10;
           pT = platform[i].getPosition().y - 10;
           pB = platform[i].getPosition().y + 10;
       }
@@ -215,7 +231,7 @@ void Update(RenderWindow& window) {
               canJump = true;
               ball.setPosition(Vector2f(bx, pT - ballRadius));
           
-          if (by < pB + ballRadius && by > pB) {
+          if (/*by < pB + ballRadius  &&*/ by > pB) {
               ballVelocity.y = 0.f;
               ball.move(Vector2f(0.f, 10.f));
           }
@@ -227,6 +243,16 @@ void Update(RenderWindow& window) {
               deaths++;
               gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight/2);
               freeze = true;
+          }
+          if (i == 6) {
+              gameOverText.setCharacterSize(40);
+              gameOverText.setFont(font);
+              gameOverText.setColor(Color::Green);
+              gameOverText.setString("LEVEL COMPLETE");
+              gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+              freeze = true;
+              complete = true;
+
           }
       }
   }
@@ -258,7 +284,7 @@ void Render(RenderWindow& window) {
         window.draw(platform[i]);
     }
     window.draw(ball);
-    window.draw(degg);
+    //window.draw(degg);
     window.draw(fpstext);
     window.draw(gameOverText);
     window.draw(deathsText);
@@ -273,9 +299,9 @@ int main() {
 
     while (window.isOpen()) {
 
-        if (freeze != true) {
+        if (freeze != true && complete != true) {
 
-            /*      FPS DISPLAY*/
+            /*      FPS DISPLAY     */
             
             fps = 0.f;
             loops = 0;
@@ -304,10 +330,14 @@ int main() {
 
             loops++;
         }
-        else {
+        else if (freeze == true && complete != true) {
             sleep(seconds(2));
             freeze = false;
             Reset(window);
+        }
+        else {
+            sleep(seconds(2));
+            window.close();
         }
     }
     return 0;
