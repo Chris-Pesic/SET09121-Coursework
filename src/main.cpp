@@ -54,6 +54,19 @@ RectangleShape platform[7];
 int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 
+bool isMenuDisplayed = true;
+Text menuText;
+
+void menuLoader() {
+
+    menuText.setCharacterSize(40);
+    menuText.setFont(font);
+    menuText.setString("EGG WITH LEGG\n\nPress ENTER to play\nPress 1 for Settings");
+    menuText.setPosition(gameWidth / 2, gameHeight / 2);
+    
+}
+
+
 void Load() {
     // Load font-face from res dir
     font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
@@ -279,19 +292,32 @@ void Update(RenderWindow& window) {
 }
 
 void Render(RenderWindow& window) {
-    // Draw Everything
-    for (int i = 0; i < platformArray; i++){
-        window.draw(platform[i]);
+
+    if (isMenuDisplayed != true) {
+        // Draw Everything
+        for (int i = 0; i < platformArray; i++) {
+            window.draw(platform[i]);
+        }
+        window.draw(ball);
+        //window.draw(degg);
+        window.draw(fpstext);
+        window.draw(gameOverText);
+        window.draw(deathsText);
     }
-    window.draw(ball);
-    //window.draw(degg);
-    window.draw(fpstext);
-    window.draw(gameOverText);
-    window.draw(deathsText);
+    else {
+        window.draw(menuText);
+        sleep(seconds(10));
+        if (Keyboard::isKeyPressed(Keyboard::Return)) {
+            isMenuDisplayed = false;
+            Load();
+        }
+    }
 }
 
 int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
+
+    if (isMenuDisplayed != true) {
     Load();
 
     window.setFramerateLimit(60);
@@ -299,46 +325,51 @@ int main() {
 
     while (window.isOpen()) {
 
-        if (freeze != true && complete != true) {
+            if (freeze != true && complete != true) {
 
-            /*      FPS DISPLAY     */
-            
-            fps = 0.f;
-            loops = 0;
-            // set the character size to 24 pixels
-            fpstext.setCharacterSize(20);
-            elapsedTime = clock.restart();
-            if (elapsedTime.asSeconds() < 1) {
+                /*      FPS DISPLAY     */
+
+                fps = 0.f;
+                loops = 0;
+                // set the character size to 24 pixels
+                fpstext.setCharacterSize(20);
+                elapsedTime = clock.restart();
+                if (elapsedTime.asSeconds() < 1) {
+                    loops++;
+                }
+                if (elapsedTime.asSeconds() > 0.0f) {
+                    fps = loops / elapsedTime.asSeconds();
+                }
+                String str_fps = to_string(fps);
+                String str_Header = "FPS: " + str_fps;
+                fpstext.setFont(font);
+                fpstext.setString(str_Header);
+                fpstext.setPosition(0, 25);
+
+                window.clear();
+
+                Update(window);
+
+                Render(window);
+
+                window.display();
+
                 loops++;
             }
-            if (elapsedTime.asSeconds() > 0.0f) {
-                fps = loops / elapsedTime.asSeconds();
+            else if (freeze == true && complete != true) {
+                sleep(seconds(2));
+                freeze = false;
+                Reset(window);
             }
-            String str_fps = to_string(fps);
-            String str_Header = "FPS: " + str_fps;
-            fpstext.setFont(font);
-            fpstext.setString(str_Header);
-            fpstext.setPosition(0, 25);
-
-            window.clear();
-
-            Update(window);
-
-            Render(window);
-
-            window.display();
-
-            loops++;
+            else {
+                sleep(seconds(2));
+                window.close();
+            }
         }
-        else if (freeze == true && complete != true) {
-            sleep(seconds(2));
-            freeze = false;
-            Reset(window);
-        }
-        else {
-            sleep(seconds(2));
-            window.close();
-        }
+    }
+    else {
+        menuLoader();
+        Render(window);
     }
     return 0;
 }
