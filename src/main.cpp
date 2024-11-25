@@ -22,8 +22,8 @@ const Keyboard::Key controls[3] = {
 const Vector2f platformSize(200.f, 20.f);
 const Vector2f groundSize(800.f, 20.f);
 const Vector2f goalHitbox(20, 20);
-const int gameWidth = 800;
-const int gameHeight = 600;
+int gameWidth = 800;
+int gameHeight = 600;
 const float ballRadius = 10.f;
 const float deggRadius = 10.f;
 Vector2f ballVelocity;
