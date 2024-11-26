@@ -7,6 +7,7 @@
         
         if you jump while touching the edge of a lava platform, the player will respawn in the floor
         you can still jump out so its no big deal. Or the player will fall from the ceiling, idk how any of it happens.
+        STATUS: FIXED - 26/11/2024
 
 */
 
@@ -144,7 +145,7 @@ void Update(RenderWindow& window) {
     //position failsafe
     if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
         ballVelocity.y = 0;
-        ball.setPosition(Vector2f(ball.getPosition().x, 825));
+        ball.setPosition(Vector2f(ball.getPosition().x, 880));
     }
     
     if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
