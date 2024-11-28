@@ -1,8 +1,5 @@
 #include <SFML/Graphics.hpp>
 
-<<<<<<< Updated upstream
-=======
-
 /*
 
         KNOWN ISSUES:
@@ -13,7 +10,7 @@
 
 */
 
->>>>>>> Stashed changes
+
 using namespace sf;
 using namespace std;
 
@@ -27,18 +24,16 @@ const Keyboard::Key controls[3] = {
 
 // These variables are used to assign sizes to various platforms, to allow for a consistent sizing
 const Vector2f platformSize(200.f, 20.f);
-<<<<<<< Updated upstream
 const Vector2f groundSize(800.f, 20.f);
 const int gameWidth = 800;
 const int gameHeight = 600;
-=======
 const Vector2f groundSize(1200.f, 20.f);
 const Vector2f goalHitbox(20, 20);
 
 int gameWidth = 1200;
 int gameHeight = 900;
 
->>>>>>> Stashed changes
+
 const float ballRadius = 10.f;
 Vector2f ballVelocity;
 const float ballHorizontalSpeed = 400.f;
@@ -48,17 +43,12 @@ bool canJump = false;
 float dt;
 int jumpTime = 0;
 int hangTime = 0;
-
 Font font;
 Text fpstext;
-<<<<<<< Updated upstream
 Text gameOverText;
-=======
 Text gameOverText; //This var is used for both game over states (level complete and player death)
-
 int deaths = 0;
 Text deathsText;
->>>>>>> Stashed changes
 int loops = 0;
 int fps = 0.0f;
 Time elapsedTime;
@@ -180,8 +170,6 @@ void Update(RenderWindow& window) {
         // Reset Jump validity
         canJump = false;
 
-<<<<<<< Updated upstream
-=======
     //position failsafe
     if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
         ballVelocity.y = 0;
@@ -192,7 +180,6 @@ void Update(RenderWindow& window) {
         degg.setPosition(Vector2f(350, 660));
     }
 
->>>>>>> Stashed changes
     // Reset clock, recalculate deltatime
     static Clock clock;
     float dt = clock.restart().asSeconds();
@@ -322,9 +309,6 @@ void Update(RenderWindow& window) {
         //ball.move(Vector2f(0.f, -10.f));
         ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
-
-<<<<<<< Updated upstream
-=======
     
         if (dx > bx && dx > 260) {
             degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
@@ -343,17 +327,13 @@ void Update(RenderWindow& window) {
     if (eggCollideY < 0) {
         eggCollideY = eggCollideY * -1;
     }
->>>>>>> Stashed changes
 
 
 }
 
 void Render(RenderWindow& window) {
     // Draw Everything
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
     for (int i = 0; i < platformArray; i++) {
         window.draw(platform[i]);
     }
@@ -371,14 +351,9 @@ int main() {
 
     while (window.isOpen()) {
 
-<<<<<<< Updated upstream
-        if (freeze != true) {
-=======
         if (freeze != true && complete != true) {
 
             /*      FPS DISPLAY     */
-
->>>>>>> Stashed changes
             fps = 0.f;
             loops = 0;
             // set the character size to 24 pixels
@@ -394,11 +369,8 @@ int main() {
             String str_Header = "FPS: " + str_fps;
             fpstext.setFont(font);
             fpstext.setString(str_Header);
-<<<<<<< Updated upstream
             fpstext.setPosition((gameWidth * .5f) - (fpstext.getLocalBounds().width * .5f), 0);
-=======
             fpstext.setPosition(0, 25);
->>>>>>> Stashed changes
 
 
             window.clear();
