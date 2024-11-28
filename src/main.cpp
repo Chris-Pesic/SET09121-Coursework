@@ -49,6 +49,10 @@ Time elapsedTime;
 bool freeze = false;
 bool complete = false;
 
+// These are used in the state machine for the deviled egg, the flags are used to change the state of the entity
+bool degg_IS_SEEKING = false;
+bool degg_IS_WANDERING = true;
+
 
 CircleShape ball;
 CircleShape degg;
@@ -137,7 +141,57 @@ void Reset(RenderWindow& window) {
     //Render(window);
 }
 
+void deviledEgg_StateMachine() {
+
+    bool hasReached_Wall_left = false;
+    bool hasReached_Wall_right = true;
+
+    if (degg_IS_SEEKING == true && degg_IS_WANDERING == false) {
+        if (degg.getPosition().x > ball.getPosition().x && degg.getPosition().x > 260 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y) {
+            degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+        }
+        else if (degg.getPosition().x < ball.getPosition().x && degg.getPosition().x < 440 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y) {
+            degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+        }
+        else {
+            degg_IS_SEEKING = false;
+            degg_IS_WANDERING = true;
+        }
+    }
+
+    //If entity deviled egg has not detected the player, initially move to the left wall
+    //Once that wall has been reached, move to opposite wall, repeat until player detected
+    else if (degg_IS_WANDERING == true && degg_IS_SEEKING == false) {
+        if (hasReached_Wall_left == false) {
+            while (degg.getPosition().x > 270) {
+                degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+                if (degg.getPosition().x <= 270) {
+                    hasReached_Wall_left = true;
+                    hasReached_Wall_right = false;
+                    break;
+                }
+            }
+        }
+        else if (hasReached_Wall_right == false) {
+            while (degg.getPosition().x < 430) {
+                degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+                if (degg.getPosition().x >= 430) {
+                    hasReached_Wall_left = false;
+                    hasReached_Wall_right = true;
+                    break;
+                }
+            }
+        }
+        else if (ball.getPosition().y <= degg.getPosition().y && ball.getPosition().x >= 260 || ball.getPosition().x <= 440 && ball.getPosition().y >= 620) {
+            degg_IS_SEEKING = true;
+            degg_IS_WANDERING = false;
+        }
+    }
+}
+
 void Update(RenderWindow& window) {
+
+    deviledEgg_StateMachine();
 
     // Reset Jump validity
     canJump = false;
