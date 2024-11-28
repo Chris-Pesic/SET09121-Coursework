@@ -53,6 +53,9 @@ bool complete = false;
 bool degg_IS_SEEKING = false;
 bool degg_IS_WANDERING = true;
 
+bool hasReached_Wall_left = false;
+bool hasReached_Wall_right = true;
+
 
 CircleShape ball;
 CircleShape degg;
@@ -140,13 +143,10 @@ void Reset(RenderWindow& window) {
     degg.setPosition(Vector2f(350, 660));
     //Render(window);
 }
-
+/*
 void deviledEgg_StateMachine() {
 
-    bool hasReached_Wall_left = false;
-    bool hasReached_Wall_right = true;
-
-    if (degg_IS_SEEKING == true && degg_IS_WANDERING == false) {
+    if (degg_IS_SEEKING == true) {
         if (degg.getPosition().x > ball.getPosition().x && degg.getPosition().x > 260 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y) {
             degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
         }
@@ -161,7 +161,7 @@ void deviledEgg_StateMachine() {
 
     //If entity deviled egg has not detected the player, initially move to the left wall
     //Once that wall has been reached, move to opposite wall, repeat until player detected
-    else if (degg_IS_WANDERING == true && degg_IS_SEEKING == false) {
+    else if (degg_IS_WANDERING == true) {
         if (hasReached_Wall_left == false) {
             while (degg.getPosition().x > 270) {
                 degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
@@ -188,10 +188,11 @@ void deviledEgg_StateMachine() {
         }
     }
 }
+*/
 
 void Update(RenderWindow& window) {
 
-    deviledEgg_StateMachine();
+    //deviledEgg_StateMachine();
 
     // Reset Jump validity
     canJump = false;
