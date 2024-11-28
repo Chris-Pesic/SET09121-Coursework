@@ -1,5 +1,19 @@
 #include <SFML/Graphics.hpp>
 
+<<<<<<< Updated upstream
+=======
+
+/*
+
+        KNOWN ISSUES:
+
+        if you jump while touching the edge of a lava platform, the player will respawn in the floor
+        you can still jump out so its no big deal. Or the player will fall from the ceiling, idk how any of it happens.
+        STATUS: FIXED - 26/11/2024
+
+*/
+
+>>>>>>> Stashed changes
 using namespace sf;
 using namespace std;
 
@@ -11,10 +25,20 @@ const Keyboard::Key controls[3] = {
     Keyboard::D,  // Player1 Right
 };
 
+// These variables are used to assign sizes to various platforms, to allow for a consistent sizing
 const Vector2f platformSize(200.f, 20.f);
+<<<<<<< Updated upstream
 const Vector2f groundSize(800.f, 20.f);
 const int gameWidth = 800;
 const int gameHeight = 600;
+=======
+const Vector2f groundSize(1200.f, 20.f);
+const Vector2f goalHitbox(20, 20);
+
+int gameWidth = 1200;
+int gameHeight = 900;
+
+>>>>>>> Stashed changes
 const float ballRadius = 10.f;
 Vector2f ballVelocity;
 const float ballHorizontalSpeed = 400.f;
@@ -24,14 +48,28 @@ bool canJump = false;
 float dt;
 int jumpTime = 0;
 int hangTime = 0;
+
 Font font;
 Text fpstext;
+<<<<<<< Updated upstream
 Text gameOverText;
+=======
+Text gameOverText; //This var is used for both game over states (level complete and player death)
+
+int deaths = 0;
+Text deathsText;
+>>>>>>> Stashed changes
 int loops = 0;
 int fps = 0.0f;
 Time elapsedTime;
 bool freeze = false;
 
+// These are used in the state machine for the deviled egg, the flags are used to change the state of the entity
+bool degg_IS_SEEKING = false;
+bool degg_IS_WANDERING = true;
+
+bool hasReached_Wall_left = false;
+bool hasReached_Wall_right = true;
 
 CircleShape ball;
 RectangleShape platform[5];
@@ -90,11 +128,71 @@ void Load() {
 }
 
 
+void deviledEgg_StateMachine() {
+
+    if (degg_IS_SEEKING == true) {
+        if (degg.getPosition().x > ball.getPosition().x && degg.getPosition().x > 260 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y - ballRadius) {
+            degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+        }
+        else if (degg.getPosition().x < ball.getPosition().x && degg.getPosition().x < 440 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y - ballRadius) {
+            degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+        }
+        else {
+            degg_IS_SEEKING = false;
+            degg_IS_WANDERING = true;
+        }
+    }
+
+    //If entity deviled egg has not detected the player, initially move to the left wall
+    //Once that wall has been reached, move to opposite wall, repeat until player detected
+    else if (degg_IS_WANDERING == true) {
+        if (hasReached_Wall_left == false) {
+            while (degg.getPosition().x > 270) {
+                degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+                if (degg.getPosition().x <= 270) {
+                    hasReached_Wall_left = true;
+                    hasReached_Wall_right = false;
+                    //break;
+                }
+            }
+        }
+        else if (hasReached_Wall_right == false) {
+            while (degg.getPosition().x < 430) {
+                degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+                if (degg.getPosition().x >= 430) {
+                    hasReached_Wall_left = false;
+                    hasReached_Wall_right = true;
+                    //break;
+                }
+            }
+        }
+        else if (ball.getPosition().y <= degg.getPosition().y && ball.getPosition().x >= 260 || ball.getPosition().x <= 440 && ball.getPosition().y >= 620) {
+            degg_IS_SEEKING = true;
+            degg_IS_WANDERING = false;
+        }
+    }
+}
+
 void Update(RenderWindow& window) {
 
-    // Reset Jump validity
-    canJump = false;
+    deviledEgg_StateMachine();
 
+        // Reset Jump validity
+        canJump = false;
+
+<<<<<<< Updated upstream
+=======
+    //position failsafe
+    if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
+        ballVelocity.y = 0;
+        ball.setPosition(Vector2f(ball.getPosition().x, 880));
+    }
+
+    if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
+        degg.setPosition(Vector2f(350, 660));
+    }
+
+>>>>>>> Stashed changes
     // Reset clock, recalculate deltatime
     static Clock clock;
     float dt = clock.restart().asSeconds();
@@ -225,12 +323,37 @@ void Update(RenderWindow& window) {
         ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
+<<<<<<< Updated upstream
+=======
+    
+        if (dx > bx && dx > 260) {
+            degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+        }
+        else if (dx < bx && dx < 440) {
+            degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+        }
+    
+
+    float eggCollideX = dx - bx;
+    if (eggCollideX < 0) {
+        eggCollideX = eggCollideX * -1;
+    }
+
+    float eggCollideY = dy - by;
+    if (eggCollideY < 0) {
+        eggCollideY = eggCollideY * -1;
+    }
+>>>>>>> Stashed changes
 
 
 }
 
 void Render(RenderWindow& window) {
     // Draw Everything
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     for (int i = 0; i < platformArray; i++) {
         window.draw(platform[i]);
     }
@@ -248,7 +371,14 @@ int main() {
 
     while (window.isOpen()) {
 
+<<<<<<< Updated upstream
         if (freeze != true) {
+=======
+        if (freeze != true && complete != true) {
+
+            /*      FPS DISPLAY     */
+
+>>>>>>> Stashed changes
             fps = 0.f;
             loops = 0;
             // set the character size to 24 pixels
@@ -264,7 +394,11 @@ int main() {
             String str_Header = "FPS: " + str_fps;
             fpstext.setFont(font);
             fpstext.setString(str_Header);
+<<<<<<< Updated upstream
             fpstext.setPosition((gameWidth * .5f) - (fpstext.getLocalBounds().width * .5f), 0);
+=======
+            fpstext.setPosition(0, 25);
+>>>>>>> Stashed changes
 
 
             window.clear();
