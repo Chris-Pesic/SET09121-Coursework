@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 
+
 /*
 
         KNOWN ISSUES:
@@ -10,11 +11,8 @@
 
 */
 
-
 using namespace sf;
 using namespace std;
-
-void Reset();
 
 const Keyboard::Key controls[3] = {
     Keyboard::W,   // Player1 Up
@@ -22,20 +20,16 @@ const Keyboard::Key controls[3] = {
     Keyboard::D,  // Player1 Right
 };
 
-// These variables are used to assign sizes to various platforms, to allow for a consistent sizing
 const Vector2f platformSize(200.f, 20.f);
-const Vector2f groundSize(800.f, 20.f);
-const int gameWidth = 800;
-const int gameHeight = 600;
 const Vector2f groundSize(1200.f, 20.f);
 const Vector2f goalHitbox(20, 20);
-
 int gameWidth = 1200;
 int gameHeight = 900;
-
-
 const float ballRadius = 10.f;
+const float deggRadius = 10.f;
 Vector2f ballVelocity;
+Vector2f deggVelocity;
+const float deggHorizontalspeed = 100.f;
 const float ballHorizontalSpeed = 400.f;
 const float ballJumpSpeed = -1200.f;
 const float initialVelocityY = 80.f;
@@ -46,23 +40,20 @@ int hangTime = 0;
 Font font;
 Text fpstext;
 Text gameOverText;
-Text gameOverText; //This var is used for both game over states (level complete and player death)
+
 int deaths = 0;
 Text deathsText;
 int loops = 0;
 int fps = 0.0f;
 Time elapsedTime;
 bool freeze = false;
+bool complete = false;
 
-// These are used in the state machine for the deviled egg, the flags are used to change the state of the entity
-bool degg_IS_SEEKING = false;
-bool degg_IS_WANDERING = true;
-
-bool hasReached_Wall_left = false;
-bool hasReached_Wall_right = true;
 
 CircleShape ball;
-RectangleShape platform[5];
+CircleShape degg;
+RectangleShape platform[7];
+
 int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 
@@ -85,90 +76,71 @@ void Load() {
         //platform[i].setFillColor(Color::Cyan);
     //}
 
+
     // Set size and origin of ball
     ball.setRadius(ballRadius);
-    ball.setOrigin(ballRadius, ballRadius); //Should be half the ball width and height
+    ball.setOrigin(ballRadius, ballRadius);
     ball.setPosition(100, gameHeight / 2);
+
+    degg.setRadius(deggRadius);
+    degg.setOrigin(deggRadius, deggRadius);
+
 
     // Reset positions
 
+    //TEXT DISPLAYS
+    gameOverText.setColor(Color::Black);
+    gameOverText.setPosition(0, 1200);
+
+    deathsText.setCharacterSize(20);
+    deathsText.setFont(font);
+    String strdeaths = to_string(deaths);
+    deathsText.setString("Deaths: " + strdeaths);
+    deathsText.setPosition(0, 0);
+
     //GROUND PLATFORM
     platform[0].setSize(groundSize);
-    platform[0].setPosition(Vector2f(400.f, 590.f));
+    platform[0].setPosition(Vector2f(600.f, 890.f));
     platform[0].setOrigin(groundSize.x / 2, groundSize.y / 2);
 
     //FLOATING PLATFORMS
-    platform[1].setPosition(Vector2f(200.f, 480.f));
-    platform[2].setPosition(Vector2f(300.f, 380.f));
-    platform[3].setPosition(Vector2f(500.f, 500.f));
+    platform[1].setPosition(Vector2f(200.f, 780.f));
+    platform[2].setPosition(Vector2f(350.f, 680.f));
+    platform[3].setPosition(Vector2f(650.f, 680.f));
+    platform[5].setPosition(Vector2f(850.f, 580.f));
 
     //LAVA PLATFORM
-    platform[4].setPosition(Vector2f(600.f, 590.f));
+    platform[4].setPosition(Vector2f(600.f, 890.f));
 
+    //GOAL HITBOX
+    platform[6].setPosition(Vector2f(850.f, 560.f));
+    platform[6].setSize(Vector2f(20, 20));
+    platform[6].setFillColor(Color::Cyan);
+    platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
 
-    ball.setPosition(Vector2f(gameWidth / 2.f, gameHeight / 2.f));
+    //ENTITIES
+    ball.setPosition(Vector2f(50, 825));
+    degg.setPosition(Vector2f(350, 660));
+    degg.setFillColor(Color::Magenta);
 
     // Set Ball falling speed
     if (canJump == false) {
         ballVelocity = { 0, initialVelocityY };
     }
-
-
-
 }
 
-
-void deviledEgg_StateMachine() {
-
-    if (degg_IS_SEEKING == true) {
-        if (degg.getPosition().x > ball.getPosition().x && degg.getPosition().x > 260 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y - ballRadius) {
-            degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
-        }
-        else if (degg.getPosition().x < ball.getPosition().x && degg.getPosition().x < 440 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y - ballRadius) {
-            degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
-        }
-        else {
-            degg_IS_SEEKING = false;
-            degg_IS_WANDERING = true;
-        }
-    }
-
-    //If entity deviled egg has not detected the player, initially move to the left wall
-    //Once that wall has been reached, move to opposite wall, repeat until player detected
-    else if (degg_IS_WANDERING == true) {
-        if (hasReached_Wall_left == false) {
-            while (degg.getPosition().x > 270) {
-                degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
-                if (degg.getPosition().x <= 270) {
-                    hasReached_Wall_left = true;
-                    hasReached_Wall_right = false;
-                    //break;
-                }
-            }
-        }
-        else if (hasReached_Wall_right == false) {
-            while (degg.getPosition().x < 430) {
-                degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
-                if (degg.getPosition().x >= 430) {
-                    hasReached_Wall_left = false;
-                    hasReached_Wall_right = true;
-                    //break;
-                }
-            }
-        }
-        else if (ball.getPosition().y <= degg.getPosition().y && ball.getPosition().x >= 260 || ball.getPosition().x <= 440 && ball.getPosition().y >= 620) {
-            degg_IS_SEEKING = true;
-            degg_IS_WANDERING = false;
-        }
-    }
+void Reset(RenderWindow& window) {
+    window.clear();
+    Load();
+    ball.setPosition(Vector2f(50, 825));
+    degg.setPosition(Vector2f(350, 660));
+    //Render(window);
 }
 
 void Update(RenderWindow& window) {
 
-    deviledEgg_StateMachine();
-
-        // Reset Jump validity
-        canJump = false;
+    // Reset Jump validity
+    canJump = false;
 
     //position failsafe
     if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
@@ -192,13 +164,6 @@ void Update(RenderWindow& window) {
         }
     }
 
-    // Reset Ball falling speed
-    //ballVelocity = { 0, initialVelocityY };
-
-
-        //if (ballVelocity.y < 1000.f) {
-            //ballVelocity = { 0.f, ballVelocity.y + 1 };
-        //}
     if (canJump == false) {
         if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
             //kill time
@@ -212,13 +177,15 @@ void Update(RenderWindow& window) {
         }
     }
 
-
-    //ball.move(ballVelocity * dt);
-
     // Quit Via ESC Key
     if (Keyboard::isKeyPressed(Keyboard::Escape)) {
         window.close();
     }
+
+
+
+    const float dx = degg.getPosition().x;
+    const float dy = degg.getPosition().y;
 
     // handle ball movement (horizontal)
     float direction = 0.0f;
@@ -237,17 +204,15 @@ void Update(RenderWindow& window) {
     const float bx = ball.getPosition().x;
     const float by = ball.getPosition().y;
 
+    if (bx > gameWidth - ballRadius) {
+        ballVelocity.x = -ballVelocity.x;
+    }
+
     if (by > gameHeight - ballRadius) { //bottom wall
-        // bottom wall
-        // ballVelocity.x *= velocityMultiplier;
         ballVelocity.y = 0.f;
-        //ball.move(Vector2f(0.f, -10.f));
         canJump = true;
     }
     else if (by < 0) { //top wall
-        // top wall
-        // ballVelocity.x *= velocityMultiplier;
-        //ballVelocity.y *= 0;
         ball.move(Vector2f(0.f, 10.f));
     }
 
@@ -263,32 +228,50 @@ void Update(RenderWindow& window) {
         pT = platform[i].getPosition().y - 10;
         pB = platform[i].getPosition().y + 10;
 
+        //GROUND HITBOX
         if (i == 0) {
-            pL = platform[i].getPosition().x - 400;
-            pR = platform[i].getPosition().x + 400;
+            pL = platform[i].getPosition().x - 600;
+            pR = platform[i].getPosition().x + 600;
+            pT = platform[i].getPosition().y - 10;
+            pB = platform[i].getPosition().y + 10;
+        }
+
+        //GOAL HITBOX
+        if (i == 6) {
+            pL = platform[i].getPosition().x - 10;
+            pR = platform[i].getPosition().x + 10;
             pT = platform[i].getPosition().y - 10;
             pB = platform[i].getPosition().y + 10;
         }
 
         if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
-            //if (by > pT - ballRadius && by < pB - ballRadius) {
+
             ballVelocity.y = 0.f;
             canJump = true;
             ball.setPosition(Vector2f(bx, pT - ballRadius));
-            //}
-            /*else*/ if (by < pB + ballRadius && by > pB) {
+
+            if (/*by < pB + ballRadius  &&*/ by > pB) {
                 ballVelocity.y = 0.f;
                 ball.move(Vector2f(0.f, 10.f));
             }
             if (i == 4) {
-                window.clear(Color::Black);
                 gameOverText.setCharacterSize(40);
                 gameOverText.setFont(font);
                 gameOverText.setColor(Color::Red);
                 gameOverText.setString("GAME OVER");
-
+                deaths++;
                 gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
                 freeze = true;
+            }
+
+            if (i == 6) {
+                gameOverText.setCharacterSize(40);
+                gameOverText.setFont(font);
+                gameOverText.setColor(Color::Green);
+                gameOverText.setString("LEVEL COMPLETE");
+                gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+                freeze = true;
+                complete = true;
             }
         }
     }
@@ -297,7 +280,7 @@ void Update(RenderWindow& window) {
     // handle ball jump
     if (canJump == true) {
         if (Keyboard::isKeyPressed(controls[0])) {
-            //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
+            ball.move(Vector2f(0.f, ballJumpSpeed * dt));
             ballVelocity = { 0.f, ballJumpSpeed };
             jumpTime = 10;
         }
@@ -309,14 +292,13 @@ void Update(RenderWindow& window) {
         //ball.move(Vector2f(0.f, -10.f));
         ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
-    
-        if (dx > bx && dx > 260) {
-            degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
-        }
-        else if (dx < bx && dx < 440) {
-            degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
-        }
-    
+
+    if (dx > bx && dx > 260) {
+        degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+    }
+    else if (dx < bx && dx < 440) {
+        degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+    }
 
     float eggCollideX = dx - bx;
     if (eggCollideX < 0) {
@@ -329,7 +311,19 @@ void Update(RenderWindow& window) {
     }
 
 
+    if (eggCollideY <= 19) {
+        if (eggCollideX <= 19) {
+            gameOverText.setCharacterSize(40);
+            gameOverText.setFont(font);
+            gameOverText.setColor(Color::Red);
+            gameOverText.setString("GAME OVER");
+            deaths++;
+            gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+            freeze = true;
+        }
+    }
 }
+
 
 void Render(RenderWindow& window) {
     // Draw Everything
@@ -338,8 +332,11 @@ void Render(RenderWindow& window) {
         window.draw(platform[i]);
     }
     window.draw(ball);
+    window.draw(degg);
     window.draw(fpstext);
     window.draw(gameOverText);
+    window.draw(deathsText);
+
 }
 
 int main() {
@@ -354,10 +351,11 @@ int main() {
         if (freeze != true && complete != true) {
 
             /*      FPS DISPLAY     */
+
             fps = 0.f;
             loops = 0;
             // set the character size to 24 pixels
-            fpstext.setCharacterSize(24);
+            fpstext.setCharacterSize(20);
             elapsedTime = clock.restart();
             if (elapsedTime.asSeconds() < 1) {
                 loops++;
@@ -369,7 +367,6 @@ int main() {
             String str_Header = "FPS: " + str_fps;
             fpstext.setFont(font);
             fpstext.setString(str_Header);
-            fpstext.setPosition((gameWidth * .5f) - (fpstext.getLocalBounds().width * .5f), 0);
             fpstext.setPosition(0, 25);
 
 
@@ -383,9 +380,15 @@ int main() {
 
             loops++;
         }
-        else {
+        else if (freeze == true && complete != true) {
             sleep(seconds(2));
             freeze = false;
+            Reset(window);
+        }
+        else {
+            sleep(seconds(2));
+            window.close();
+
         }
     }
     return 0;
