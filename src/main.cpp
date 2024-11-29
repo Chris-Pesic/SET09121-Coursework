@@ -230,6 +230,7 @@ void Update(RenderWindow& window) {
     //position failsafe
     if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
         ballVelocity.y = 0;
+        ballVelocity.x = 0;
         ball.setPosition(Vector2f(ball.getPosition().x, 880));
     }
 
