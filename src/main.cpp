@@ -41,7 +41,7 @@ const Vector2f groundSize(1200.f, 20.f);
 const Vector2f goalHitbox(20.f, 20.f);
 int gameWidth = 1200;
 int gameHeight = 900;
-const float ballRadius = 10.f;
+const float ballRadius = 60.f;
 const float deggRadius = 10.f;
 const Vector2f hammerHitbox(20.f, 20.f);
 Vector2f ballVelocity;
@@ -85,7 +85,7 @@ int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("[PATH]");
+    font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
 
     // Set size and origin of platform
     for (auto& p : platform) {
@@ -105,7 +105,7 @@ void Load() {
 
     // Set size and origin of ball
     //ball.setRadius(ballRadius);
-    //ball.setOrigin(ballRadius, ballRadius);
+    eggsprite.setOrigin(ballRadius, ballRadius);
     //ball.setPosition(100, gameHeight / 2);
     eggsprite.setPosition(100, gameHeight / 2);
 
@@ -220,6 +220,7 @@ void GameOver() {
         gameOverText.setColor(Color::Green);
         gameOverText.setString("LEVEL COMPLETE");
         gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+        cout << "Level Completed - Press any key to close" << endl;
         freeze = true;
     }
     else {
@@ -547,7 +548,7 @@ int main() {
     window.setFramerateLimit(60);
     Clock clock;
 
-    if (!backgroundTexture.loadFromFile("[PATH]"))
+    if (!backgroundTexture.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/KitchenBackground.png"))
     {
         cout << "ERROR loading background" << endl;
     }
@@ -556,7 +557,7 @@ int main() {
         background.setTexture(backgroundTexture);
     }
 
-    if (!spritesheet.loadFromFile("[PATH]"))
+    if (!spritesheet.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/EggSpritesheet.png"))
     {
         cout << "ERROR loading spritesheet" << endl;
     }
