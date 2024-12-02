@@ -104,7 +104,7 @@ void Load() {
 
 
     // Set size and origin of ball
-    //ball.setRadius(ballRadius);
+    //eggsprite.setRadius(ballRadius);
     eggsprite.setOrigin(ballRadius, ballRadius);
     //ball.setPosition(100, gameHeight / 2);
     eggsprite.setPosition(100, gameHeight / 2);
@@ -555,6 +555,7 @@ int main() {
     else
     {
         background.setTexture(backgroundTexture);
+        background.setScale(1.2f, 1.2f);
     }
 
     if (!spritesheet.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/EggSpritesheet.png"))
