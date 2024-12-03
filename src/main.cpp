@@ -41,7 +41,7 @@ const Vector2f groundSize(1200.f, 20.f);
 const Vector2f goalHitbox(20.f, 20.f);
 int gameWidth = 1200;
 int gameHeight = 900;
-const float ballRadius = 60.f;
+const float ballRadius = 10.f;
 const float deggRadius = 10.f;
 const Vector2f hammerHitbox(20.f, 20.f);
 Vector2f ballVelocity;
@@ -74,7 +74,7 @@ bool hasReached_Wall_left = false;
 bool hasReached_Wall_right = true;
 
 
-//CircleShape ball;
+CircleShape ball;
 CircleShape degg;
 RectangleShape hammer;
 
@@ -105,9 +105,9 @@ void Load() {
 
     // Set size and origin of ball
     //eggsprite.setRadius(ballRadius);
-    eggsprite.setOrigin(ballRadius, ballRadius);
+    ball.setOrigin(ballRadius, ballRadius);
     //ball.setPosition(100, gameHeight / 2);
-    eggsprite.setPosition(100, gameHeight / 2);
+    ball.setPosition(100, gameHeight / 2);
 
     degg.setRadius(deggRadius);
     degg.setOrigin(deggRadius, deggRadius);
@@ -147,7 +147,7 @@ void Load() {
 
     //ENTITIES
     //ball.setPosition(Vector2f(50, 825));
-    eggsprite.setPosition(Vector2f(50, 825));
+    ball.setPosition(Vector2f(50, 825));
 
     degg.setPosition(Vector2f(350, 660));
     degg.setFillColor(Color::Magenta);
@@ -208,7 +208,7 @@ Player player;
 void Reset(RenderWindow& window) {
     window.clear();
     Load();
-    eggsprite.setPosition(Vector2f(50, 825));
+    ball.setPosition(Vector2f(50, 825));
     degg.setPosition(Vector2f(350, 660));
     //Render(window);
 }
@@ -353,10 +353,10 @@ void Update(RenderWindow& window) {
 
 
     //position failsafe
-    if (eggsprite.getPosition().y < 0 || eggsprite.getPosition().y > 880) {
+    if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
         ballVelocity.y = 0;
         ballVelocity.x = 0;
-        eggsprite.setPosition(Vector2f(eggsprite.getPosition().x, 880));
+        ball.setPosition(Vector2f(ball.getPosition().x, 880));
     }
 
     if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
@@ -411,14 +411,14 @@ void Update(RenderWindow& window) {
         direction++;
         player.setState(WALKING_RIGHT);
     }
-    eggsprite.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
+    ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
 
 
 
     // Check Collision with platform
 
-    const float bx = eggsprite.getPosition().x;
-    const float by = eggsprite.getPosition().y;
+    const float bx = ball.getPosition().x;
+    const float by = ball.getPosition().y;
 
     if (bx > gameWidth - ballRadius) {
         ballVelocity.x = -ballVelocity.x;
@@ -429,7 +429,7 @@ void Update(RenderWindow& window) {
         canJump = true;
     }
     else if (by < 0) { //top wall
-        eggsprite.move(Vector2f(0.f, 10.f));
+        ball.move(Vector2f(0.f, 10.f));
     }
 
 
@@ -464,11 +464,11 @@ void Update(RenderWindow& window) {
 
             ballVelocity.y = 0.f;
             canJump = true;
-            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
+            ball.setPosition(Vector2f(bx, pT - ballRadius));
 
             if (/*by < pB + ballRadius  &&*/ by > pB) {
                 ballVelocity.y = 0.f;
-                eggsprite.move(Vector2f(0.f, 10.f));
+                ball.move(Vector2f(0.f, 10.f));
             }
             if (i == 4) {
                 GameOver();
@@ -492,11 +492,11 @@ void Update(RenderWindow& window) {
         }
     }
 
-    eggsprite.move(ballVelocity * dt);
+    ball.move(ballVelocity * dt);
 
     if (by > gameHeight) {
         //ball.move(Vector2f(0.f, -10.f));
-        eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
+        ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
     if (dx > bx && dx > 260) {
@@ -522,6 +522,8 @@ void Update(RenderWindow& window) {
             GameOver();
         }
     }
+
+    eggsprite.setPosition(bx, by);
 }
 
 
@@ -532,6 +534,7 @@ void Render(RenderWindow& window) {
     for (int i = 0; i < platformArray; i++) {
         window.draw(platform[i]);
     }
+    window.draw(ball);
     window.draw(eggsprite);
     window.draw(degg);
     window.draw(hammer);
