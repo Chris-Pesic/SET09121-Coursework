@@ -25,7 +25,7 @@ const Vector2f groundSize(1200.f, 20.f);
 const Vector2f goalHitbox(20, 20);
 int gameWidth = 1200;
 int gameHeight = 900;
-const float ballRadius = 10.f;
+const Vector2f ballRadius(10.f, 10.f);
 const float deggRadius = 10.f;
 Vector2f ballVelocity;
 Vector2f deggVelocity;
@@ -57,7 +57,7 @@ bool hasReached_Wall_left = false;
 bool hasReached_Wall_right = true;
 
 
-CircleShape ball;
+RectangleShape ball;
 CircleShape degg;
 RectangleShape platform[7];
 
@@ -85,8 +85,8 @@ void Load() {
 
 
     // Set size and origin of ball
-    ball.setRadius(ballRadius);
-    ball.setOrigin(ballRadius, ballRadius);
+    ball.setSize(ballRadius);
+    ball.setOrigin(ballRadius);
     ball.setPosition(100, gameHeight / 2);
 
     degg.setRadius(deggRadius);
@@ -259,11 +259,11 @@ void Update(RenderWindow& window) {
     const float bx = ball.getPosition().x;
     const float by = ball.getPosition().y;
 
-    if (bx > gameWidth - ballRadius) {
+    if (bx > gameWidth - ballRadius.x) {
         ballVelocity.x = -ballVelocity.x;
     }
 
-    if (by > gameHeight - ballRadius) { //bottom wall
+    if (by > gameHeight - ballRadius.y) { //bottom wall
         ballVelocity.y = 0.f;
         canJump = true;
     }
@@ -299,11 +299,11 @@ void Update(RenderWindow& window) {
             pB = platform[i].getPosition().y + 10;
         }
 
-        if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
+        if (bx > pL && bx < pR && by >= pT - ballRadius.y && by < pB - ballRadius.y) {
 
             ballVelocity.y = 0.f;
             canJump = true;
-            ball.setPosition(Vector2f(bx, pT - ballRadius));
+            ball.setPosition(Vector2f(bx, pT - ballRadius.y));
 
             if (/*by < pB + ballRadius  &&*/ by > pB) {
                 ballVelocity.y = 0.f;
@@ -345,7 +345,7 @@ void Update(RenderWindow& window) {
 
     if (by > gameHeight) {
         //ball.move(Vector2f(0.f, -10.f));
-        ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
+        ball.setPosition(Vector2f(bx, gameHeight - ballRadius.y));
     }
 
     if (dx > bx && dx > 260) {
