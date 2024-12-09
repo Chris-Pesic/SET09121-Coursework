@@ -167,7 +167,6 @@ void Load() {
     if (canJump == false) {
         ballVelocity = { 0, initialVelocityY };
     }
-
 }
 
 class Player {
@@ -280,7 +279,7 @@ void Update(RenderWindow& window) {
 
     // Reset Jump validity
     canJump = false;
-
+  
     switch (player.getState()) {
     case EggState::STANDING:
         // Animate grids 1-3
@@ -403,7 +402,7 @@ void Update(RenderWindow& window) {
 
     const float hx = hammer.getPosition().x;
     const float hy = hammer.getPosition().y;
-
+  
     // handle ball movement (horizontal)
     float direction = 0.0f;
     if (Keyboard::isKeyPressed(controls[1])) {
@@ -418,8 +417,8 @@ void Update(RenderWindow& window) {
 
 
 
-    // Check Collision with platform
 
+    // Check Collision with platform
     const float bx = eggsprite.getPosition().x;
     const float by = eggsprite.getPosition().y;
 
@@ -532,7 +531,6 @@ void Update(RenderWindow& window) {
 
 void Render(RenderWindow& window) {
     // Draw Everything
-
     window.draw(background);
     for (int i = 0; i < platformArray; i++) {
         window.draw(platform[i]);
@@ -605,6 +603,7 @@ int main() {
             fpstext.setFont(font);
             fpstext.setString(str_Header);
             fpstext.setPosition(0, 25);
+            
 
             //112 223
             /*
