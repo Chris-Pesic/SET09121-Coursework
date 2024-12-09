@@ -1,10 +1,12 @@
 #include <SFML/Graphics.hpp>
+//#include <SFML/Audio.hpp>
+#include <iostream>
 
 
 /*
 
         KNOWN ISSUES:
-        
+
         if you jump while touching the edge of a lava platform, the player will respawn in the floor
         you can still jump out so its no big deal. Or the player will fall from the ceiling, idk how any of it happens.
         STATUS: FIXED - 26/11/2024
@@ -14,19 +16,40 @@
 using namespace sf;
 using namespace std;
 
+Texture spritesheet;
+Sprite eggsprite;
+Texture backgroundTexture;
+Sprite background;
+
+IntRect eggSourceSprite(1, 1, 110, 125);
+
+//SoundBuffer buffer;
+//Sound jumpsound;
+
 const Keyboard::Key controls[3] = {
     Keyboard::W,   // Player1 Up
     Keyboard::A,   // Player1 Left
     Keyboard::D,  // Player1 Right
 };
 
+// Define an enum for player states
+enum EggState {
+    STANDING,
+    WALKING_LEFT,
+    WALKING_RIGHT,
+    RISING,
+    FALLING,
+    DYING
+};
+
 const Vector2f platformSize(200.f, 20.f);
 const Vector2f groundSize(1200.f, 20.f);
-const Vector2f goalHitbox(20, 20);
+const Vector2f goalHitbox(20.f, 20.f);
 int gameWidth = 1200;
 int gameHeight = 900;
-const float ballRadius = 10.f;
+const float ballRadius = 60.f;
 const float deggRadius = 10.f;
+const Vector2f hammerHitbox(20.f, 20.f);
 Vector2f ballVelocity;
 Vector2f deggVelocity;
 const float deggHorizontalspeed = 100.f;
@@ -49,9 +72,18 @@ Time elapsedTime;
 bool freeze = false;
 bool complete = false;
 
+// These are used in the state machine for the deviled egg, the flags are used to change the state of the entity
+bool degg_IS_SEEKING = false;
+bool degg_IS_WANDERING = true;
 
-CircleShape ball;
+bool hasReached_Wall_left = false;
+bool hasReached_Wall_right = true;
+
+
+//CircleShape ball;
 CircleShape degg;
+RectangleShape hammer;
+
 RectangleShape platform[7];
 
 int platformArray = sizeof(platform) / sizeof(platform[0]);
@@ -59,7 +91,7 @@ int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
+    font.loadFromFile("C:/Users/angus/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
 
     // Set size and origin of platform
     for (auto& p : platform) {
@@ -78,9 +110,10 @@ void Load() {
 
 
     // Set size and origin of ball
-    ball.setRadius(ballRadius);
-    ball.setOrigin(ballRadius, ballRadius);
-    ball.setPosition(100, gameHeight / 2);
+    //ball.setRadius(ballRadius);
+    //ball.setOrigin(ballRadius, ballRadius);
+    //ball.setPosition(100, gameHeight / 2);
+    eggsprite.setPosition(100, gameHeight / 2);
 
     degg.setRadius(deggRadius);
     degg.setOrigin(deggRadius, deggRadius);
@@ -107,21 +140,28 @@ void Load() {
     platform[1].setPosition(Vector2f(200.f, 780.f));
     platform[2].setPosition(Vector2f(350.f, 680.f));
     platform[3].setPosition(Vector2f(650.f, 680.f));
-    platform[5].setPosition(Vector2f(850.f, 580.f));
+    platform[5].setPosition(Vector2f(950.f, 580.f));
 
     //LAVA PLATFORM
     platform[4].setPosition(Vector2f(600.f, 890.f));
 
     //GOAL HITBOX
-    platform[6].setPosition(Vector2f(850.f, 560.f));
+    platform[6].setPosition(Vector2f(950.f, 560.f));
     platform[6].setSize(Vector2f(20, 20));
     platform[6].setFillColor(Color::Cyan);
     platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
 
     //ENTITIES
-    ball.setPosition(Vector2f(50, 825));
+    //ball.setPosition(Vector2f(50, 825));
+    eggsprite.setPosition(Vector2f(50, 825));
+
     degg.setPosition(Vector2f(350, 660));
     degg.setFillColor(Color::Magenta);
+
+    hammer.setSize(Vector2f(hammerHitbox));
+    hammer.setOrigin(hammerHitbox.x / 2, hammerHitbox.y / 2);
+    hammer.setPosition(Vector2f(650.f, 560.f));
+    hammer.setFillColor(Color::Yellow);
 
     // Set Ball falling speed
     if (canJump == false) {
@@ -129,29 +169,202 @@ void Load() {
     }
 }
 
+class Player {
+public:
+    // Constructor to initialize the player state
+    Player() : state(STANDING), frameCounter(0), animationSpeed(10) {}
+
+    // Method to set the player's state
+    void setState(EggState newState) {
+        state = newState;
+    }
+
+    // Method to get the current player's state
+    EggState getState() const {
+        return state;
+    }
+
+
+
+private:
+    int frameCounter;    // Tracks which frame of the animation to show
+    int animationSpeed;  // Controls animation speed (higher = slower animation)
+    EggState state;      // Stores the current state of the player
+
+
+    sf::Texture spritesheet;
+    sf::Sprite eggsprite;
+};
+
+Player player;
+
 void Reset(RenderWindow& window) {
     window.clear();
     Load();
-    ball.setPosition(Vector2f(50, 825));
+    eggsprite.setPosition(Vector2f(50, 825));
     degg.setPosition(Vector2f(350, 660));
     //Render(window);
 }
 
+void GameOver() {
+    if (complete == true) {
+        gameOverText.setCharacterSize(40);
+        gameOverText.setFont(font);
+        gameOverText.setColor(Color::Green);
+        gameOverText.setString("LEVEL COMPLETE");
+        gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+        freeze = true;
+    }
+    else {
+        gameOverText.setCharacterSize(40);
+        gameOverText.setFont(font);
+        gameOverText.setColor(Color::Red);
+        gameOverText.setString("GAME OVER");
+        deaths++;
+        gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+        freeze = true;
+    }
+}
+
+/*
+void deviledEgg_StateMachine() {
+
+    if (degg_IS_SEEKING == true) {
+        if (degg.getPosition().x > ball.getPosition().x && degg.getPosition().x > 260 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y) {
+            degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+        }
+        else if (degg.getPosition().x < ball.getPosition().x && degg.getPosition().x < 440 && ball.getPosition().y >= 620 && ball.getPosition().y <= degg.getPosition().y) {
+            degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+        }
+        else {
+            degg_IS_SEEKING = false;
+            degg_IS_WANDERING = true;
+        }
+    }
+
+    //If entity deviled egg has not detected the player, initially move to the left wall
+    //Once that wall has been reached, move to opposite wall, repeat until player detected
+    else if (degg_IS_WANDERING == true) {
+        if (hasReached_Wall_left == false) {
+            while (degg.getPosition().x > 270) {
+                degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+                if (degg.getPosition().x <= 270) {
+                    hasReached_Wall_left = true;
+                    hasReached_Wall_right = false;
+                    break;
+                }
+            }
+        }
+        else if (hasReached_Wall_right == false) {
+            while (degg.getPosition().x < 430) {
+                degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+                if (degg.getPosition().x >= 430) {
+                    hasReached_Wall_left = false;
+                    hasReached_Wall_right = true;
+                    break;
+                }
+            }
+        }
+        else if (ball.getPosition().y <= degg.getPosition().y && ball.getPosition().x >= 260 || ball.getPosition().x <= 440 && ball.getPosition().y >= 620) {
+            degg_IS_SEEKING = true;
+            degg_IS_WANDERING = false;
+        }
+    }
+}
+*/
+
 void Update(RenderWindow& window) {
+    Clock animateClock;
+    //deviledEgg_StateMachine();
 
     // Reset Jump validity
     canJump = false;
+  
+    switch (player.getState()) {
+    case EggState::STANDING:
+        // Animate grids 1-3
+        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (eggSourceSprite.left == 223)
+                eggSourceSprite.left = 1;
+            else
+                eggSourceSprite.left += 111;
+
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        eggsprite.setOrigin(0, 0);      // Reset origin
+        break;
+
+    case EggState::WALKING_LEFT:
+        // Animate grids 4-6 (left-facing)
+        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (eggSourceSprite.left == 223)
+                eggSourceSprite.left = 1;
+            else
+                eggSourceSprite.left += 111;
+
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(-0.5f, 0.5f); // Flipped horizontally
+        eggsprite.setOrigin(110, 0);     // Adjust origin for flipping
+        break;
+
+    case EggState::WALKING_RIGHT:
+        // Animate grids 4-6 (right-facing)
+        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (eggSourceSprite.left == 223)
+                eggSourceSprite.left = 1;
+            else
+                eggSourceSprite.left += 111;
+
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
+        eggsprite.setOrigin(0, 0);      // Reset origin
+        break;
+
+    case EggState::RISING:
+        // Static frame for RISING
+        eggsprite.setTextureRect(IntRect(223, 2, 110, 125)); // Grid 3
+        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        eggsprite.setOrigin(0, 0);      // Reset origin
+        break;
+
+    case EggState::FALLING:
+        // Static frame for FALLING
+        eggsprite.setTextureRect(IntRect(111, 253, 110, 125)); // Grid 8
+        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        eggsprite.setOrigin(0, 0);      // Reset origin
+        break;
+
+    case EggState::DYING:
+        // Static frame for DYING
+        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10
+        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        eggsprite.setOrigin(0, 0);      // Reset origin
+        break;
+
+    default:
+        // Optionally, handle unknown states
+        break;
+    }
+
+
 
     //position failsafe
-    if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
+    if (eggsprite.getPosition().y < 0 || eggsprite.getPosition().y > 880) {
         ballVelocity.y = 0;
-        ball.setPosition(Vector2f(ball.getPosition().x, 880));
+        ballVelocity.x = 0;
+        eggsprite.setPosition(Vector2f(eggsprite.getPosition().x, 880));
     }
-    
+
     if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
         degg.setPosition(Vector2f(350, 660));
     }
-    
+
     // Reset clock, recalculate deltatime
     static Clock clock;
     float dt = clock.restart().asSeconds();
@@ -187,22 +400,27 @@ void Update(RenderWindow& window) {
     const float dx = degg.getPosition().x;
     const float dy = degg.getPosition().y;
 
+    const float hx = hammer.getPosition().x;
+    const float hy = hammer.getPosition().y;
+  
     // handle ball movement (horizontal)
     float direction = 0.0f;
     if (Keyboard::isKeyPressed(controls[1])) {
         direction--;
+        player.setState(WALKING_LEFT);
     }
     if (Keyboard::isKeyPressed(controls[2])) {
         direction++;
+        player.setState(WALKING_RIGHT);
     }
-    ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
+    eggsprite.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
+
 
 
 
     // Check Collision with platform
-
-    const float bx = ball.getPosition().x;
-    const float by = ball.getPosition().y;
+    const float bx = eggsprite.getPosition().x;
+    const float by = eggsprite.getPosition().y;
 
     if (bx > gameWidth - ballRadius) {
         ballVelocity.x = -ballVelocity.x;
@@ -213,7 +431,7 @@ void Update(RenderWindow& window) {
         canJump = true;
     }
     else if (by < 0) { //top wall
-        ball.move(Vector2f(0.f, 10.f));
+        eggsprite.move(Vector2f(0.f, 10.f));
     }
 
 
@@ -248,30 +466,19 @@ void Update(RenderWindow& window) {
 
             ballVelocity.y = 0.f;
             canJump = true;
-            ball.setPosition(Vector2f(bx, pT - ballRadius));
+            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
 
             if (/*by < pB + ballRadius  &&*/ by > pB) {
                 ballVelocity.y = 0.f;
-                ball.move(Vector2f(0.f, 10.f));
+                eggsprite.move(Vector2f(0.f, 10.f));
             }
             if (i == 4) {
-                gameOverText.setCharacterSize(40);
-                gameOverText.setFont(font);
-                gameOverText.setColor(Color::Red);
-                gameOverText.setString("GAME OVER");
-                deaths++;
-                gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
-                freeze = true;
+                GameOver();
             }
 
             if (i == 6) {
-                gameOverText.setCharacterSize(40);
-                gameOverText.setFont(font);
-                gameOverText.setColor(Color::Green);
-                gameOverText.setString("LEVEL COMPLETE");
-                gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
-                freeze = true;
                 complete = true;
+                GameOver();
             }
         }
     }
@@ -280,17 +487,20 @@ void Update(RenderWindow& window) {
     // handle ball jump
     if (canJump == true) {
         if (Keyboard::isKeyPressed(controls[0])) {
-            ball.move(Vector2f(0.f, ballJumpSpeed * dt));
+            //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
             ballVelocity = { 0.f, ballJumpSpeed };
             jumpTime = 10;
+
+            //jumpsound.play();
+            player.setState(RISING);
         }
     }
 
-    ball.move(ballVelocity * dt);
+    eggsprite.move(ballVelocity * dt);
 
     if (by > gameHeight) {
         //ball.move(Vector2f(0.f, -10.f));
-        ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
+        eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
     if (dx > bx && dx > 260) {
@@ -313,13 +523,7 @@ void Update(RenderWindow& window) {
 
     if (eggCollideY <= 19) {
         if (eggCollideX <= 19) {
-            gameOverText.setCharacterSize(40);
-            gameOverText.setFont(font);
-            gameOverText.setColor(Color::Red);
-            gameOverText.setString("GAME OVER");
-            deaths++;
-            gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
-            freeze = true;
+            GameOver();
         }
     }
 }
@@ -327,12 +531,13 @@ void Update(RenderWindow& window) {
 
 void Render(RenderWindow& window) {
     // Draw Everything
-
-    for (int i = 0; i < platformArray; i++){
+    window.draw(background);
+    for (int i = 0; i < platformArray; i++) {
         window.draw(platform[i]);
     }
-    window.draw(ball);
+    window.draw(eggsprite);
     window.draw(degg);
+    window.draw(hammer);
     window.draw(fpstext);
     window.draw(gameOverText);
     window.draw(deathsText);
@@ -346,12 +551,42 @@ int main() {
     window.setFramerateLimit(60);
     Clock clock;
 
+
+    if (!backgroundTexture.loadFromFile("C:/Users/angus/SET09121-Coursework/res/KitchenBackground.png"))
+    {
+        cout << "ERROR loading background" << endl;
+    }
+    else
+    {
+        background.setTexture(backgroundTexture);
+        background.setScale(1.2f, 1.2f);
+    }
+
+    if (!spritesheet.loadFromFile("C:/Users/angus/SET09121-Coursework/res/EggSpritesheet.png"))
+    {
+        cout << "ERROR loading spritesheet" << endl;
+    }
+    else
+    {
+        eggsprite.setTexture(spritesheet);
+        //IntRect(1, 1, 110, 125)
+        eggsprite.setTextureRect(eggSourceSprite);
+        eggsprite.setScale(0.5f, 0.5f);
+    }
+
+    /*
+    if (!buffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/jump.wav"))
+        return -1;
+
+    jumpsound.setBuffer(buffer);
+    */
+
     while (window.isOpen()) {
 
         if (freeze != true && complete != true) {
 
             /*      FPS DISPLAY     */
-            
+
             fps = 0.f;
             loops = 0;
             // set the character size to 24 pixels
@@ -370,7 +605,46 @@ int main() {
             fpstext.setPosition(0, 25);
             
 
+            //112 223
+            /*
+            if (animateClock.getElapsedTime().asSeconds() > 0.2f)
+            {
+                switch (player.getState())
+                {
+                case STANDING:
+                case WALKING_LEFT:
+                case WALKING_RIGHT:
+                    // Animation logic
+                    if (eggSourceSprite.left == 223)
+                        eggSourceSprite.left = 1;
+                    else
+                        eggSourceSprite.left += 111;
+
+                    eggsprite.setTextureRect(eggSourceSprite);
+                    animateClock.restart();
+                    break;
+
+                default:
+                    // Do nothing for other states
+                    break;
+                }
+
+                if
+                {
+                    if (eggSourceSprite.left == 223)
+                        eggSourceSprite.left = 1;
+                    else
+                        eggSourceSprite.left += 111;
+
+                    eggsprite.setTextureRect(eggSourceSprite);
+                    animateClock.restart();
+                }
+                */
+
+
+
             window.clear();
+            window.draw(eggsprite);
 
             Update(window);
 
@@ -384,12 +658,14 @@ int main() {
             sleep(seconds(2));
             freeze = false;
             Reset(window);
+            cout << "working" << endl;
         }
         else {
             sleep(seconds(2));
             window.close();
-
+            cout << "closing" << endl;
         }
+        
     }
     return 0;
 }
