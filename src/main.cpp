@@ -64,6 +64,8 @@ Font font;
 Text fpstext;
 Text gameOverText;
 
+Clock animateClock;
+
 int deaths = 0;
 Text deathsText;
 int loops = 0;
@@ -275,7 +277,7 @@ void deviledEgg_StateMachine() {
 */
 
 void Update(RenderWindow& window) {
-    Clock animateClock;
+    
     //deviledEgg_StateMachine();
 
     // Reset Jump validity
@@ -283,12 +285,15 @@ void Update(RenderWindow& window) {
 
     switch (player.getState()) {
     case EggState::STANDING:
+        eggSourceSprite.top = 1;
         // Animate grids 1-3
         if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
             if (eggSourceSprite.left == 223)
                 eggSourceSprite.left = 1;
             else
+            {
                 eggSourceSprite.left += 111;
+            }
 
             eggsprite.setTextureRect(eggSourceSprite);
             animateClock.restart();
@@ -299,11 +304,14 @@ void Update(RenderWindow& window) {
 
     case EggState::WALKING_LEFT:
         // Animate grids 4-6 (left-facing)
+        eggSourceSprite.top = 126;
         if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
             if (eggSourceSprite.left == 223)
                 eggSourceSprite.left = 1;
             else
+            {
                 eggSourceSprite.left += 111;
+            }
 
             eggsprite.setTextureRect(eggSourceSprite);
             animateClock.restart();
@@ -313,6 +321,7 @@ void Update(RenderWindow& window) {
         break;
 
     case EggState::WALKING_RIGHT:
+        eggSourceSprite.top = 126;
         // Animate grids 4-6 (right-facing)
         if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
             if (eggSourceSprite.left == 223)
@@ -337,16 +346,26 @@ void Update(RenderWindow& window) {
     case EggState::FALLING:
         // Static frame for FALLING
         eggsprite.setTextureRect(IntRect(111, 253, 110, 125)); // Grid 8
-        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
-        eggsprite.setOrigin(0, 0);      // Reset origin
+        eggsprite.setScale(0.5f, 0.5f); 
+        eggsprite.setOrigin(0, 0);      
         break;
 
     case EggState::DYING:
-        // Static frame for DYING
-        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10
-        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        eggSourceSprite.top = 379;
+        // Animate grids 4-6 (right-facing)
+        if (animateClock.getElapsedTime().asSeconds() > 0.4f) {
+            if (eggSourceSprite.left == 223)
+                break;
+            else
+                eggSourceSprite.left += 111;
+
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
         eggsprite.setOrigin(0, 0);      // Reset origin
         break;
+        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10   
 
     default:
         // Optionally, handle unknown states
@@ -410,10 +429,13 @@ void Update(RenderWindow& window) {
         direction--;
         player.setState(WALKING_LEFT);
     }
-    if (Keyboard::isKeyPressed(controls[2])) {
+    else if (Keyboard::isKeyPressed(controls[2])) {
         direction++;
         player.setState(WALKING_RIGHT);
     }
+    else
+        player.setState(STANDING);
+
     eggsprite.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
 
 
@@ -607,42 +629,6 @@ int main() {
             fpstext.setPosition(0, 25);
 
             //112 223
-            /*
-            if (animateClock.getElapsedTime().asSeconds() > 0.2f)
-            {
-                switch (player.getState())
-                {
-                case STANDING:
-                case WALKING_LEFT:
-                case WALKING_RIGHT:
-                    // Animation logic
-                    if (eggSourceSprite.left == 223)
-                        eggSourceSprite.left = 1;
-                    else
-                        eggSourceSprite.left += 111;
-
-                    eggsprite.setTextureRect(eggSourceSprite);
-                    animateClock.restart();
-                    break;
-
-                default:
-                    // Do nothing for other states
-                    break;
-                }
-
-                if
-                {
-                    if (eggSourceSprite.left == 223)
-                        eggSourceSprite.left = 1;
-                    else
-                        eggSourceSprite.left += 111;
-
-                    eggsprite.setTextureRect(eggSourceSprite);
-                    animateClock.restart();
-                }
-                */
-
-
 
             window.clear();
             window.draw(eggsprite);
@@ -659,12 +645,10 @@ int main() {
             sleep(seconds(2));
             freeze = false;
             Reset(window);
-            cout << "working" << endl;
         }
         else {
             sleep(seconds(2));
             window.close();
-            cout << "closing" << endl;
         }
         
     }
