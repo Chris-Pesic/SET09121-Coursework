@@ -85,7 +85,7 @@ int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
+    font.loadFromFile("../res/fonts/RobotoMono-Regular.ttf");
 
     // Set size and origin of platform
     for (auto& p : platform) {
