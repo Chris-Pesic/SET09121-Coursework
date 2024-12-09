@@ -551,6 +551,10 @@ int main() {
     window.setFramerateLimit(60);
     Clock clock;
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     if (!backgroundTexture.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/KitchenBackground.png"))
     {
         cout << "ERROR loading background" << endl;
