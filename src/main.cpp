@@ -138,7 +138,7 @@ void Load() {
 
     //FLOATING PLATFORMS
     platform[1].setPosition(Vector2f(200.f, 780.f));
-    platform[2].setPosition(Vector2f(350.f, 680.f));
+    platform[2].setPosition(Vector2f(350.f, 730.f));
     platform[3].setPosition(Vector2f(650.f, 680.f));
     platform[5].setPosition(Vector2f(950.f, 580.f));
 
@@ -154,8 +154,9 @@ void Load() {
     //ENTITIES
     //ball.setPosition(Vector2f(50, 825));
     eggsprite.setPosition(Vector2f(50, 825));
+    //eggsprite.setOrigin(Vector2f(55, 72.5));
 
-    degg.setPosition(Vector2f(350, 660));
+    degg.setPosition(Vector2f(350, 710));
     degg.setFillColor(Color::Magenta);
 
     hammer.setSize(Vector2f(hammerHitbox));
@@ -380,7 +381,7 @@ void Update(RenderWindow& window) {
     }
 
     if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
-        degg.setPosition(Vector2f(350, 660));
+        degg.setPosition(Vector2f(350, 710));
     }
 
     // Reset clock, recalculate deltatime
@@ -441,6 +442,7 @@ void Update(RenderWindow& window) {
     // Check Collision with platform
 
     const float bx = eggsprite.getPosition().x;
+    //cout << bx << endl;
     const float by = eggsprite.getPosition().y;
     /*
     if (bx > gameWidth - ballRadius) {
@@ -487,13 +489,14 @@ void Update(RenderWindow& window) {
 
             ballVelocity.y = 0.f;
             canJump = true;
-            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
 
-            if (/*by < pB + ballRadius  &&*/ by > pB) {
-                ballVelocity.y = 0.f;
-                eggsprite.move(Vector2f(0.f, 10.f));
-            }
+            /*if (by <= pB + ballRadius && by > pT + ballRadius) {
+                ballVelocity.y = ballVelocity.y * -1;
+                eggsprite.setPosition(Vector2f(bx, by - 10.f));
+                cout << "hit bottom" << endl;
+            }*/
             if (i == 4) {
+                cout << "hit lava" << endl;
                 GameOver();
             }
 
@@ -501,7 +504,15 @@ void Update(RenderWindow& window) {
                 complete = true;
                 GameOver();
             }
+            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
         }
+
+        if ((bx +20) > pL && (bx +20) <pR && by <= pB + 1 && by > pT + 1) {
+            ballVelocity.y = 0.f;
+               eggsprite.setPosition(Vector2f(bx, by + 10.f));
+               cout << "hit bottom" << endl;
+        }
+
     }
 
 
@@ -524,40 +535,33 @@ void Update(RenderWindow& window) {
         eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
-    if (dx > bx && dx > 260) {
+    if (dx > (27.5 +bx) && dx > 260) {
         degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
-    else if (dx < bx && dx < 440) {
+    else if (dx < (27.5 +bx) && dx < 440) {
         degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
-    float eggCollideX = dx - eggsprite.getLocalBounds().width;
-    if (eggCollideX < 0) {
-        eggCollideX = eggCollideX * -1;
-    }
-
-    float eggCollideY = dy - eggsprite.getLocalBounds().height;
-    if (eggCollideY < 0) {
-        eggCollideY = eggCollideY * -1;
-    }
-
-    /*
-    float eggCollideX = dx - bx;
+    
+    
+    float eggCollideX = dx - (27.5 +bx);
     if (eggCollideX < 0) {
         eggCollideX = eggCollideX * -1;
     }
     
-    float eggCollideY = dy - by;
+    float eggCollideY = dy - (31.25 +by);
     if (eggCollideY < 0) {
         eggCollideY = eggCollideY * -1;
-    }*/
+    }
 
-
-    if (eggCollideY <= eggsprite.getLocalBounds().height/2) {
-        if (eggCollideX <= eggsprite.getLocalBounds().width/2) {
+   
+    if (eggCollideX <= (13.75 + 9)) { //top right colision
+        if (eggCollideY <= (15.625 + 9)) {
             GameOver();
         }
     }
+
+
 }
 
 
