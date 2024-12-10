@@ -16,12 +16,19 @@
 using namespace sf;
 using namespace std;
 
+//eggy textures
 Texture spritesheet;
 Sprite eggsprite;
+//deviled egg textures
+Texture spritesheetdevil;
+Sprite devilsprite;
+//background textures
 Texture backgroundTexture;
 Sprite background;
+//Goal texture
 
 IntRect eggSourceSprite(1, 1, 110, 125);
+IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
 
 //SoundBuffer buffer;
 //Sound jumpsound;
@@ -48,7 +55,7 @@ const Vector2f goalHitbox(20.f, 20.f);
 int gameWidth = 1200;
 int gameHeight = 900;
 const float ballRadius = 60.f;
-const float deggRadius = 10.f;
+const float deggRadius = 60.f;
 const Vector2f hammerHitbox(20.f, 20.f);
 Vector2f ballVelocity;
 Vector2f deggVelocity;
@@ -65,6 +72,7 @@ Text fpstext;
 Text gameOverText;
 
 Clock animateClock;
+Clock animateClockDevil;
 
 int deaths = 0;
 Text deathsText;
@@ -205,11 +213,12 @@ void Reset(RenderWindow& window) {
     window.clear();
     Load();
     eggsprite.setPosition(Vector2f(50, 825));
-    degg.setPosition(Vector2f(350, 660));
+    devilsprite.setPosition(Vector2f(350, 66));
+    //degg.setPosition(Vector2f(350, 660));
     //Render(window);
 }
 
-void GameOver() {
+void GameOver(/*&Renderwindow window*/) {
     if (complete == true) {
         gameOverText.setCharacterSize(40);
         gameOverText.setFont(font);
@@ -226,6 +235,8 @@ void GameOver() {
         deaths++;
         gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
         freeze = true;
+        player.setState(DYING);
+        //Update(window);
     }
 }
 
@@ -337,8 +348,10 @@ void Update(RenderWindow& window) {
         break;
 
     case EggState::RISING:
-        // Static frame for RISING
-        eggsprite.setTextureRect(IntRect(223, 2, 110, 125)); // Grid 3
+        // Static frame while jumping up
+        eggSourceSprite.top = 223; // Grid 3
+        eggSourceSprite.left = 1;
+        //eggsprite.setTextureRect(IntRect(223, 2, 110, 125)); 
         eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
         eggsprite.setOrigin(0, 0);      // Reset origin
         break;
@@ -351,28 +364,70 @@ void Update(RenderWindow& window) {
         break;
 
     case EggState::DYING:
-        eggSourceSprite.top = 379;
-        // Animate grids 4-6 (right-facing)
-        if (animateClock.getElapsedTime().asSeconds() > 0.4f) {
-            if (eggSourceSprite.left == 223)
-                break;
-            else
-                eggSourceSprite.left += 111;
+        if (freeze == true) {
+            eggSourceSprite.top = 379;
+            // Animate grids 4-6 (right-facing)
+            if (animateClock.getElapsedTime().asSeconds() > 0.4f) {
+                if (eggSourceSprite.left == 223)
+                    break;
+                else
+                    eggSourceSprite.left += 111;
 
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
+                eggsprite.setTextureRect(eggSourceSprite);
+                animateClock.restart();
+            }
+            eggsprite.setScale(0.5f, 0.5f); // Normal orientation
+            eggsprite.setOrigin(0, 0);      // Reset origin
+            break;
+            eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10  
         }
-        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
-        eggsprite.setOrigin(0, 0);      // Reset origin
-        break;
-        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10   
 
     default:
         // Optionally, handle unknown states
         break;
     }
 
+    //animateClockDevil;
+    // grids 3,-9,7,10,8,-10,-7,9, back to 3 (I understand this is overcomplicated but I don't want to edit the png file)
+    int currentFrame = 0;
 
+    struct Frame {
+        int top;
+        int left;
+        bool flipped; // Indicates whether the sprite should be flipped horizontally
+    };
+
+    vector<Frame> devilFrames = {
+        {1, 223, false},  // Grid 3 (regular)
+        {252, 223, true}, // Grid 9 (flipped)
+        {252, 1, false},  // Grid 7 (regular)
+        {378, 1, false},  // Grid 10 (regular)
+        {252, 111, false}, // Grid 8 (regular)
+        {378, 1, true},   // Grid 10 (flipped)
+        {252, 1, true},   // Grid 7 (flipped)
+        {252, 223, false} // Grid 9 (regular)
+    };
+
+    //devilSourceSprite.top = 1;
+    if (animateClockDevil.getElapsedTime().asSeconds() >= 0.2) {
+        Frame frame = devilFrames[currentFrame];
+        devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+
+        // Handle flipping
+        if (frame.flipped) {
+            devilsprite.setScale(-0.5f, 0.5f);  // Flipped
+            devilsprite.setOrigin(110, 0);   // Adjust origin to flip properly
+        }
+        else {
+            devilsprite.setScale(0.5f, 0.5f); // Normal
+            devilsprite.setOrigin(0, 0);
+        }
+
+        cout << "frame progressed" << endl;
+        // Move to the next frame
+        currentFrame = (currentFrame + 1) % devilFrames.size();
+        animateClockDevil.restart();
+    }
 
     //position failsafe
     if (eggsprite.getPosition().y < 0 || eggsprite.getPosition().y > 880) {
@@ -380,9 +435,12 @@ void Update(RenderWindow& window) {
         ballVelocity.x = 0;
         eggsprite.setPosition(Vector2f(eggsprite.getPosition().x, 880));
     }
-
+    /*
     if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
         degg.setPosition(Vector2f(350, 660));
+    */
+    if (devilsprite.getPosition().x < 250 || devilsprite.getPosition().x > 450) {
+        devilsprite.setPosition(Vector2f(350, 660));
     }
 
     // Reset clock, recalculate deltatime
@@ -416,9 +474,13 @@ void Update(RenderWindow& window) {
     }
 
 
-
+    /*
     const float dx = degg.getPosition().x;
     const float dy = degg.getPosition().y;
+    */
+    
+    const float dx = devilsprite.getPosition().x;
+    const float dy = devilsprite.getPosition().y;
 
     const float hx = hammer.getPosition().x;
     const float hy = hammer.getPosition().y;
@@ -527,10 +589,12 @@ void Update(RenderWindow& window) {
     }
 
     if (dx > bx && dx > 260) {
-        degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+        //degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+        devilsprite.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
     else if (dx < bx && dx < 440) {
-        degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+        //degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+        devilsprite.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
     float eggCollideX = dx - bx;
@@ -560,7 +624,8 @@ void Render(RenderWindow& window) {
         window.draw(platform[i]);
     }
     window.draw(eggsprite);
-    window.draw(degg);
+    //window.draw(degg);
+    window.draw(devilsprite);
     window.draw(hammer);
     window.draw(fpstext);
     window.draw(gameOverText);
@@ -586,6 +651,7 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
+    // Load in spritesheet for Eggy
     if (!spritesheet.loadFromFile("C:/Users/angus/SET09121-Coursework/res/EggSpritesheet.png"))
     {
         cout << "ERROR loading spritesheet" << endl;
@@ -596,6 +662,19 @@ int main() {
         //IntRect(1, 1, 110, 125)
         eggsprite.setTextureRect(eggSourceSprite);
         eggsprite.setScale(0.5f, 0.5f);
+    }
+
+    // Load in spritesheet for Deviled Egg
+    if (!spritesheetdevil.loadFromFile("C:/Users/angus/SET09121-Coursework/res/DevilSpritesheet.png"))
+    {
+        cout << "ERROR loading devil spritesheet" << endl;
+    }
+    else
+    {
+        devilsprite.setTexture(spritesheetdevil);
+        //IntRect(1, 1, 110, 125)
+        devilsprite.setTextureRect(devilSourceSprite);
+        devilsprite.setScale(0.5f, 0.5f);
     }
 
     /*
