@@ -26,9 +26,15 @@ Sprite devilsprite;
 Texture backgroundTexture;
 Sprite background;
 //Goal texture
+Texture goalTexture;
+Sprite goalsprite;
+//Hammer textures
+Texture hammerTexture;
+Sprite hammersprite;
 
 IntRect eggSourceSprite(1, 1, 110, 125);
 IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
+IntRect hammerSourceSprite(1, 1, 203, 129);
 
 //SoundBuffer buffer;
 //Sound jumpsound;
@@ -51,7 +57,7 @@ enum EggState {
 
 const Vector2f platformSize(200.f, 20.f);
 const Vector2f groundSize(1200.f, 20.f);
-const Vector2f goalHitbox(20.f, 20.f);
+const Vector2f goalHitbox(112.f, 43.f);
 int gameWidth = 1200;
 int gameHeight = 900;
 const float ballRadius = 60.f;
@@ -73,6 +79,7 @@ Text gameOverText;
 
 Clock animateClock;
 Clock animateClockDevil;
+Clock animateClockHammer;
 
 int deaths = 0;
 Text deathsText;
@@ -155,11 +162,13 @@ void Load() {
     //LAVA PLATFORM
     platform[4].setPosition(Vector2f(600.f, 890.f));
 
-    //GOAL HITBOX
+    //GOAL HITBOX 112x43
+    goalsprite.setPosition(Vector2f(950.f, 550.f));
     platform[6].setPosition(Vector2f(950.f, 560.f));
     platform[6].setSize(Vector2f(20, 20));
-    platform[6].setFillColor(Color::Cyan);
+    //platform[6].setFillColor(Color::Color(255,255,255,255));
     platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
+    goalsprite.setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
 
     //ENTITIES
     //ball.setPosition(Vector2f(50, 825));
@@ -168,9 +177,12 @@ void Load() {
     degg.setPosition(Vector2f(350, 660));
     degg.setFillColor(Color::Magenta);
 
+    //205x130, 391 total
     hammer.setSize(Vector2f(hammerHitbox));
     hammer.setOrigin(hammerHitbox.x / 2, hammerHitbox.y / 2);
+    hammersprite.setOrigin(hammerHitbox.x / 2, hammerHitbox.y / 2);
     hammer.setPosition(Vector2f(650.f, 560.f));
+    hammersprite.setPosition(Vector2f(650.f, 560.f));
     hammer.setFillColor(Color::Yellow);
 
     // Set Ball falling speed
@@ -411,7 +423,9 @@ void Update(RenderWindow& window) {
     //devilSourceSprite.top = 1;
     if (animateClockDevil.getElapsedTime().asSeconds() >= 0.2) {
         Frame frame = devilFrames[currentFrame];
-        devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+        //devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+        devilSourceSprite.top = frame.top;
+        devilSourceSprite.left = frame.left;
 
         // Handle flipping
         if (frame.flipped) {
@@ -428,6 +442,25 @@ void Update(RenderWindow& window) {
         currentFrame = (currentFrame + 1) % devilFrames.size();
         animateClockDevil.restart();
     }
+
+    //Hammer animation and movement
+    /*
+    if (animateClockHammer.getElapsedTime().asSeconds() >= 0.3)
+    { 
+        hammerSourceSprite.top += 130;
+        if (animateClockHammer.getElapsedTime().asSeconds() >= 0.6)
+        {
+            hammerSourceSprite.top += 130;
+            //fall
+            hammersprite.move(Vector2f(0.f, -1 * ballHorizontalSpeed * dt));
+
+            if (animateClockHammer.getElapsedTime().asSeconds() >= 2)
+            {
+                //rise
+
+            }
+        }
+    */
 
     //position failsafe
     if (eggsprite.getPosition().y < 0 || eggsprite.getPosition().y > 880) {
@@ -620,13 +653,15 @@ void Render(RenderWindow& window) {
     // Draw Everything
 
     window.draw(background);
-    for (int i = 0; i < platformArray; i++) {
+    for (int i = 0; i < platformArray -1; i++) {
         window.draw(platform[i]);
     }
+    window.draw(goalsprite);
     window.draw(eggsprite);
     //window.draw(degg);
     window.draw(devilsprite);
     window.draw(hammer);
+    window.draw(hammersprite);
     window.draw(fpstext);
     window.draw(gameOverText);
     window.draw(deathsText);
@@ -677,12 +712,38 @@ int main() {
         devilsprite.setScale(0.5f, 0.5f);
     }
 
+    // Load in spritesheet for Goal
+    if (!goalTexture.loadFromFile("C:/Users/angus/SET09121-Coursework/res/GoalSprite.png"))
+    {
+        cout << "ERROR loading goal sprite" << endl;
+    }
+    else
+    {
+        goalsprite.setTexture(goalTexture);
+    }
+
+    // Load in spritesheet for Hammer
+    if (!hammerTexture.loadFromFile("C:/Users/angus/SET09121-Coursework/res/HammerSpritesheet.png"))
+    {
+        cout << "ERROR loading hammer sprite" << endl;
+    }
+    else
+    {
+        hammersprite.setTexture(hammerTexture);
+        hammersprite.setTextureRect(hammerSourceSprite);
+        hammersprite.setOrigin(1, 129); //203x129
+        //hammersprite.setScale(0.8f, 0.8f);
+    }
+
     /*
     if (!buffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/jump.wav"))
-        return -1;
+    {
+        cout << "ERROR loading jump sound!" << endl;
+    }
 
     jumpsound.setBuffer(buffer);
     */
+    
 
     while (window.isOpen()) {
 
@@ -711,6 +772,7 @@ int main() {
 
             window.clear();
             window.draw(eggsprite);
+            window.draw(devilsprite);
 
             Update(window);
 
