@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+//#include <SFML/Audio.hpp>
 #include <iostream>
 
 
@@ -20,6 +21,11 @@ Sprite eggsprite;
 Texture backgroundTexture;
 Sprite background;
 
+IntRect eggSourceSprite(1, 1, 110, 125);
+
+//SoundBuffer buffer;
+//Sound jumpsound;
+
 const Keyboard::Key controls[3] = {
     Keyboard::W,   // Player1 Up
     Keyboard::A,   // Player1 Left
@@ -38,10 +44,10 @@ enum EggState {
 
 const Vector2f platformSize(200.f, 20.f);
 const Vector2f groundSize(1200.f, 20.f);
-const Vector2f goalHitbox(20.f, 20.f);
+const Vector2f goalHitbox(80.f, 20.f);
 int gameWidth = 1200;
 int gameHeight = 900;
-const float ballRadius = 10.f;
+const float ballRadius = 60.f;
 const float deggRadius = 10.f;
 const Vector2f hammerHitbox(20.f, 20.f);
 Vector2f ballVelocity;
@@ -57,7 +63,7 @@ int hangTime = 0;
 Font font;
 Text fpstext;
 Text gameOverText;
-
+Clock animateClock;
 int deaths = 0;
 Text deathsText;
 int loops = 0;
@@ -74,7 +80,7 @@ bool hasReached_Wall_left = false;
 bool hasReached_Wall_right = true;
 
 
-CircleShape ball;
+//CircleShape ball;
 CircleShape degg;
 RectangleShape hammer;
 
@@ -104,10 +110,10 @@ void Load() {
 
 
     // Set size and origin of ball
-    //eggsprite.setRadius(ballRadius);
-    ball.setOrigin(ballRadius, ballRadius);
+    //ball.setRadius(ballRadius);
+    //ball.setOrigin(ballRadius, ballRadius);
     //ball.setPosition(100, gameHeight / 2);
-    ball.setPosition(100, gameHeight / 2);
+    eggsprite.setPosition(100, gameHeight / 2);
 
     degg.setRadius(deggRadius);
     degg.setOrigin(deggRadius, deggRadius);
@@ -141,13 +147,13 @@ void Load() {
 
     //GOAL HITBOX
     platform[6].setPosition(Vector2f(950.f, 560.f));
-    platform[6].setSize(Vector2f(20, 20));
+    platform[6].setSize(Vector2f(80, 20));
     platform[6].setFillColor(Color::Cyan);
     platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
 
     //ENTITIES
     //ball.setPosition(Vector2f(50, 825));
-    ball.setPosition(Vector2f(50, 825));
+    eggsprite.setPosition(Vector2f(50, 825));
 
     degg.setPosition(Vector2f(350, 660));
     degg.setFillColor(Color::Magenta);
@@ -162,8 +168,6 @@ void Load() {
         ballVelocity = { 0, initialVelocityY };
     }
 
-    eggsprite.setTexture(spritesheet);
-    eggsprite.setScale(0.5f, 0.5f);
 }
 
 class Player {
@@ -181,16 +185,6 @@ public:
         return state;
     }
 
-    void animateFrames(int startX, int startY, int frameCount) {
-        // Calculate which frame to display based on frameCounter
-        int currentFrame = (frameCounter / animationSpeed) % frameCount;
-
-        // Set the texture rectangle to the current frame
-        eggsprite.setTextureRect(sf::IntRect(startX + currentFrame * 32, startY, 32, 32));
-
-        // Increment frameCounter for next update
-        frameCounter++;
-    }
 
 
 private:
@@ -208,7 +202,7 @@ Player player;
 void Reset(RenderWindow& window) {
     window.clear();
     Load();
-    ball.setPosition(Vector2f(50, 825));
+    eggsprite.setPosition(Vector2f(50, 825));
     degg.setPosition(Vector2f(350, 660));
     //Render(window);
 }
@@ -220,7 +214,6 @@ void GameOver() {
         gameOverText.setColor(Color::Green);
         gameOverText.setString("LEVEL COMPLETE");
         gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
-        cout << "Level Completed - Press any key to close" << endl;
         freeze = true;
     }
     else {
@@ -290,73 +283,100 @@ void Update(RenderWindow& window) {
 
     switch (player.getState()) {
     case EggState::STANDING:
-        player.animateFrames(1, 1, 3); //(animates frames from grids 1-3)
-        eggsprite.setScale(0.5f, 0.5f); // ensures scale is normal
+        eggSourceSprite.top = 1;
+        // Animate grids 1-3
+        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (eggSourceSprite.left == 223)
+                eggSourceSprite.left = 1;
+            else
+            {
+                eggSourceSprite.left += 111;
+            }
+
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        eggsprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::WALKING_LEFT:
-        //(animates grids 4-6, same for WALKING_RIGHT)
-        player.animateFrames(1, 126, 3); //Same frames as WALKING_RIGHT
-        eggsprite.setScale(-0.5f, 0.5f); //Flipped horizontally
-        eggsprite.setOrigin(110, 1);
+        // Animate grids 4-6 (left-facing)
+        eggSourceSprite.top = 126;
+        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (eggSourceSprite.left == 223)
+                eggSourceSprite.left = 1;
+            else
+            {
+                eggSourceSprite.left += 111;
+            }
+
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(-0.5f, 0.5f); // Flipped horizontally
+        eggsprite.setOrigin(110, 0);     // Adjust origin for flipping
         break;
 
     case EggState::WALKING_RIGHT:
-        player.animateFrames(1, 126, 3);
-        eggsprite.setScale(0.5f, 0.5f);
-        eggsprite.setOrigin(1, 1);
+        eggSourceSprite.top = 126;
+        // Animate grids 4-6 (right-facing)
+        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (eggSourceSprite.left == 223)
+                eggSourceSprite.left = 1;
+            else
+                eggSourceSprite.left += 111;
+
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
+        eggsprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::RISING:
-        // Display the first frame for 0.2 seconds
-        if (elapsedTime.asSeconds() < 0.2) {
-            // First frame, squat...
-            eggsprite.setTextureRect(IntRect(223, 1, 110, 125)); //(coordinates for grid 3)
-        }
-        else {
-            // Second frame, ...jump!
-            eggsprite.setTextureRect(IntRect(1, 253, 110, 125)); //(coordinates for grid 7)
-        }
-        eggsprite.setScale(0.5f, 0.5f);
+        // Static frame for RISING
+        eggsprite.setTextureRect(IntRect(223, 2, 110, 125)); // Grid 3
+        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        eggsprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::FALLING:
-        // Display the first frame for 0.2 seconds
-        if (elapsedTime.asSeconds() < 0.2) {
-            // First frame
-            eggsprite.setTextureRect(IntRect(111, 253, 110, 125));  //(coordinates for grid 8)
-        }
-        else {
-            // Second frame
-            eggsprite.setTextureRect(IntRect(223, 253, 110, 125)); //(coordinates for grid 9)
-        }
+        // Static frame for FALLING
+        eggsprite.setTextureRect(IntRect(111, 253, 110, 125)); // Grid 8
         eggsprite.setScale(0.5f, 0.5f);
+        eggsprite.setOrigin(0, 0);
         break;
+
     case EggState::DYING:
-        //(fixing scale not needed, doesn't matter if flipped horizontally)
-        //egg cracks
-        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); //(coordinates for grid 10)
+        eggSourceSprite.top = 379;
+        // Animate grids 4-6 (right-facing)
+        if (animateClock.getElapsedTime().asSeconds() > 0.4f) {
+            if (eggSourceSprite.left == 223)
+                break;
+            else
+                eggSourceSprite.left += 111;
 
-        // TRIGGER GAME FREEZE
+            eggsprite.setTextureRect(eggSourceSprite);
+            animateClock.restart();
+        }
+        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
+        eggsprite.setOrigin(0, 0);      // Reset origin
+        break;
+        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10   
 
-        //border goes from 0-111,0-126. actual sprite is (x) 1-110, (y) 1-125
-        if (elapsedTime.asSeconds() < 0.2) {
-            // First frame
-            eggsprite.setTextureRect(IntRect(112, 379, 110, 125)); //(coordinates for grid 11)
-        }
-        else {
-            // Second frame
-            eggsprite.setTextureRect(IntRect(223, 379, 110, 125)); //(coordinates for grid 12)
-        }
+    default:
+        // Optionally, handle unknown states
         break;
     }
 
 
+
     //position failsafe
-    if (ball.getPosition().y < 0 || ball.getPosition().y > 880) {
+    if (eggsprite.getPosition().y < 0 || eggsprite.getPosition().y > 880) {
         ballVelocity.y = 0;
         ballVelocity.x = 0;
-        ball.setPosition(Vector2f(ball.getPosition().x, 880));
+        eggsprite.setPosition(Vector2f(eggsprite.getPosition().x, 880));
     }
 
     if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
@@ -407,29 +427,32 @@ void Update(RenderWindow& window) {
         direction--;
         player.setState(WALKING_LEFT);
     }
-    if (Keyboard::isKeyPressed(controls[2])) {
+    else if (Keyboard::isKeyPressed(controls[2])) {
         direction++;
         player.setState(WALKING_RIGHT);
     }
-    ball.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
+    else
+        player.setState(STANDING);
+
+    eggsprite.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
 
 
 
     // Check Collision with platform
 
-    const float bx = ball.getPosition().x;
-    const float by = ball.getPosition().y;
-
+    const float bx = eggsprite.getPosition().x;
+    const float by = eggsprite.getPosition().y;
+    /*
     if (bx > gameWidth - ballRadius) {
         ballVelocity.x = -ballVelocity.x;
     }
-
+    */
     if (by > gameHeight - ballRadius) { //bottom wall
         ballVelocity.y = 0.f;
         canJump = true;
     }
     else if (by < 0) { //top wall
-        ball.move(Vector2f(0.f, 10.f));
+        eggsprite.move(Vector2f(0.f, 10.f));
     }
 
 
@@ -454,21 +477,21 @@ void Update(RenderWindow& window) {
 
         //GOAL HITBOX
         if (i == 6) {
-            pL = platform[i].getPosition().x - 10;
-            pR = platform[i].getPosition().x + 10;
-            pT = platform[i].getPosition().y - 10;
-            pB = platform[i].getPosition().y + 10;
+            pL = platform[i].getPosition().x - 40;
+            pR = platform[i].getPosition().x + 40;
+            pT = platform[i].getPosition().y - 40;
+            pB = platform[i].getPosition().y + 40;
         }
 
         if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
 
             ballVelocity.y = 0.f;
             canJump = true;
-            ball.setPosition(Vector2f(bx, pT - ballRadius));
+            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
 
             if (/*by < pB + ballRadius  &&*/ by > pB) {
                 ballVelocity.y = 0.f;
-                ball.move(Vector2f(0.f, 10.f));
+                eggsprite.move(Vector2f(0.f, 10.f));
             }
             if (i == 4) {
                 GameOver();
@@ -488,15 +511,17 @@ void Update(RenderWindow& window) {
             //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
             ballVelocity = { 0.f, ballJumpSpeed };
             jumpTime = 10;
+
+            //jumpsound.play();
             player.setState(RISING);
         }
     }
 
-    ball.move(ballVelocity * dt);
+    eggsprite.move(ballVelocity * dt);
 
     if (by > gameHeight) {
         //ball.move(Vector2f(0.f, -10.f));
-        ball.setPosition(Vector2f(bx, gameHeight - ballRadius));
+        eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
     if (dx > bx && dx > 260) {
@@ -506,24 +531,33 @@ void Update(RenderWindow& window) {
         degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
-    float eggCollideX = dx - bx;
+    float eggCollideX = dx - eggsprite.getLocalBounds().width;
     if (eggCollideX < 0) {
         eggCollideX = eggCollideX * -1;
     }
 
-    float eggCollideY = dy - by;
+    float eggCollideY = dy - eggsprite.getLocalBounds().height;
     if (eggCollideY < 0) {
         eggCollideY = eggCollideY * -1;
     }
 
+    /*
+    float eggCollideX = dx - bx;
+    if (eggCollideX < 0) {
+        eggCollideX = eggCollideX * -1;
+    }
+    
+    float eggCollideY = dy - by;
+    if (eggCollideY < 0) {
+        eggCollideY = eggCollideY * -1;
+    }*/
 
-    if (eggCollideY <= 19) {
-        if (eggCollideX <= 19) {
+
+    if (eggCollideY <= eggsprite.getLocalBounds().height/2) {
+        if (eggCollideX <= eggsprite.getLocalBounds().width/2) {
             GameOver();
         }
     }
-
-    eggsprite.setPosition(bx, by);
 }
 
 
@@ -534,7 +568,6 @@ void Render(RenderWindow& window) {
     for (int i = 0; i < platformArray; i++) {
         window.draw(platform[i]);
     }
-    window.draw(ball);
     window.draw(eggsprite);
     window.draw(degg);
     window.draw(hammer);
@@ -551,6 +584,7 @@ int main() {
     window.setFramerateLimit(60);
     Clock clock;
 
+
     if (!backgroundTexture.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/KitchenBackground.png"))
     {
         cout << "ERROR loading background" << endl;
@@ -565,6 +599,20 @@ int main() {
     {
         cout << "ERROR loading spritesheet" << endl;
     }
+    else
+    {
+        eggsprite.setTexture(spritesheet);
+        //IntRect(1, 1, 110, 125)
+        eggsprite.setTextureRect(eggSourceSprite);
+        eggsprite.setScale(0.5f, 0.5f);
+    }
+
+    /*
+    if (!buffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/jump.wav"))
+        return -1;
+
+    jumpsound.setBuffer(buffer);
+    */
 
     while (window.isOpen()) {
 
@@ -589,6 +637,7 @@ int main() {
             fpstext.setString(str_Header);
             fpstext.setPosition(0, 25);
 
+            //112 223
 
             window.clear();
             window.draw(eggsprite);
@@ -609,8 +658,8 @@ int main() {
         else {
             sleep(seconds(2));
             window.close();
-
         }
+
     }
     return 0;
 }
