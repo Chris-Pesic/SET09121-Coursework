@@ -1,7 +1,18 @@
 #include <SFML/Graphics.hpp>
 //#include <SFML/Audio.hpp>
 #include <iostream>
+/*
+#include <filesystem>
+namespace fs = std::filesystem;
 
+fs::path getResourcePath(const std::string& filename) 
+{
+    fs::path executablePath = fs::current_path();
+    fs::path projectPath = executablePath.parent_path();
+    fs::path resPath = projectPath / "res" / filename;
+    return resPath;
+}
+*/
 
 /*
 
@@ -670,10 +681,22 @@ int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
 
+    /*
+    std::cout << "Current path is " << fs::current_path() << '\n'; // (1)
+    fs::current_path(fs::temp_directory_path()); // (3)
+    std::cout << "Current path is " << fs::current_path() << '\n';
+    */
+
     window.setFramerateLimit(60);
     Clock clock;
 
-
+    /*
+    fs::path spritePath = getResourcePath("EggSpritesheet.png");
+    if (!spritesheet.loadFromFile(spritePath.string())) {
+        std::cout << "ERROR: Unable to load spritesheet from " << spritePath << std::endl;
+        return -1;
+    }
+    */
     if (!backgroundTexture.loadFromFile("C:/Users/angus/SET09121-Coursework/res/KitchenBackground.png"))
     {
         cout << "ERROR loading background" << endl;
