@@ -52,7 +52,8 @@ const float deggRadius = 10.f;
 const Vector2f hammerHitbox(20.f, 20.f);
 Vector2f ballVelocity;
 Vector2f deggVelocity;
-const float deggHorizontalspeed = 100.f;
+const float deggHorizontalspeed = 50.f;
+const float degg2Horizontalspeed = 150.f;
 const float ballHorizontalSpeed = 400.f;
 const float ballJumpSpeed = -1200.f;
 const float initialVelocityY = 80.f;
@@ -146,7 +147,8 @@ void Load() {
     platform[3].setPosition(Vector2f(775.f, 730.f));
     platform[5].setPosition(Vector2f(1060.f, 650.f));
     platform[7].setPosition(Vector2f(780.f, 530.f)); 
-    platform[8].setPosition(Vector2f(450.f, 530.f)); //degg
+    platform[8].setPosition(Vector2f(450.f, 520.f)); //degg
+    platform[8].setSize(Vector2f(300, 20));
     platform[9].setPosition(Vector2f(170.f, 450.f));
     platform[10].setPosition(Vector2f(450.f, 330.f));
     platform[11].setPosition(Vector2f(730.f, 250.f)); //goal
@@ -168,7 +170,7 @@ void Load() {
     degg.setPosition(Vector2f(500.f, 710.f));
     degg.setFillColor(Color::Magenta);
 
-    degg2.setPosition(Vector2f(450.f, 510.f));
+    degg2.setPosition(Vector2f(450.f, 500.f));
     degg2.setFillColor(Color::Magenta);
 
     //hammer.setSize(Vector2f(hammerHitbox));
@@ -395,8 +397,8 @@ void Update(RenderWindow& window) {
         degg.setPosition(Vector2f(500, 710));
     }
 
-    if (degg2.getPosition().x < 350 || degg2.getPosition().x > 550) {
-        degg2.setPosition(Vector2f(450, 510));
+    if (degg2.getPosition().x < 350 || degg2.getPosition().x > 650) {
+        degg2.setPosition(Vector2f(450, 500));
     }
 
     // Reset clock, recalculate deltatime
@@ -503,6 +505,13 @@ void Update(RenderWindow& window) {
             pB = platform[i].getPosition().y + 40;
         }
 
+        if (i == 8) {
+            pL = platform[i].getPosition().x - 150;
+            pR = platform[i].getPosition().x + 150;
+            pT = platform[i].getPosition().y - 10;
+            pB = platform[i].getPosition().y + 10;
+        }
+
         if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
 
             ballVelocity.y = 0.f;
@@ -525,10 +534,10 @@ void Update(RenderWindow& window) {
             eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
         }
 
-        if ((bx +20) > pL && (bx +20) <pR && by <= pB + 1 && by > pT + 1) {
+        if ((bx + 20) > pL && (bx + 20) < pR && by <= pB + 1 && by > pT + 1) {
             ballVelocity.y = 0.f;
-               eggsprite.setPosition(Vector2f(bx, by + 10.f));
-               cout << "hit bottom" << endl;
+            eggsprite.setPosition(Vector2f(bx, by + 10.f));
+            cout << "hit bottom" << endl;
         }
 
     }
@@ -553,36 +562,46 @@ void Update(RenderWindow& window) {
         eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
-    if (dx > (27.5 +bx) && dx > 360) {
-        degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+    if (dx > (27.5 + bx) && dx > 360) {
+        degg.move(Vector2f(-1 * degg2Horizontalspeed * dt, 0.f));
     }
-    else if (dx < (27.5 +bx) && dx < 540) {
-        degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+    else if (dx < (27.5 + bx) && dx < 540) {
+        degg.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
     }
 
     if (d2x > (27.5 + bx) && d2x > 360) {
         degg2.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
-    else if (d2x < (27.5 + bx) && d2x < 540) {
+    else if (d2x < (27.5 + bx) && d2x < 640) {
         degg2.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
-    
+
     ///*
-    float eggCollideX = dx - (27.5 +bx) || d2x - (27.5 + bx);
-    if (eggCollideX < 0) {
-        eggCollideX = eggCollideX * -1;
+    float eggCollideX1 = dx - (27.5 + bx);
+    if (eggCollideX1 < 0) {
+        eggCollideX1 = eggCollideX1 * -1;
     }
-    
-    float eggCollideY = dy - (31.25 +by) || d2y - (31.25 + by);
-    if (eggCollideY < 0) {
-        eggCollideY = eggCollideY * -1;
+
+    float eggCollideY1 = dy - (31.25 + by);
+    if (eggCollideY1 < 0) {
+        eggCollideY1 = eggCollideY1 * -1;
     }
-   
-    if (eggCollideX <= (13.75 + 9)) { //top right colision
-        if (eggCollideY <= (15.625 + 9)) {
-           GameOver();
-        }
+
+    float eggCollideX2 = d2x - (27.5 + bx);
+    if (eggCollideX2 < 0) {
+        eggCollideX2 = eggCollideX2 * -1;
+    }
+
+    float eggCollideY2 = d2y - (31.25 + by);
+    if (eggCollideY2 < 0) {
+        eggCollideY2 = eggCollideY2 * -1;
+    }
+
+    // Check for collision with either entity
+    if ((eggCollideX1 <= (13.75 + 9) && eggCollideY1 <= (15.625 + 9)) ||
+        (eggCollideX2 <= (13.75 + 9) && eggCollideY2 <= (15.625 + 9))) {
+        GameOver();
     }
     //*/
 }
