@@ -65,7 +65,8 @@ const float deggRadius = 60.f;
 const Vector2f hammerHitbox(20.f, 20.f);
 Vector2f ballVelocity;
 Vector2f deggVelocity;
-const float deggHorizontalspeed = 100.f;
+const float deggHorizontalspeed = 50.f;
+const float degg2Horizontalspeed = 150.f;
 const float ballHorizontalSpeed = 400.f;
 const float ballJumpSpeed = -1200.f;
 const float initialVelocityY = 80.f;
@@ -80,7 +81,7 @@ Text gameOverText;
 
 Clock animateClock;
 Clock animateClockDevil;
-Clock animateClockHammer;
+//Clock animateClockHammer;
 
 int deaths = 0;
 Text deathsText;
@@ -100,16 +101,17 @@ bool hasReached_Wall_right = true;
 
 //CircleShape ball;
 CircleShape degg;
-RectangleShape hammer;
+CircleShape degg2;
+//RectangleShape hammer;
 
-RectangleShape platform[7];
+RectangleShape platform[12];
 
 int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("C:/Users/angus/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
+    font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
 
     // Set size and origin of platform
     for (auto& p : platform) {
@@ -136,6 +138,9 @@ void Load() {
     degg.setRadius(deggRadius);
     degg.setOrigin(deggRadius, deggRadius);
 
+    degg2.setRadius(deggRadius);
+    degg2.setOrigin(deggRadius, deggRadius);
+
 
     // Reset positions
 
@@ -156,9 +161,15 @@ void Load() {
 
     //FLOATING PLATFORMS
     platform[1].setPosition(Vector2f(200.f, 780.f));
-    platform[2].setPosition(Vector2f(350.f, 680.f));
-    platform[3].setPosition(Vector2f(650.f, 680.f));
-    platform[5].setPosition(Vector2f(950.f, 580.f));
+    platform[2].setPosition(Vector2f(450.f, 730.f)); //degg
+    platform[3].setPosition(Vector2f(775.f, 730.f));
+    platform[5].setPosition(Vector2f(1060.f, 650.f));
+    platform[7].setPosition(Vector2f(780.f, 530.f)); 
+    platform[8].setPosition(Vector2f(450.f, 520.f)); //degg
+    platform[8].setSize(Vector2f(300, 20));
+    platform[9].setPosition(Vector2f(170.f, 450.f));
+    platform[10].setPosition(Vector2f(450.f, 330.f));
+    platform[11].setPosition(Vector2f(730.f, 250.f)); //goal
 
     //LAVA PLATFORM
     platform[4].setPosition(Vector2f(600.f, 890.f));
@@ -168,23 +179,29 @@ void Load() {
     platform[6].setPosition(Vector2f(950.f, 560.f));
     platform[6].setSize(Vector2f(20, 20));
     //platform[6].setFillColor(Color::Color(255,255,255,255));
+
     platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
     goalsprite.setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
 
     //ENTITIES
     //ball.setPosition(Vector2f(50, 825));
-    eggsprite.setPosition(Vector2f(50, 825));
+    eggsprite.setPosition(Vector2f(50.f, 825.f));
+    //eggsprite.setOrigin(Vector2f(55, 72.5));
 
-    degg.setPosition(Vector2f(350, 660));
+    degg.setPosition(Vector2f(500.f, 710.f));
     degg.setFillColor(Color::Magenta);
-
+/*
     //205x130, 391 total
     hammer.setSize(Vector2f(hammerHitbox));
     hammer.setOrigin(hammerHitbox.x / 2, hammerHitbox.y / 2);
     hammersprite.setOrigin(hammerHitbox.x / 2, hammerHitbox.y / 2);
     hammer.setPosition(Vector2f(650.f, 560.f));
     hammersprite.setPosition(Vector2f(650.f, 560.f));
-    hammer.setFillColor(Color::Yellow);
+    hammer.setFillColor(Color::Yellow);*/
+  
+    degg2.setPosition(Vector2f(450.f, 500.f));
+    degg2.setFillColor(Color::Magenta);
+
 
     // Set Ball falling speed
     if (canJump == false) {
@@ -226,7 +243,7 @@ void Reset(RenderWindow& window) {
     window.clear();
     Load();
     eggsprite.setPosition(Vector2f(50, 825));
-    devilsprite.setPosition(Vector2f(350, 66));
+    devilsprite.setPosition(Vector2f(500, 710));
     //degg.setPosition(Vector2f(350, 660));
     //Render(window);
 }
@@ -301,7 +318,6 @@ void deviledEgg_StateMachine() {
 */
 
 void Update(RenderWindow& window) {
-    
     //deviledEgg_StateMachine();
 
     // Reset Jump validity
@@ -396,7 +412,6 @@ void Update(RenderWindow& window) {
         }
 
     default:
-        // Optionally, handle unknown states
         break;
     }
 
@@ -470,8 +485,11 @@ void Update(RenderWindow& window) {
     if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
         degg.setPosition(Vector2f(350, 660));
     */
-    if (devilsprite.getPosition().x < 250 || devilsprite.getPosition().x > 450) {
-        devilsprite.setPosition(Vector2f(350, 660));
+    if (devilsprite.getPosition().x < 350 || devilsprite.getPosition().x > 550) {
+        devilsprite.setPosition(Vector2f(500, 710));
+      
+    if (degg2.getPosition().x < 350 || degg2.getPosition().x > 650) {
+        degg2.setPosition(Vector2f(450, 500));
     }
 
     // Reset clock, recalculate deltatime
@@ -513,8 +531,11 @@ void Update(RenderWindow& window) {
     const float dx = devilsprite.getPosition().x;
     const float dy = devilsprite.getPosition().y;
 
-    const float hx = hammer.getPosition().x;
-    const float hy = hammer.getPosition().y;
+    const float d2x = degg2.getPosition().x;
+    const float d2y = degg2.getPosition().y;
+
+    //const float hx = hammer.getPosition().x;
+    //const float hy = hammer.getPosition().y;
 
     // handle ball movement (horizontal)
     float direction = 0.0f;
@@ -536,12 +557,13 @@ void Update(RenderWindow& window) {
     // Check Collision with platform
 
     const float bx = eggsprite.getPosition().x;
+    //cout << bx << endl;
     const float by = eggsprite.getPosition().y;
-
+    /*
     if (bx > gameWidth - ballRadius) {
         ballVelocity.x = -ballVelocity.x;
     }
-
+    */
     if (by > gameHeight - ballRadius) { //bottom wall
         ballVelocity.y = 0.f;
         canJump = true;
@@ -572,8 +594,15 @@ void Update(RenderWindow& window) {
 
         //GOAL HITBOX
         if (i == 6) {
-            pL = platform[i].getPosition().x - 10;
-            pR = platform[i].getPosition().x + 10;
+            pL = platform[i].getPosition().x - 40;
+            pR = platform[i].getPosition().x + 40;
+            pT = platform[i].getPosition().y - 40;
+            pB = platform[i].getPosition().y + 40;
+        }
+
+        if (i == 8) {
+            pL = platform[i].getPosition().x - 150;
+            pR = platform[i].getPosition().x + 150;
             pT = platform[i].getPosition().y - 10;
             pB = platform[i].getPosition().y + 10;
         }
@@ -582,13 +611,14 @@ void Update(RenderWindow& window) {
 
             ballVelocity.y = 0.f;
             canJump = true;
-            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
 
-            if (/*by < pB + ballRadius  &&*/ by > pB) {
-                ballVelocity.y = 0.f;
-                eggsprite.move(Vector2f(0.f, 10.f));
-            }
+            /*if (by <= pB + ballRadius && by > pT + ballRadius) {
+                ballVelocity.y = ballVelocity.y * -1;
+                eggsprite.setPosition(Vector2f(bx, by - 10.f));
+                cout << "hit bottom" << endl;
+            }*/
             if (i == 4) {
+                cout << "hit lava" << endl;
                 GameOver();
             }
 
@@ -596,7 +626,15 @@ void Update(RenderWindow& window) {
                 complete = true;
                 GameOver();
             }
+            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
         }
+
+        if ((bx + 20) > pL && (bx + 20) < pR && by <= pB + 1 && by > pT + 1) {
+            ballVelocity.y = 0.f;
+            eggsprite.setPosition(Vector2f(bx, by + 10.f));
+            cout << "hit bottom" << endl;
+        }
+
     }
 
 
@@ -619,31 +657,50 @@ void Update(RenderWindow& window) {
         eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
-    if (dx > bx && dx > 260) {
+    if (dx > (27.5 + bx) && dx > 360) {
         //degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
         devilsprite.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
-    else if (dx < bx && dx < 440) {
+    else if (dx < (27.5 + bx) && dx < 540) {
         //degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
         devilsprite.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
-    float eggCollideX = dx - bx;
-    if (eggCollideX < 0) {
-        eggCollideX = eggCollideX * -1;
+    if (d2x > (27.5 + bx) && d2x > 360) {
+        degg2.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
-
-    float eggCollideY = dy - by;
-    if (eggCollideY < 0) {
-        eggCollideY = eggCollideY * -1;
+    else if (d2x < (27.5 + bx) && d2x < 640) {
+        degg2.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
 
-    if (eggCollideY <= 19) {
-        if (eggCollideX <= 19) {
-            GameOver();
-        }
+    ///*
+    float eggCollideX1 = dx - (27.5 + bx);
+    if (eggCollideX1 < 0) {
+        eggCollideX1 = eggCollideX1 * -1;
     }
+
+    float eggCollideY1 = dy - (31.25 + by);
+    if (eggCollideY1 < 0) {
+        eggCollideY1 = eggCollideY1 * -1;
+    }
+
+    float eggCollideX2 = d2x - (27.5 + bx);
+    if (eggCollideX2 < 0) {
+        eggCollideX2 = eggCollideX2 * -1;
+    }
+
+    float eggCollideY2 = d2y - (31.25 + by);
+    if (eggCollideY2 < 0) {
+        eggCollideY2 = eggCollideY2 * -1;
+    }
+
+    // Check for collision with either entity
+    if ((eggCollideX1 <= (13.75 + 9) && eggCollideY1 <= (15.625 + 9)) ||
+        (eggCollideX2 <= (13.75 + 9) && eggCollideY2 <= (15.625 + 9))) {
+        GameOver();
+    }
+    //*/
 }
 
 
@@ -658,8 +715,9 @@ void Render(RenderWindow& window) {
     window.draw(eggsprite);
     //window.draw(degg);
     window.draw(devilsprite);
-    window.draw(hammer);
-    window.draw(hammersprite);
+    //window.draw(hammer);
+    //window.draw(hammersprite);
+    window.draw(degg2);
     window.draw(fpstext);
     window.draw(gameOverText);
     window.draw(deathsText);
@@ -674,7 +732,7 @@ int main() {
     Clock clock;
 
 
-    if (!backgroundTexture.loadFromFile("C:/Users/angus/SET09121-Coursework/res/KitchenBackground.png"))
+    if (!backgroundTexture.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/KitchenBackground.png"))
     {
         cout << "ERROR loading background" << endl;
     }
@@ -684,8 +742,8 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
-    // Load in spritesheet for Eggy
-    if (!spritesheet.loadFromFile("C:/Users/angus/SET09121-Coursework/res/EggSpritesheet.png"))
+
+    if (!spritesheet.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/EggSpritesheet.png"))
     {
         cout << "ERROR loading spritesheet" << endl;
     }
@@ -744,7 +802,7 @@ int main() {
     
 
     while (window.isOpen()) {
-
+        elapsedTime = clock.restart();
         if (freeze != true && complete != true) {
 
             /*      FPS DISPLAY     */
@@ -753,7 +811,7 @@ int main() {
             loops = 0;
             // set the character size to 24 pixels
             fpstext.setCharacterSize(20);
-            elapsedTime = clock.restart();
+
             if (elapsedTime.asSeconds() < 1) {
                 loops++;
             }
@@ -789,7 +847,7 @@ int main() {
             sleep(seconds(2));
             window.close();
         }
-        
+
     }
     return 0;
 }
