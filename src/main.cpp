@@ -73,6 +73,7 @@ bool canJump = false;
 float dt;
 int jumpTime = 0;
 int hangTime = 0;
+int currentFrame = 0;
 Font font;
 Text fpstext;
 Text gameOverText;
@@ -401,7 +402,6 @@ void Update(RenderWindow& window) {
 
     //animateClockDevil;
     // grids 3,-9,7,10,8,-10,-7,9, back to 3 (I understand this is overcomplicated but I don't want to edit the png file)
-    int currentFrame = 0;
 
     struct Frame {
         int top;
@@ -421,11 +421,10 @@ void Update(RenderWindow& window) {
     };
 
     //devilSourceSprite.top = 1;
-    if (animateClockDevil.getElapsedTime().asSeconds() >= 0.2) {
+    if (animateClockDevil.getElapsedTime().asSeconds() >= 0.1) {
         Frame frame = devilFrames[currentFrame];
-        //devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
-        devilSourceSprite.top = frame.top;
-        devilSourceSprite.left = frame.left;
+        devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+        //cout << "top = " << devilSourceSprite.top << ", left = " << devilSourceSprite.left << endl;
 
         // Handle flipping
         if (frame.flipped) {
@@ -437,7 +436,6 @@ void Update(RenderWindow& window) {
             devilsprite.setOrigin(0, 0);
         }
 
-        cout << "frame progressed" << endl;
         // Move to the next frame
         currentFrame = (currentFrame + 1) % devilFrames.size();
         animateClockDevil.restart();
