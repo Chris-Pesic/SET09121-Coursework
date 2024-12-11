@@ -82,9 +82,10 @@ bool hasReached_Wall_right = true;
 
 //CircleShape ball;
 CircleShape degg;
-RectangleShape hammer;
+CircleShape degg2;
+//RectangleShape hammer;
 
-RectangleShape platform[7];
+RectangleShape platform[12];
 
 int platformArray = sizeof(platform) / sizeof(platform[0]);
 
@@ -118,6 +119,9 @@ void Load() {
     degg.setRadius(deggRadius);
     degg.setOrigin(deggRadius, deggRadius);
 
+    degg2.setRadius(deggRadius);
+    degg2.setOrigin(deggRadius, deggRadius);
+
 
     // Reset positions
 
@@ -138,31 +142,39 @@ void Load() {
 
     //FLOATING PLATFORMS
     platform[1].setPosition(Vector2f(200.f, 780.f));
-    platform[2].setPosition(Vector2f(350.f, 730.f));
-    platform[3].setPosition(Vector2f(650.f, 680.f));
-    platform[5].setPosition(Vector2f(950.f, 580.f));
+    platform[2].setPosition(Vector2f(450.f, 730.f)); //degg
+    platform[3].setPosition(Vector2f(775.f, 730.f));
+    platform[5].setPosition(Vector2f(1060.f, 650.f));
+    platform[7].setPosition(Vector2f(780.f, 530.f)); 
+    platform[8].setPosition(Vector2f(450.f, 530.f)); //degg
+    platform[9].setPosition(Vector2f(170.f, 450.f));
+    platform[10].setPosition(Vector2f(450.f, 330.f));
+    platform[11].setPosition(Vector2f(730.f, 250.f)); //goal
 
     //LAVA PLATFORM
     platform[4].setPosition(Vector2f(600.f, 890.f));
 
     //GOAL HITBOX
-    platform[6].setPosition(Vector2f(950.f, 560.f));
-    platform[6].setSize(Vector2f(80, 20));
+    platform[6].setPosition(Vector2f(730.f, 240.f));
+    platform[6].setSize(Vector2f(80.f, 20.f));
     platform[6].setFillColor(Color::Cyan);
     platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
 
     //ENTITIES
     //ball.setPosition(Vector2f(50, 825));
-    eggsprite.setPosition(Vector2f(50, 825));
+    eggsprite.setPosition(Vector2f(50.f, 825.f));
     //eggsprite.setOrigin(Vector2f(55, 72.5));
 
-    degg.setPosition(Vector2f(350, 710));
+    degg.setPosition(Vector2f(500.f, 710.f));
     degg.setFillColor(Color::Magenta);
 
-    hammer.setSize(Vector2f(hammerHitbox));
-    hammer.setOrigin(hammerHitbox.x / 2, hammerHitbox.y / 2);
-    hammer.setPosition(Vector2f(650.f, 560.f));
-    hammer.setFillColor(Color::Yellow);
+    degg2.setPosition(Vector2f(450.f, 510.f));
+    degg2.setFillColor(Color::Magenta);
+
+    //hammer.setSize(Vector2f(hammerHitbox));
+    //hammer.setOrigin(hammerHitbox.x / 2, hammerHitbox.y / 2);
+    //hammer.setPosition(Vector2f(650.f, 560.f));
+    //hammer.setFillColor(Color::Yellow);
 
     // Set Ball falling speed
     if (canJump == false) {
@@ -204,7 +216,7 @@ void Reset(RenderWindow& window) {
     window.clear();
     Load();
     eggsprite.setPosition(Vector2f(50, 825));
-    degg.setPosition(Vector2f(350, 660));
+    degg.setPosition(Vector2f(500, 710));
     //Render(window);
 }
 
@@ -367,7 +379,6 @@ void Update(RenderWindow& window) {
         eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10   
 
     default:
-        // Optionally, handle unknown states
         break;
     }
 
@@ -380,8 +391,12 @@ void Update(RenderWindow& window) {
         eggsprite.setPosition(Vector2f(eggsprite.getPosition().x, 880));
     }
 
-    if (degg.getPosition().x < 250 || degg.getPosition().x > 450) {
-        degg.setPosition(Vector2f(350, 710));
+    if (degg.getPosition().x < 350 || degg.getPosition().x > 550) {
+        degg.setPosition(Vector2f(500, 710));
+    }
+
+    if (degg2.getPosition().x < 350 || degg2.getPosition().x > 550) {
+        degg2.setPosition(Vector2f(450, 510));
     }
 
     // Reset clock, recalculate deltatime
@@ -419,8 +434,11 @@ void Update(RenderWindow& window) {
     const float dx = degg.getPosition().x;
     const float dy = degg.getPosition().y;
 
-    const float hx = hammer.getPosition().x;
-    const float hy = hammer.getPosition().y;
+    const float d2x = degg2.getPosition().x;
+    const float d2y = degg2.getPosition().y;
+
+    //const float hx = hammer.getPosition().x;
+    //const float hy = hammer.getPosition().y;
 
     // handle ball movement (horizontal)
     float direction = 0.0f;
@@ -535,33 +553,38 @@ void Update(RenderWindow& window) {
         eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
     }
 
-    if (dx > (27.5 +bx) && dx > 260) {
+    if (dx > (27.5 +bx) && dx > 360) {
         degg.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
-    else if (dx < (27.5 +bx) && dx < 440) {
+    else if (dx < (27.5 +bx) && dx < 540) {
         degg.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
+    if (d2x > (27.5 + bx) && d2x > 360) {
+        degg2.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+    }
+    else if (d2x < (27.5 + bx) && d2x < 540) {
+        degg2.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+    }
+
     
-    
-    float eggCollideX = dx - (27.5 +bx);
+    ///*
+    float eggCollideX = dx - (27.5 +bx) || d2x - (27.5 + bx);
     if (eggCollideX < 0) {
         eggCollideX = eggCollideX * -1;
     }
     
-    float eggCollideY = dy - (31.25 +by);
+    float eggCollideY = dy - (31.25 +by) || d2y - (31.25 + by);
     if (eggCollideY < 0) {
         eggCollideY = eggCollideY * -1;
     }
-
    
     if (eggCollideX <= (13.75 + 9)) { //top right colision
         if (eggCollideY <= (15.625 + 9)) {
-            GameOver();
+           GameOver();
         }
     }
-
-
+    //*/
 }
 
 
@@ -574,7 +597,8 @@ void Render(RenderWindow& window) {
     }
     window.draw(eggsprite);
     window.draw(degg);
-    window.draw(hammer);
+    window.draw(degg2);
+    //window.draw(hammer);
     window.draw(fpstext);
     window.draw(gameOverText);
     window.draw(deathsText);
@@ -619,7 +643,7 @@ int main() {
     */
 
     while (window.isOpen()) {
-
+        elapsedTime = clock.restart();
         if (freeze != true && complete != true) {
 
             /*      FPS DISPLAY     */
@@ -628,7 +652,7 @@ int main() {
             loops = 0;
             // set the character size to 24 pixels
             fpstext.setCharacterSize(20);
-            elapsedTime = clock.restart();
+
             if (elapsedTime.asSeconds() < 1) {
                 loops++;
             }
