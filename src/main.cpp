@@ -83,6 +83,7 @@ Clock animateClock;
 Clock animateClockDevil;
 //Clock animateClockHammer;
 
+
 int deaths = 0;
 Text deathsText;
 int loops = 0;
