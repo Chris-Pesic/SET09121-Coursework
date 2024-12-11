@@ -64,7 +64,9 @@ int hangTime = 0;
 Font font;
 Text fpstext;
 Text gameOverText;
+
 Clock animateClock;
+
 int deaths = 0;
 Text deathsText;
 int loops = 0;
