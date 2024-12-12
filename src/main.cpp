@@ -147,11 +147,15 @@ void Load() {
     platform[3].setPosition(Vector2f(775.f, 730.f));
     platform[5].setPosition(Vector2f(1060.f, 650.f));
     platform[7].setPosition(Vector2f(780.f, 530.f));
+
+    //LONG PLATFORM
     platform[8].setSize(Vector2f(300, 20));
-    platform[8].setOrigin((platformSize.x / 2.f), (platformSize.y / 2.f));
+    //platform[8].setOrigin((platformSize.x / 2.f), (platformSize.y / 2.f));
     platform[8].setPosition(Vector2f(450.f, 520.f)); //degg
     //platform[8].setSize(Vector2f(300, 20));
-    //platform[8].setOrigin((platformSize.x / 2.f), (platformSize.y / 2.f));
+    platform[8].setOrigin((300.f / 2.f), ( platformSize.y / 2.f));
+
+
     platform[9].setPosition(Vector2f(170.f, 450.f));
     platform[10].setPosition(Vector2f(450.f, 330.f));
     platform[11].setPosition(Vector2f(730.f, 250.f)); //goal
@@ -400,7 +404,7 @@ void Update(RenderWindow& window) {
         degg.setPosition(Vector2f(500, 710));
     }
 
-    if (degg2.getPosition().x < 350 || degg2.getPosition().x > 650) {
+    if (degg2.getPosition().x < 300 || degg2.getPosition().x > 600) {
         degg2.setPosition(Vector2f(450, 500));
     }
 
@@ -574,10 +578,10 @@ void Update(RenderWindow& window) {
         degg.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
     }
 
-    if (d2x > (27.5 + bx) && d2x > 360) {
+    if (d2x > (27.5 + bx) && d2x > 310) {
         degg2.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
-    else if (d2x < (27.5 + bx) && d2x < 640) {
+    else if (d2x < (27.5 + bx) && d2x < 590) {
         degg2.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
 
