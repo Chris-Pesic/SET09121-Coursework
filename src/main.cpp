@@ -20,8 +20,14 @@ Texture spritesheet;
 Sprite eggsprite;
 Texture backgroundTexture;
 Sprite background;
+Texture spritesheetdevil;
+Sprite devilsprite;
+Texture spritesheetdevil2;
+Sprite devil2sprite;
 
 IntRect eggSourceSprite(1, 1, 110, 125);
+IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
+IntRect devil2SourceSprite(223, 1, 110, 125);
 
 //SoundBuffer buffer;
 //Sound jumpsound;
@@ -61,10 +67,12 @@ bool canJump = false;
 float dt;
 int jumpTime = 0;
 int hangTime = 0;
+int currentFrame = 0;
 Font font;
 Text fpstext;
 Text gameOverText;
 Clock animateClock;
+Clock animateClockDevil;
 int deaths = 0;
 Text deathsText;
 int loops = 0;
@@ -225,7 +233,10 @@ void Reset(RenderWindow& window) {
     window.clear();
     Load();
     eggsprite.setPosition(Vector2f(50, 825));
+    devilsprite.setPosition(Vector2f(500, 660));
+    devil2sprite.setPosition(Vector2f(450, 450));
     degg.setPosition(Vector2f(500, 710));
+    degg2.setPosition(Vector2f(450, 500));
     //Render(window);
 }
 
@@ -391,6 +402,52 @@ void Update(RenderWindow& window) {
         break;
     }
 
+    //animateClockDevil;
+    // grids 3,-9,7,10,8,-10,-7,9, back to 3 (I understand this is overcomplicated but I don't want to edit the png file)
+
+    struct Frame {
+        int top;
+        int left;
+        bool flipped; // Indicates whether the sprite should be flipped horizontally
+    };
+
+    vector<Frame> devilFrames = {
+        {1, 223, false},  // Grid 3 (regular)
+        {252, 223, true}, // Grid 9 (flipped)
+        {252, 1, false},  // Grid 7 (regular)
+        {378, 1, false},  // Grid 10 (regular)
+        {252, 111, false}, // Grid 8 (regular)
+        {378, 1, true},   // Grid 10 (flipped)
+        {252, 1, true},   // Grid 7 (flipped)
+        {252, 223, false} // Grid 9 (regular)
+    };
+
+    //devilSourceSprite.top = 1;
+    if (animateClockDevil.getElapsedTime().asSeconds() >= 0.1) {
+        Frame frame = devilFrames[currentFrame];
+        devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+        devil2sprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+        //cout << "top = " << devilSourceSprite.top << ", left = " << devilSourceSprite.left << endl;
+
+        // Handle flipping
+        if (frame.flipped) {
+            devilsprite.setScale(-0.5f, 0.5f);  // Flipped
+            devilsprite.setOrigin(110, 0);   // Adjust origin to flip properly
+            devil2sprite.setScale(-0.5f, 0.5f);  // Flipped
+            devil2sprite.setOrigin(110, 0);   // Adjust origin to flip properly
+        }
+        else {
+            devilsprite.setScale(0.5f, 0.5f); // Normal
+            devilsprite.setOrigin(0, 0);
+            devil2sprite.setScale(0.5f, 0.5f); // Normal
+            devil2sprite.setOrigin(0, 0);
+        }
+
+        // Move to the next frame
+        currentFrame = (currentFrame + 1) % devilFrames.size();
+        animateClockDevil.restart();
+    }
+
 
 
     //position failsafe
@@ -404,8 +461,16 @@ void Update(RenderWindow& window) {
         degg.setPosition(Vector2f(500, 710));
     }
 
+    if (devilsprite.getPosition().x < 250 || devilsprite.getPosition().x > 450) {
+        devilsprite.setPosition(Vector2f(500, 660));
+    }
+
     if (degg2.getPosition().x < 300 || degg2.getPosition().x > 600) {
         degg2.setPosition(Vector2f(450, 500));
+    }
+
+    if (devil2sprite.getPosition().x < 200 || devil2sprite.getPosition().x > 500) {
+        devilsprite.setPosition(Vector2f(450, 450));
     }
 
     // Reset clock, recalculate deltatime
@@ -442,6 +507,14 @@ void Update(RenderWindow& window) {
 
     const float dx = degg.getPosition().x;
     const float dy = degg.getPosition().y;
+
+    const float devilX = devilsprite.getPosition().x;
+    //cout << devilX  << endl;
+    const float devilY = devilsprite.getPosition().y;
+
+    const float devil2X = devil2sprite.getPosition().x;
+    //cout << devilX << endl;
+    const float devil2Y = devil2sprite.getPosition().y;
 
     const float d2x = degg2.getPosition().x;
     const float d2y = degg2.getPosition().y;
@@ -578,12 +651,23 @@ void Update(RenderWindow& window) {
         degg.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
     }
 
+    /*if (devilX >(27.5 + bx) && devilX > 360) {
+        devilsprite.move(Vector2f(-1 * degg2Horizontalspeed * dt, 0.f));
+    }
+    else if (devilX < (27.5 + bx) && devilX < 540) {
+        devilsprite.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
+    }*/
+
+    devilsprite.setPosition(dx -27.5, dy - 49);
+
     if (d2x > (27.5 + bx) && d2x > 310) {
         degg2.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
     }
     else if (d2x < (27.5 + bx) && d2x < 590) {
         degg2.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
     }
+
+    devil2sprite.setPosition(d2x - 27.5, d2y - 49);
 
 
     ///*
@@ -624,8 +708,10 @@ void Render(RenderWindow& window) {
         window.draw(platform[i]);
     }
     window.draw(eggsprite);
-    window.draw(degg);
+    //window.draw(degg);
+    window.draw(devilsprite);
     window.draw(degg2);
+    window.draw(devil2sprite); 
     //window.draw(hammer);
     window.draw(fpstext);
     window.draw(gameOverText);
@@ -663,6 +749,30 @@ int main() {
         eggsprite.setScale(0.5f, 0.5f);
     }
 
+    if (!spritesheetdevil.loadFromFile("C:/SET09121-Coursework/res/DevilSpritesheet.png"))
+    {
+        cout << "ERROR loading devil spritesheet" << endl;
+    }
+    else
+    {
+        devilsprite.setTexture(spritesheetdevil);
+        //IntRect(1, 1, 110, 125)
+        devilsprite.setTextureRect(devilSourceSprite);
+        devilsprite.setScale(0.5f, 0.5f);
+    }
+
+    if (!spritesheetdevil2.loadFromFile("C:/SET09121-Coursework/res/DevilSpritesheet.png"))
+    {
+        cout << "ERROR loading devil spritesheet" << endl;
+    }
+    else
+    {
+        devil2sprite.setTexture(spritesheetdevil);
+        //IntRect(1, 1, 110, 125)
+        devil2sprite.setTextureRect(devil2SourceSprite);
+        devil2sprite.setScale(0.5f, 0.5f);
+    }
+
     /*
     if (!buffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/jump.wav"))
         return -1;
@@ -697,6 +807,8 @@ int main() {
 
             window.clear();
             window.draw(eggsprite);
+            window.draw(devilsprite);
+            window.draw(devil2sprite);
 
             Update(window);
 
