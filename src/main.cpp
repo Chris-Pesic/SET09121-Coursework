@@ -93,7 +93,7 @@ int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
+    font.loadFromFile("C:/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
 
     // Set size and origin of platform
     for (auto& p : platform) {
@@ -147,8 +147,11 @@ void Load() {
     platform[3].setPosition(Vector2f(775.f, 730.f));
     platform[5].setPosition(Vector2f(1060.f, 650.f));
     platform[7].setPosition(Vector2f(780.f, 530.f));
-    platform[8].setPosition(Vector2f(450.f, 520.f)); //degg
     platform[8].setSize(Vector2f(300, 20));
+    platform[8].setOrigin((platformSize.x / 2.f), (platformSize.y / 2.f));
+    platform[8].setPosition(Vector2f(450.f, 520.f)); //degg
+    //platform[8].setSize(Vector2f(300, 20));
+    //platform[8].setOrigin((platformSize.x / 2.f), (platformSize.y / 2.f));
     platform[9].setPosition(Vector2f(170.f, 450.f));
     platform[10].setPosition(Vector2f(450.f, 330.f));
     platform[11].setPosition(Vector2f(730.f, 250.f)); //goal
@@ -417,7 +420,7 @@ void Update(RenderWindow& window) {
         if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
             //kill time
             hangTime++;
-            if (hangTime % 2 == 0) {
+            if (hangTime % 4 == 0) {
                 ballVelocity = { 0.f, ballVelocity.y + 100 };
             }
         }
@@ -469,7 +472,7 @@ void Update(RenderWindow& window) {
         ballVelocity.x = -ballVelocity.x;
     }
     */
-    if (by > gameHeight - ballRadius) { //bottom wall
+    if (by > gameHeight - 62.5) { //bottom wall
         ballVelocity.y = 0.f;
         canJump = true;
     }
@@ -512,10 +515,10 @@ void Update(RenderWindow& window) {
             pB = platform[i].getPosition().y + 10;
         }
 
-        if (bx > pL && bx < pR && by >= pT - ballRadius && by < pB - ballRadius) {
+        if ((bx + 41.25) > pL && (bx + 13.75) < pR && by >= pT - ballRadius && by < pB - ballRadius) {
 
             ballVelocity.y = 0.f;
-            canJump = true;
+            //canJump = true;
 
             /*if (by <= pB + ballRadius && by > pT + ballRadius) {
                 ballVelocity.y = ballVelocity.y * -1;
@@ -532,6 +535,8 @@ void Update(RenderWindow& window) {
                 GameOver();
             }
             eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
+
+            canJump = true;
         }
 
         if ((bx + 20) > pL && (bx + 20) < pR && by <= pB + 1 && by > pT + 1) {
@@ -632,7 +637,7 @@ int main() {
     Clock clock;
 
 
-    if (!backgroundTexture.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/KitchenBackground.png"))
+    if (!backgroundTexture.loadFromFile("C:/SET09121-Coursework/res/KitchenBackground.png"))
     {
         cout << "ERROR loading background" << endl;
     }
@@ -642,7 +647,7 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
-    if (!spritesheet.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/EggSpritesheet.png"))
+    if (!spritesheet.loadFromFile("C:/SET09121-Coursework/res/EggSpritesheet.png"))
     {
         cout << "ERROR loading spritesheet" << endl;
     }
