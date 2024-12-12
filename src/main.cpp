@@ -24,6 +24,8 @@ Texture spritesheetdevil;
 Sprite devilsprite;
 Texture spritesheetdevil2;
 Sprite devil2sprite;
+Texture goalTexture;
+Sprite goalsprite;
 
 IntRect eggSourceSprite(1, 1, 110, 125);
 IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
@@ -172,10 +174,12 @@ void Load() {
     platform[4].setPosition(Vector2f(600.f, 890.f));
 
     //GOAL HITBOX
+    goalsprite.setPosition(Vector2f(690.f, 198.f));
     platform[6].setPosition(Vector2f(730.f, 240.f));
     platform[6].setSize(Vector2f(80.f, 20.f));
     platform[6].setFillColor(Color::Cyan);
     platform[6].setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
+    //goalsprite.setOrigin(goalHitbox.x / 2, goalHitbox.y / 2);
 
     //ENTITIES
     //ball.setPosition(Vector2f(50, 825));
@@ -705,12 +709,15 @@ void Render(RenderWindow& window) {
 
     window.draw(background);
     for (int i = 0; i < platformArray; i++) {
-        window.draw(platform[i]);
+        if (i != 6) {
+            window.draw(platform[i]);
+        }
     }
+    window.draw(goalsprite);
     window.draw(eggsprite);
     //window.draw(degg);
     window.draw(devilsprite);
-    window.draw(degg2);
+    //window.draw(degg2);
     window.draw(devil2sprite); 
     //window.draw(hammer);
     window.draw(fpstext);
@@ -772,6 +779,16 @@ int main() {
         devil2sprite.setTextureRect(devil2SourceSprite);
         devil2sprite.setScale(0.5f, 0.5f);
     }
+
+    if (!goalTexture.loadFromFile("C:/SET09121-Coursework/res/GoalSprite.png"))
+    {
+        cout << "ERROR loading goal sprite" << endl;
+    }
+    else
+    {
+        goalsprite.setTexture(goalTexture);
+    }
+
 
     /*
     if (!buffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/jump.wav"))
