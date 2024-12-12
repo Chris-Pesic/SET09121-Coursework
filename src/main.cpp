@@ -741,7 +741,10 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
     if (!spritesheet.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/EggSpritesheet.png"))
     {
         cout << "ERROR loading spritesheet" << endl;
@@ -754,7 +757,10 @@ int main() {
         eggsprite.setScale(0.5f, 0.5f);
     }
 
+<<<<<<< Updated upstream
     // Load in spritesheet for Deviled Egg
+=======
+>>>>>>> Stashed changes
     if (!spritesheetdevil.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/DevilSpritesheet.png"))
     {
         cout << "ERROR loading devil spritesheet" << endl;
@@ -767,7 +773,22 @@ int main() {
         devilsprite.setScale(0.5f, 0.5f);
     }
 
+<<<<<<< Updated upstream
     // Load in spritesheet for Goal
+=======
+    if (!spritesheetdevil2.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/DevilSpritesheet.png"))
+    {
+        cout << "ERROR loading devil spritesheet" << endl;
+    }
+    else
+    {
+        devil2sprite.setTexture(spritesheetdevil);
+        //IntRect(1, 1, 110, 125)
+        devil2sprite.setTextureRect(devil2SourceSprite);
+        devil2sprite.setScale(0.5f, 0.5f);
+    }
+
+>>>>>>> Stashed changes
     if (!goalTexture.loadFromFile("C:/Users/chris/ENU OneDrive/OneDrive - Edinburgh Napier University/Year 3/Modules/TR1/Games Engineering/Coursework/SET09121-Coursework/res/GoalSprite.png"))
     {
         cout << "ERROR loading goal sprite" << endl;
