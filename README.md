@@ -11,8 +11,10 @@
 
 ## Links:
 
-Github Repository: https://github.com/Chris-Pesic/SET09121-Coursework \
-Github Pages: https://chris-pesic.github.io/SET09121-Coursework/ \
+Github Repository: https://github.com/Chris-Pesic/SET09121-Coursework 
+
+Github Pages: https://chris-pesic.github.io/SET09121-Coursework/ 
+
 Code Documentation: [Here](Code_Documentation.md)
 
 ## Notes:
