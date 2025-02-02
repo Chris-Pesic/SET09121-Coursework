@@ -272,94 +272,6 @@ void Update(RenderWindow& window) {
     // Reset Jump validity
     canJump = false;
 
-    switch (player.getState()) {
-    case EggState::STANDING:
-        eggSourceSprite.top = 1;
-        // Animate grids 1-3
-        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (eggSourceSprite.left == 223)
-                eggSourceSprite.left = 1;
-            else
-            {
-                eggSourceSprite.left += 111;
-            }
-
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
-        }
-        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
-        eggsprite.setOrigin(0, 0);      // Reset origin
-        break;
-
-    case EggState::WALKING_LEFT:
-        // Animate grids 4-6 (left-facing)
-        eggSourceSprite.top = 126;
-        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (eggSourceSprite.left == 223)
-                eggSourceSprite.left = 1;
-            else
-            {
-                eggSourceSprite.left += 111;
-            }
-
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
-        }
-        eggsprite.setScale(-0.5f, 0.5f); // Flipped horizontally
-        eggsprite.setOrigin(110, 0);     // Adjust origin for flipping
-        break;
-
-    case EggState::WALKING_RIGHT:
-        eggSourceSprite.top = 126;
-        // Animate grids 4-6 (right-facing)
-        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (eggSourceSprite.left == 223)
-                eggSourceSprite.left = 1;
-            else
-                eggSourceSprite.left += 111;
-
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
-        }
-        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
-        eggsprite.setOrigin(0, 0);      // Reset origin
-        break;
-
-    case EggState::RISING:
-        // Static frame for RISING
-        eggsprite.setTextureRect(IntRect(223, 2, 110, 125)); // Grid 3
-        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
-        eggsprite.setOrigin(0, 0);      // Reset origin
-        break;
-
-    case EggState::FALLING:
-        // Static frame for FALLING
-        eggsprite.setTextureRect(IntRect(111, 253, 110, 125)); // Grid 8
-        eggsprite.setScale(0.5f, 0.5f);
-        eggsprite.setOrigin(0, 0);
-        break;
-
-    case EggState::DYING:
-        eggSourceSprite.top = 379;
-        // Animate grids 4-6 (right-facing)
-        if (animateClock.getElapsedTime().asSeconds() > 0.4f) {
-            if (eggSourceSprite.left == 223)
-                break;
-            else
-                eggSourceSprite.left += 111;
-
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
-        }
-        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
-        eggsprite.setOrigin(0, 0);      // Reset origin
-        break;
-        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10
-
-    default:
-        break;
-    }
-
     //animateClockDevil;
     // grids 3,-9,7,10,8,-10,-7,9, back to 3 (I understand this is overcomplicated but I don't want to edit the png file)
 
@@ -368,6 +280,8 @@ void Update(RenderWindow& window) {
         int left;
         bool flipped; // Indicates whether the sprite should be flipped horizontally
     };
+
+    player.updateState(eggsprite);
 
     vector<Frame> devilFrames = {
         {1, 223, false},  // Grid 3 (regular)
@@ -704,6 +618,7 @@ int main() {
     {
         eggsprite.setTexture(spritesheet);
         //IntRect(1, 1, 110, 125)
+        player.setSourceSprite(eggSourceSprite);
         eggsprite.setTextureRect(eggSourceSprite);
         eggsprite.setScale(0.5f, 0.5f);
     }
