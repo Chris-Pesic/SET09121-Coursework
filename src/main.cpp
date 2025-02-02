@@ -736,7 +736,7 @@ int main() {
 
     if (!backgroundTexture.loadFromFile("./res/KitchenBackground.png"))
     {
-        cout << "ERROR loading background" << endl;
+        cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
     }
     else
     {
@@ -746,7 +746,7 @@ int main() {
 
     if (!spritesheet.loadFromFile("./res/EggSpritesheet.png"))
     {
-        cout << "ERROR loading spritesheet" << endl;
+        cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading spritesheet" << endl;
     }
     else
     {
@@ -758,7 +758,7 @@ int main() {
 
     if (!spritesheetdevil.loadFromFile("./res/DevilSpritesheet.png"))
     {
-        cout << "ERROR loading devil spritesheet" << endl;
+        cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading devil spritesheet" << endl;
     }
     else
     {
@@ -770,7 +770,7 @@ int main() {
 
     if (!spritesheetdevil2.loadFromFile("./res/DevilSpritesheet.png"))
     {
-        cout << "ERROR loading devil spritesheet" << endl;
+        cerr << __FILE__ << ":" << __LINE__ << ": ERROR loading devil spritesheet" << endl;
     }
     else
     {
@@ -782,7 +782,7 @@ int main() {
 
     if (!goalTexture.loadFromFile("./res/GoalSprite.png"))
     {
-        cout << "ERROR loading goal sprite" << endl;
+        cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading goal sprite" << endl;
     }
     else
     {
