@@ -1,17 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 //#include <SFML/Audio.hpp>
-
-
-/*
-
-        KNOWN ISSUES:
-
-        if you jump while touching the edge of a lava platform, the player will respawn in the floor
-        you can still jump out so its no big deal. Or the player will fall from the ceiling, idk how any of it happens.
-        STATUS: FIXED - 26/11/2024
-
-*/
 #include "misc.hpp"
 #include "player.hpp"
 
