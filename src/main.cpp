@@ -98,7 +98,7 @@ void Load() {
     //ball.setRadius(ballRadius);
     //ball.setOrigin(ballRadius, ballRadius);
     //ball.setPosition(100, gameHeight / 2);
-    eggsprite.setPosition(100, gameHeight / 2);
+    eggsprite.setPosition(100, static_cast<float>(gameHeight) / 2);
 
     degg.setRadius(deggRadius);
     degg.setOrigin(deggRadius, deggRadius);
@@ -196,7 +196,7 @@ void GameOver() {
         gameOverText.setFont(font);
         gameOverText.setFillColor(Color::Green);
         gameOverText.setString("LEVEL COMPLETE");
-        gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+        gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), static_cast<float>(gameHeight) / 2);
         freeze = true;
     }
     else {
@@ -205,7 +205,7 @@ void GameOver() {
         gameOverText.setFillColor(Color::Red);
         gameOverText.setString("GAME OVER");
         deaths++;
-        gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
+        gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), static_cast<float>(gameHeight) / 2);
         freeze = true;
     }
 }
