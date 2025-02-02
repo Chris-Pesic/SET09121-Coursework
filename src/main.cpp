@@ -103,7 +103,7 @@ int platformArray = sizeof(platform) / sizeof(platform[0]);
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("C:/SET09121-Coursework/res/fonts/RobotoMono-Regular.ttf");
+    font.loadFromFile("./res/fonts/RobotoMono-Regular.ttf");
 
     // Set size and origin of platform
     for (auto& p : platform) {
@@ -400,7 +400,7 @@ void Update(RenderWindow& window) {
         eggsprite.setScale(0.5f, 0.5f); // Normal orientation
         eggsprite.setOrigin(0, 0);      // Reset origin
         break;
-        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10   
+        eggsprite.setTextureRect(IntRect(1, 379, 110, 125)); // Grid 10
 
     default:
         break;
@@ -734,7 +734,7 @@ int main() {
     Clock clock;
 
 
-    if (!backgroundTexture.loadFromFile("C:/SET09121-Coursework/res/KitchenBackground.png"))
+    if (!backgroundTexture.loadFromFile("./res/KitchenBackground.png"))
     {
         cout << "ERROR loading background" << endl;
     }
@@ -744,7 +744,7 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
-    if (!spritesheet.loadFromFile("C:/SET09121-Coursework/res/EggSpritesheet.png"))
+    if (!spritesheet.loadFromFile("./res/EggSpritesheet.png"))
     {
         cout << "ERROR loading spritesheet" << endl;
     }
@@ -756,7 +756,7 @@ int main() {
         eggsprite.setScale(0.5f, 0.5f);
     }
 
-    if (!spritesheetdevil.loadFromFile("C:/SET09121-Coursework/res/DevilSpritesheet.png"))
+    if (!spritesheetdevil.loadFromFile("./res/DevilSpritesheet.png"))
     {
         cout << "ERROR loading devil spritesheet" << endl;
     }
@@ -768,7 +768,7 @@ int main() {
         devilsprite.setScale(0.5f, 0.5f);
     }
 
-    if (!spritesheetdevil2.loadFromFile("C:/SET09121-Coursework/res/DevilSpritesheet.png"))
+    if (!spritesheetdevil2.loadFromFile("./res/DevilSpritesheet.png"))
     {
         cout << "ERROR loading devil spritesheet" << endl;
     }
@@ -780,7 +780,7 @@ int main() {
         devil2sprite.setScale(0.5f, 0.5f);
     }
 
-    if (!goalTexture.loadFromFile("C:/SET09121-Coursework/res/GoalSprite.png"))
+    if (!goalTexture.loadFromFile("./res/GoalSprite.png"))
     {
         cout << "ERROR loading goal sprite" << endl;
     }
