@@ -71,8 +71,7 @@ CircleShape degg2;
 //RectangleShape hammer;
 
 RectangleShape platform[12];
-
-int platformArray = sizeof(platform) / sizeof(platform[0]);
+// int platformArray = sizeof(platform) / sizeof(platform[0]); // Is there a reason to do this? We know it's always 12 - Ben
 
 void Load() {
     // Load font-face from res dir
@@ -453,8 +452,6 @@ void Update(RenderWindow& window) {
         window.close();
     }
 
-
-
     const float dx = degg.getPosition().x;
     const float dy = degg.getPosition().y;
 
@@ -513,7 +510,7 @@ void Update(RenderWindow& window) {
     float pT = 0;
     float pB = 0;
 
-    for (int i = 0; i < platformArray; i++) {
+    for (int i = 0; i < 12; i++) {
         pL = platform[i].getPosition().x - 100;
         pR = platform[i].getPosition().x + 100;
         pT = platform[i].getPosition().y - 10;
@@ -654,7 +651,7 @@ void Render(RenderWindow& window) {
     // Draw Everything
 
     window.draw(background);
-    for (int i = 0; i < platformArray; i++) {
+    for (int i = 0; i < 12; i++) {
         if (i != 6) {
             window.draw(platform[i]);
         }
