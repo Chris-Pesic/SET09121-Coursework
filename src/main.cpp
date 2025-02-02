@@ -1,6 +1,6 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 //#include <SFML/Audio.hpp>
-#include <iostream>
 
 
 /*
@@ -12,6 +12,8 @@
         STATUS: FIXED - 26/11/2024
 
 */
+#include "misc.hpp"
+#include "player.hpp"
 
 using namespace sf;
 using namespace std;
@@ -33,22 +35,6 @@ IntRect devil2SourceSprite(223, 1, 110, 125);
 
 //SoundBuffer buffer;
 //Sound jumpsound;
-
-const Keyboard::Key controls[3] = {
-    Keyboard::W,   // Player1 Up
-    Keyboard::A,   // Player1 Left
-    Keyboard::D,  // Player1 Right
-};
-
-// Define an enum for player states
-enum EggState {
-    STANDING,
-    WALKING_LEFT,
-    WALKING_RIGHT,
-    RISING,
-    FALLING,
-    DYING
-};
 
 const Vector2f platformSize(200.f, 20.f);
 const Vector2f groundSize(1200.f, 20.f);
@@ -90,7 +76,6 @@ bool degg_IS_WANDERING = true;
 bool hasReached_Wall_left = false;
 bool hasReached_Wall_right = true;
 
-
 //CircleShape ball;
 CircleShape degg;
 CircleShape degg2;
@@ -99,7 +84,6 @@ CircleShape degg2;
 RectangleShape platform[12];
 
 int platformArray = sizeof(platform) / sizeof(platform[0]);
-
 
 void Load() {
     // Load font-face from res dir
@@ -203,33 +187,6 @@ void Load() {
     }
 
 }
-
-class Player {
-public:
-    // Constructor to initialize the player state
-    Player() : state(STANDING), frameCounter(0), animationSpeed(10) {}
-
-    // Method to set the player's state
-    void setState(EggState newState) {
-        state = newState;
-    }
-
-    // Method to get the current player's state
-    EggState getState() const {
-        return state;
-    }
-
-
-
-private:
-    int frameCounter;    // Tracks which frame of the animation to show
-    int animationSpeed;  // Controls animation speed (higher = slower animation)
-    EggState state;      // Stores the current state of the player
-
-
-    sf::Texture spritesheet;
-    sf::Sprite eggsprite;
-};
 
 Player player;
 
