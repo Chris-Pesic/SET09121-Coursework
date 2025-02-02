@@ -25,36 +25,45 @@ IntRect devil2SourceSprite(223, 1, 110, 125);
 //SoundBuffer buffer;
 //Sound jumpsound;
 
+Font font;
+
+int gameWidth = 1200;
+int gameHeight = 900;
+
 const Vector2f platformSize(200.f, 20.f);
 const Vector2f groundSize(1200.f, 20.f);
 const Vector2f goalHitbox(80.f, 20.f);
-int gameWidth = 1200;
-int gameHeight = 900;
+const Vector2f hammerHitbox(20.f, 20.f);
+
 const float ballRadius = 60.f;
 const float deggRadius = 10.f;
-const Vector2f hammerHitbox(20.f, 20.f);
+
 Vector2f ballVelocity;
 Vector2f deggVelocity;
+
+Clock animateClockDevil;
+
 const float deggHorizontalspeed = 50.f;
 const float degg2Horizontalspeed = 150.f;
 const float ballHorizontalSpeed = 400.f;
 const float ballJumpSpeed = -1200.f;
 const float initialVelocityY = 80.f;
-bool canJump = false;
-float dt;
+
 int jumpTime = 0;
 int hangTime = 0;
 int currentFrame = 0;
-Font font;
+float dt;
+
 Text fpstext;
 Text gameOverText;
-Clock animateClock;
-Clock animateClockDevil;
-int deaths = 0;
 Text deathsText;
+Time elapsedTime;
+
+int deaths = 0;
 int loops = 0;
 int fps = 0.0f;
-Time elapsedTime;
+
+bool canJump = false;
 bool freeze = false;
 bool complete = false;
 
