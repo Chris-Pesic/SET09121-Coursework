@@ -110,7 +110,7 @@ void Load() {
     // Reset positions
 
     //TEXT DISPLAYS
-    gameOverText.setColor(Color::Black);
+    gameOverText.setFillColor(Color::Black);
     gameOverText.setPosition(0, 1200);
 
     deathsText.setCharacterSize(20);
@@ -194,7 +194,7 @@ void GameOver() {
     if (complete == true) {
         gameOverText.setCharacterSize(40);
         gameOverText.setFont(font);
-        gameOverText.setColor(Color::Green);
+        gameOverText.setFillColor(Color::Green);
         gameOverText.setString("LEVEL COMPLETE");
         gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
         freeze = true;
@@ -202,7 +202,7 @@ void GameOver() {
     else {
         gameOverText.setCharacterSize(40);
         gameOverText.setFont(font);
-        gameOverText.setColor(Color::Red);
+        gameOverText.setFillColor(Color::Red);
         gameOverText.setString("GAME OVER");
         deaths++;
         gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f), gameHeight / 2);
@@ -664,7 +664,7 @@ void Render(RenderWindow& window) {
     //window.draw(degg);
     window.draw(devilsprite);
     //window.draw(degg2);
-    window.draw(devil2sprite); 
+    window.draw(devil2sprite);
     //window.draw(hammer);
     window.draw(fpstext);
     window.draw(gameOverText);
