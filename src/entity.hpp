@@ -50,32 +50,40 @@ public:
         // Walking
         if (sf::Keyboard::isKeyPressed(controls[1])) {
             direction = -1;
-            state = WALKING_LEFT;
+            spriteState = WALKING_LEFT;
         } else if (sf::Keyboard::isKeyPressed(controls[2])) {
             direction = 1;
-            state = WALKING_RIGHT;
+            spriteState = WALKING_RIGHT;
         } else {
-            state = STANDING;
+            spriteState = STANDING;
         }
 
         // Gravity
-        if (isGrounded == false) {
+        if (!isGrounded) {
             velocity += GRAVITY;
-            state = FALLING;
+            spriteState = FALLING;
         } else {
             velocity = 0;
         }
 
+        if (this->isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
+            velocity -= 400.f;
+            spriteState = RISING;
+        }
+
         if (position.y >= 500) {
             isGrounded = true;
+        } else {
+            isGrounded = false;
         }
 
         // Move the player
         this->position += {this->direction * this->speed.x * dt, velocity * dt};
         move();
     }
+
     void render(sf::RenderWindow &window) override {
-        switch (state) {
+        switch (spriteState) {
         case EggState::STANDING:
             spriteLocation.top = 1;
             // Animate grids 1-3
@@ -111,7 +119,6 @@ public:
             sprite.setScale(-0.5f, 0.5f); // Flipped horizontally
             sprite.setOrigin(110, 0);     // Adjust origin for flipping
             break;
-
         case EggState::WALKING_RIGHT:
             spriteLocation.top = 126;
             // Animate grids 4-6 (right-facing)
@@ -157,8 +164,6 @@ public:
             sprite.setScale(0.5f, 0.5f); // Normal orientation
             sprite.setOrigin(0, 0);      // Reset origin
             break;
-            sprite.setTextureRect(sf::IntRect(1, 379, 110, 125)); // Grid 10
-
         default:
             break;
         }
@@ -168,7 +173,7 @@ public:
     }
 private:
     bool isGrounded;
-    EggState state;
+    EggState spriteState;
 };
 
 #endif /* ENTITY_HPP */
