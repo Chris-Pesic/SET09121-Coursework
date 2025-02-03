@@ -84,7 +84,7 @@ RectangleShape platform[12];
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("./res/fonts/RobotoMono-Regular.ttf");
+    font.loadFromFile("./res/font/RobotoMono-Regular.ttf");
 
     // Set size and origin of platform
     for (auto& p : platform) {
@@ -598,7 +598,7 @@ int main() {
     Clock clock;
 
 
-    if (!backgroundTexture.loadFromFile("./res/KitchenBackground.png"))
+    if (!backgroundTexture.loadFromFile("./res/background/kitchen.png"))
     {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
     }
@@ -608,7 +608,7 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
-    if (!spritesheet.loadFromFile("./res/EggSpritesheet.png"))
+    if (!spritesheet.loadFromFile("./res/sprite/player.png"))
     {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading spritesheet" << endl;
     }
@@ -621,7 +621,7 @@ int main() {
         eggsprite.setScale(0.5f, 0.5f);
     }
 
-    if (!spritesheetdevil.loadFromFile("./res/DevilSpritesheet.png"))
+    if (!spritesheetdevil.loadFromFile("./res/sprite/enemy.png"))
     {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading devil spritesheet" << endl;
     }
@@ -633,7 +633,7 @@ int main() {
         devilsprite.setScale(0.5f, 0.5f);
     }
 
-    if (!spritesheetdevil2.loadFromFile("./res/DevilSpritesheet.png"))
+    if (!spritesheetdevil2.loadFromFile("./res/sprite/enemy.png"))
     {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR loading devil spritesheet" << endl;
     }
@@ -645,7 +645,7 @@ int main() {
         devil2sprite.setScale(0.5f, 0.5f);
     }
 
-    if (!goalTexture.loadFromFile("./res/GoalSprite.png"))
+    if (!goalTexture.loadFromFile("./res/sprite/goal.png"))
     {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading goal sprite" << endl;
     }
