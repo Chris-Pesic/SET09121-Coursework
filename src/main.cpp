@@ -23,6 +23,8 @@ IntRect eggSourceSprite(1, 1, 110, 125);
 IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
 IntRect devil2SourceSprite(223, 1, 110, 125);
 
+vector<Entity*> entities;
+
 //SoundBuffer buffer;
 //Sound jumpsound;
 
@@ -662,7 +664,7 @@ int main() {
     jumpsound.setBuffer(buffer);
     */
 
-    FauxPlayer fp;
+    entities.push_back(new FauxPlayer());
 
     while (window.isOpen()) {
         elapsedTime = clock.restart();
@@ -698,8 +700,10 @@ int main() {
 
             Render(window);
 
-            fp.update(window, dt);
-            fp.render(window);
+            for (auto e : entities) {
+                e->update(window, dt);
+                e->render(window);
+            }
 
             window.display();
 
