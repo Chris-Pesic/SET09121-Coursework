@@ -348,7 +348,7 @@ void Update(RenderWindow& window) {
 
     // Reset clock, recalculate deltatime
     static Clock clock;
-    float dt = clock.restart().asSeconds();
+    dt = clock.restart().asSeconds();
     // check and consume events
     Event event;
     while (window.pollEvent(event)) {
@@ -698,9 +698,7 @@ int main() {
 
             Render(window);
 
-            fp.setVelocity({0, 1});
-            fp.update();
-            std::cout << "X: " << fp.getPosition().x << " Y: " << fp.getPosition().y << std::endl;
+            fp.update(window, dt);
             fp.render(window);
 
             window.display();
