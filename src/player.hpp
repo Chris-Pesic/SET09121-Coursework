@@ -27,5 +27,4 @@ private:
     sf::Sprite eggsprite;
 };
 
-
 #endif /* PLAYER_HPP */

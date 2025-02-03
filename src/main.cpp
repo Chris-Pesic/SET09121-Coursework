@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 //#include <SFML/Audio.hpp>
+#include "entity.hpp"
 #include "misc.hpp"
 #include "player.hpp"
 
@@ -661,6 +662,8 @@ int main() {
     jumpsound.setBuffer(buffer);
     */
 
+    FauxPlayer fp;
+
     while (window.isOpen()) {
         elapsedTime = clock.restart();
         if (freeze != true && complete != true) {
@@ -694,6 +697,11 @@ int main() {
             Update(window);
 
             Render(window);
+
+            fp.setVelocity({0, 1});
+            fp.update();
+            std::cout << "X: " << fp.getPosition().x << " Y: " << fp.getPosition().y << std::endl;
+            fp.render(window);
 
             window.display();
 

@@ -1,5 +1,10 @@
 #include "entity.hpp"
 
+void Entity::move() {
+    collision.setPosition(position);
+    sprite.setPosition(position);
+}
+
 sf::Texture Entity::getSpritesheet() {
     return this->spritesheet;
 }
@@ -40,4 +45,11 @@ sf::Vector2f Entity::getVelocity() {
 }
 void Entity::setVelocity(sf::Vector2f velocity) {
     this->velocity = velocity;
+}
+
+sf::Vector2f Entity::getPosition() {
+    return this->position;
+}
+void Entity::setPosition(sf::Vector2f position) {
+    this->position = position;
 }
