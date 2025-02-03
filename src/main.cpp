@@ -281,7 +281,7 @@ void Update(RenderWindow& window) {
         bool flipped; // Indicates whether the sprite should be flipped horizontally
     };
 
-    player.updateState(eggsprite);
+    player.updateState(eggsprite, eggSourceSprite);
 
     vector<Frame> devilFrames = {
         {1, 223, false},  // Grid 3 (regular)
@@ -616,7 +616,6 @@ int main() {
     {
         eggsprite.setTexture(spritesheet);
         //IntRect(1, 1, 110, 125)
-        player.setSourceSprite(eggSourceSprite);
         eggsprite.setTextureRect(eggSourceSprite);
         eggsprite.setScale(0.5f, 0.5f);
     }

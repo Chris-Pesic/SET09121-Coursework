@@ -11,7 +11,7 @@ EggState Player::getState() const {
     return state;
 }
 
-void Player::updateState(sf::Sprite &eggsprite) {
+void Player::updateState(sf::Sprite &eggsprite, sf::IntRect &eggSourceSprite) {
     switch (getState()) {
     case EggState::STANDING:
         eggSourceSprite.top = 1;
@@ -99,8 +99,4 @@ void Player::updateState(sf::Sprite &eggsprite) {
     default:
         break;
     }
-}
-
-void Player::setSourceSprite(sf::IntRect eggSourceSprite) {
-    this->eggSourceSprite = eggSourceSprite;
 }

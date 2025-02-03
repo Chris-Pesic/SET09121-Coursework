@@ -7,7 +7,7 @@
 class Player {
 public:
     // Constructor to initialize the player state
-    Player() : state(STANDING), frameCounter(0), animationSpeed(10), eggSourceSprite(1, 1, 110, 125) {}
+    Player() : state(STANDING), frameCounter(0), animationSpeed(10) {}
 
     // Method to set the player's state
     void setState(EggState newState);
@@ -15,9 +15,7 @@ public:
     // Method to get the current player's state
     EggState getState() const;
 
-    void updateState(sf::Sprite &eggsprite);
-
-    void setSourceSprite(sf::IntRect eggSourceSprite);
+    void updateState(sf::Sprite &eggsprite, sf::IntRect &eggSourceSprite);
 private:
     int frameCounter;    // Tracks which frame of the animation to show
     int animationSpeed;  // Controls animation speed (higher = slower animation)
@@ -25,7 +23,6 @@ private:
 
     sf::Clock animateClock;
 
-    sf::IntRect eggSourceSprite;
     sf::Texture spritesheet;
     sf::Sprite eggsprite;
 };
