@@ -13,7 +13,7 @@ const sf::Keyboard::Key controls[3] = {
 
 // Define an enum for player states
 enum EggState {
-    STANDING,
+    STANDING = 0,
     WALKING_LEFT,
     WALKING_RIGHT,
     RISING,
