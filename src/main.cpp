@@ -473,7 +473,6 @@ void Update(RenderWindow& window) {
                 cout << "hit bottom" << endl;
             }*/
             if (i == 4) {
-                cout << "hit lava" << endl;
                 GameOver();
             }
 
@@ -489,7 +488,6 @@ void Update(RenderWindow& window) {
         if ((bx + 20) > pL && (bx + 20) < pR && by <= pB + 1 && by > pT + 1) {
             ballVelocity.y = 0.f;
             eggsprite.setPosition(Vector2f(bx, by + 10.f));
-            cout << "hit bottom" << endl;
         }
 
     }
