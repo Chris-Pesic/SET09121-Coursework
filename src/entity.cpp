@@ -5,10 +5,10 @@ void Entity::move() {
     sprite.setPosition(position);
 }
 
-sf::CircleShape Entity::getCollision() {
+sf::RectangleShape Entity::getCollision() {
     return this->collision;
 }
-void Entity::setCollision(sf::CircleShape collision) {
+void Entity::setCollision(sf::RectangleShape collision) {
     this->collision = collision;
 }
 

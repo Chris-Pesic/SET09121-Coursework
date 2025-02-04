@@ -1,9 +1,11 @@
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <memory>
 //#include <SFML/Audio.hpp>
 #include "entity.hpp"
-#include "entity_manager.hpp"
+#include "level_manager.hpp"
 #include "misc.hpp"
 #include "player.hpp"
 
@@ -25,7 +27,7 @@ IntRect eggSourceSprite(1, 1, 110, 125);
 IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
 IntRect devil2SourceSprite(223, 1, 110, 125);
 
-EntityManager em;
+LevelManager lm;
 
 //SoundBuffer buffer;
 //Sound jumpsound;
@@ -666,9 +668,26 @@ int main() {
     jumpsound.setBuffer(buffer);
     */
 
-    auto fp = std::make_unique<FauxPlayer>();
+    FauxPlayer fp;
 
-    em.addEntity(*fp);
+    sf::RectangleShape p1;
+    sf::RectangleShape p2;
+    sf::RectangleShape p3;
+    sf::RectangleShape p4;
+
+    p1.setPosition(10, 500);
+    p1.setSize({100, 20});
+    p1.setFillColor(sf::Color::Blue);
+
+    p2.setPosition(150, 400);
+    p2.setSize({50, 20});
+    p2.setFillColor(sf::Color::Blue);
+
+    lm.addEntity(fp);
+    lm.addPlatform(p1);
+    lm.addPlatform(p2);
+    // lm.addPlatform(p3);
+    // lm.addPlatform(p4);
 
     while (window.isOpen()) {
         elapsedTime = clock.restart();
@@ -703,7 +722,7 @@ int main() {
             Update(window);
             Render(window);
 
-            em.update(window, dt);
+            lm.update(window, dt);
 
             window.display();
 

@@ -9,19 +9,23 @@ class Entity {
 public:
     void move(); // Moves `collision' and `sprite' to `position'
 
-    sf::CircleShape getCollision();
-    void setCollision(sf::CircleShape collision);
+    sf::RectangleShape getCollision();
+    void setCollision(sf::RectangleShape collision);
     sf::Vector2f getPosition();
     void setPosition(sf::Vector2f position);
 
     virtual void update(sf::RenderWindow &window, float dt) {}
     virtual void render(sf::RenderWindow &window) {}
+
+    virtual std::string collide(std::string object) {} // `object' is the name of whatever has collided with the entity
+                                                       // will return a string to tell whatever called it what to do
 protected:
     sf::Texture spritesheet;
     sf::Sprite sprite;
     sf::IntRect spriteLocation;
     sf::Clock animationClock;
-    sf::CircleShape collision;
+    sf::RectangleShape collision;
+    sf::Vector2f lastValidPosition;
     sf::Vector2f position;
     sf::Vector2f speed;
     int direction; // Horizontal
@@ -34,6 +38,7 @@ public:
         speed = {400, 1200};
 
         spriteLocation = {1, 1, 110, 125};
+        collision.setSize({110/2, 125/2});
 
         if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
             std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
@@ -42,6 +47,25 @@ public:
             sprite.setTextureRect(spriteLocation);
             sprite.setScale(0.5f, 0.5f);
         }
+    }
+
+    std::string collide(std::string object) override {
+        if (object == "Platform") {
+            // I deserve the death penalty for this
+            if (position.y > this->lastValidPosition.y) {
+                this->position.y = this->lastValidPosition.y;
+                isGrounded = true;
+            } else if (position.y < this->lastValidPosition.y) {
+                this->position.y = this->lastValidPosition.y;
+            } else if (position.x > this->lastValidPosition.x) {
+                this->position.x = this->lastValidPosition.x;
+            } else if (position.x < this->lastValidPosition.x) {
+                this->position.x = this->lastValidPosition.x;
+            }
+            move();
+        }
+
+        return "";
     }
 
     void update(sf::RenderWindow &window, float dt) override {
@@ -67,17 +91,13 @@ public:
         }
 
         if (this->isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
-            velocity -= 400.f;
+            velocity -= 700.f;
             spriteState = RISING;
-        }
-
-        if (position.y >= 500) {
-            isGrounded = true;
-        } else {
             isGrounded = false;
         }
 
         // Move the player
+        this->lastValidPosition = this->position;
         this->position += {this->direction * this->speed.x * dt, velocity * dt};
         move();
     }
