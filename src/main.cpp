@@ -1,7 +1,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <memory>
 //#include <SFML/Audio.hpp>
 #include "entity.hpp"
+#include "entity_manager.hpp"
 #include "misc.hpp"
 #include "player.hpp"
 
@@ -23,7 +25,7 @@ IntRect eggSourceSprite(1, 1, 110, 125);
 IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
 IntRect devil2SourceSprite(223, 1, 110, 125);
 
-vector<Entity*> entities;
+EntityManager em;
 
 //SoundBuffer buffer;
 //Sound jumpsound;
@@ -664,7 +666,9 @@ int main() {
     jumpsound.setBuffer(buffer);
     */
 
-    entities.push_back(new FauxPlayer());
+    auto fp = std::make_unique<FauxPlayer>();
+
+    em.addEntity(*fp);
 
     while (window.isOpen()) {
         elapsedTime = clock.restart();
@@ -697,13 +701,9 @@ int main() {
             window.draw(devil2sprite);
 
             Update(window);
-
             Render(window);
 
-            for (auto e : entities) {
-                e->update(window, dt);
-                e->render(window);
-            }
+            em.update(window, dt);
 
             window.display();
 
