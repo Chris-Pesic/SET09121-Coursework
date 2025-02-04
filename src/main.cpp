@@ -689,6 +689,8 @@ int main() {
     // lm.addPlatform(p3);
     // lm.addPlatform(p4);
 
+    fp.addPlatforms(lm.getPlatforms());
+
     while (window.isOpen()) {
         elapsedTime = clock.restart();
         if (freeze != true && complete != true) {

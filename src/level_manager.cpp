@@ -5,17 +5,6 @@
 void LevelManager::update(sf::RenderWindow &window, float dt) {
     // Check collision
     for (int i = 0; i < this->entities.size(); i++) {
-        // Check platforms
-        for (int j = 0; j < this->platforms.size(); j++) {
-            auto e = *this->entities.at(i);
-            auto p = *this->platforms.at(j);
-
-            if (e.getCollision().getGlobalBounds().intersects(p.getGlobalBounds())) {
-                // do the collision
-                this->entities.at(i)->collide("Platform");
-            }
-        }
-        // Check other entities
         for (int j = 0; j < this->entities.size(); j++) {
             if (i == j)
                 continue;
@@ -28,7 +17,6 @@ void LevelManager::update(sf::RenderWindow &window, float dt) {
             }
         }
     }
-
 
     // Platforms
     for (int i = 0; i < this->platforms.size(); i++) {
@@ -53,4 +41,7 @@ void LevelManager::addPlatform(sf::RectangleShape &platform) {
 }
 void LevelManager::removePlatform(int index) {
     this->platforms.erase(this->platforms.begin() + index);
+}
+std::vector<sf::RectangleShape*> LevelManager::getPlatforms() {
+    return this->platforms;
 }

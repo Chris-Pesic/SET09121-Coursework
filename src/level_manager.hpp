@@ -4,11 +4,6 @@
 #include "entity.hpp"
 #include <SFML/Graphics.hpp>
 
-struct Platform {
-    sf::RectangleShape rect;
-    sf::Color color;
-};
-
 class LevelManager {
 public:
     void update(sf::RenderWindow &window, float dt); // Updates and renders entities and platforms
@@ -18,6 +13,7 @@ public:
 
     void addPlatform(sf::RectangleShape &platform);
     void removePlatform(int index);
+    std::vector<sf::RectangleShape*> getPlatforms();
 private:
     std::vector<Entity*> entities;
     std::vector<sf::RectangleShape*> platforms;

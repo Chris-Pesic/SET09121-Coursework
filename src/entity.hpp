@@ -38,7 +38,7 @@ public:
         speed = {400, 1200};
 
         spriteLocation = {1, 1, 110, 125};
-        collision.setSize({110/2, 125/2});
+        collision.setSize({55, 62.5f});
 
         if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
             std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
@@ -50,26 +50,17 @@ public:
     }
 
     std::string collide(std::string object) override {
-        if (object == "Platform") {
-            // I deserve the death penalty for this
-            if (position.y > this->lastValidPosition.y) {
-                this->position.y = this->lastValidPosition.y;
-                isGrounded = true;
-            } else if (position.y < this->lastValidPosition.y) {
-                this->position.y = this->lastValidPosition.y;
-            } else if (position.x > this->lastValidPosition.x) {
-                this->position.x = this->lastValidPosition.x;
-            } else if (position.x < this->lastValidPosition.x) {
-                this->position.x = this->lastValidPosition.x;
-            }
-            move();
-        }
 
         return "";
     }
 
+    void addPlatforms(std::vector<sf::RectangleShape*> platforms) {
+        this->platforms = platforms;
+    }
+
     void update(sf::RenderWindow &window, float dt) override {
         direction = 0;
+        isGrounded = false;
 
         // Walking
         if (sf::Keyboard::isKeyPressed(controls[1])) {
@@ -82,12 +73,32 @@ public:
             spriteState = STANDING;
         }
 
+        const float bx = position.x;
+        const float by = position.y;
+        const float bw = collision.getSize().x;
+        const float bh = collision.getSize().y;
+
+        // l
+        for (int i = 0; i < platforms.size(); i++) {
+            auto p = platforms.at(i);
+
+            float pL = p->getPosition().x;
+            float pR = p->getPosition().x + p->getSize().x;
+            float pT = p->getPosition().y;
+            float pB = p->getPosition().y + p->getSize().y;
+
+            if (bx + bw > pL && bx < pR &&
+                by + bh >= pT && by < pB && !isGrounded) {
+                isGrounded = true;
+                position.y = pT - bh;
+                velocity = 0;
+            }
+        }
+
         // Gravity
         if (!isGrounded) {
             velocity += GRAVITY;
             spriteState = FALLING;
-        } else {
-            velocity = 0;
         }
 
         if (this->isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
@@ -188,12 +199,15 @@ public:
             break;
         }
 
+        window.draw(this->collision);
+
         // Render the sprite
         window.draw(this->sprite);
     }
 private:
     bool isGrounded;
     EggState spriteState;
+    std::vector<sf::RectangleShape*> platforms;
 };
 
 #endif /* ENTITY_HPP */
