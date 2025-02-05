@@ -1,12 +1,7 @@
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include <memory>
-//#include <SFML/Audio.hpp>
 #include "entity.hpp"
 #include "level_manager.hpp"
-#include "misc.hpp"
 #include "player.hpp"
 
 using namespace sf;
@@ -28,9 +23,6 @@ IntRect devilSourceSprite(223, 1, 110, 125); //grid 3
 IntRect devil2SourceSprite(223, 1, 110, 125);
 
 LevelManager lm;
-
-//SoundBuffer buffer;
-//Sound jumpsound;
 
 Font font;
 
@@ -276,81 +268,81 @@ void Update(RenderWindow& window) {
 
     //deviledEgg_StateMachine();
 
-    // Reset Jump validity
-    canJump = false;
+    // // Reset Jump validity
+    // canJump = false;
 
-    //animateClockDevil;
-    // grids 3,-9,7,10,8,-10,-7,9, back to 3 (I understand this is overcomplicated but I don't want to edit the png file)
+    // //animateClockDevil;
+    // // grids 3,-9,7,10,8,-10,-7,9, back to 3 (I understand this is overcomplicated but I don't want to edit the png file)
 
-    struct Frame {
-        int top;
-        int left;
-        bool flipped; // Indicates whether the sprite should be flipped horizontally
-    };
+    // struct Frame {
+    //     int top;
+    //     int left;
+    //     bool flipped; // Indicates whether the sprite should be flipped horizontally
+    // };
 
-    player.updateState(eggsprite, eggSourceSprite);
+    // player.updateState(eggsprite, eggSourceSprite);
 
-    vector<Frame> devilFrames = {
-        {1, 223, false},  // Grid 3 (regular)
-        {252, 223, true}, // Grid 9 (flipped)
-        {252, 1, false},  // Grid 7 (regular)
-        {378, 1, false},  // Grid 10 (regular)
-        {252, 111, false}, // Grid 8 (regular)
-        {378, 1, true},   // Grid 10 (flipped)
-        {252, 1, true},   // Grid 7 (flipped)
-        {252, 223, false} // Grid 9 (regular)
-    };
+    // vector<Frame> devilFrames = {
+    //     {1, 223, false},  // Grid 3 (regular)
+    //     {252, 223, true}, // Grid 9 (flipped)
+    //     {252, 1, false},  // Grid 7 (regular)
+    //     {378, 1, false},  // Grid 10 (regular)
+    //     {252, 111, false}, // Grid 8 (regular)
+    //     {378, 1, true},   // Grid 10 (flipped)
+    //     {252, 1, true},   // Grid 7 (flipped)
+    //     {252, 223, false} // Grid 9 (regular)
+    // };
 
-    //devilSourceSprite.top = 1;
-    if (animateClockDevil.getElapsedTime().asSeconds() >= 0.1) {
-        Frame frame = devilFrames[currentFrame];
-        devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
-        devil2sprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
-        //cout << "top = " << devilSourceSprite.top << ", left = " << devilSourceSprite.left << endl;
+    // //devilSourceSprite.top = 1;
+    // if (animateClockDevil.getElapsedTime().asSeconds() >= 0.1) {
+    //     Frame frame = devilFrames[currentFrame];
+    //     devilsprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+    //     devil2sprite.setTextureRect(IntRect(frame.left, frame.top, 110, 125));
+    //     //cout << "top = " << devilSourceSprite.top << ", left = " << devilSourceSprite.left << endl;
 
-        // Handle flipping
-        if (frame.flipped) {
-            devilsprite.setScale(-0.5f, 0.5f);  // Flipped
-            devilsprite.setOrigin(110, 0);   // Adjust origin to flip properly
-            devil2sprite.setScale(-0.5f, 0.5f);  // Flipped
-            devil2sprite.setOrigin(110, 0);   // Adjust origin to flip properly
-        }
-        else {
-            devilsprite.setScale(0.5f, 0.5f); // Normal
-            devilsprite.setOrigin(0, 0);
-            devil2sprite.setScale(0.5f, 0.5f); // Normal
-            devil2sprite.setOrigin(0, 0);
-        }
+    //     // Handle flipping
+    //     if (frame.flipped) {
+    //         devilsprite.setScale(-0.5f, 0.5f);  // Flipped
+    //         devilsprite.setOrigin(110, 0);   // Adjust origin to flip properly
+    //         devil2sprite.setScale(-0.5f, 0.5f);  // Flipped
+    //         devil2sprite.setOrigin(110, 0);   // Adjust origin to flip properly
+    //     }
+    //     else {
+    //         devilsprite.setScale(0.5f, 0.5f); // Normal
+    //         devilsprite.setOrigin(0, 0);
+    //         devil2sprite.setScale(0.5f, 0.5f); // Normal
+    //         devil2sprite.setOrigin(0, 0);
+    //     }
 
-        // Move to the next frame
-        currentFrame = (currentFrame + 1) % devilFrames.size();
-        animateClockDevil.restart();
-    }
+    //     // Move to the next frame
+    //     currentFrame = (currentFrame + 1) % devilFrames.size();
+    //     animateClockDevil.restart();
+    // }
 
 
 
-    //position failsafe
-    if (eggsprite.getPosition().y < 0 || eggsprite.getPosition().y > 880) {
-        ballVelocity.y = 0;
-        ballVelocity.x = 0;
-        eggsprite.setPosition(Vector2f(eggsprite.getPosition().x, 880));
-    }
+    // //position failsafe
+    // if (eggsprite.getPosition().y < 0 || eggsprite.getPosition().y > 880) {
+    //     ballVelocity.y = 0;
+    //     ballVelocity.x = 0;
+    //     eggsprite.setPosition(Vector2f(eggsprite.getPosition().x, 880));
+    // }
 
-    if (degg.getPosition().x < 350 || degg.getPosition().x > 550) {
-        degg.setPosition(Vector2f(500, 710));
-    }
+    // if (degg.getPosition().x < 350 || degg.getPosition().x > 550) {
+    //     degg.setPosition(Vector2f(500, 710));
+    // }
 
-    if (devilsprite.getPosition().x < 250 || devilsprite.getPosition().x > 450) {
-        devilsprite.setPosition(Vector2f(500, 660));
-    }
+    // if (devilsprite.getPosition().x < 250 || devilsprite.getPosition().x > 450) {
+    //     devilsprite.setPosition(Vector2f(500, 660));
+    // }
 
-    if (degg2.getPosition().x < 300 || degg2.getPosition().x > 600) {
-        degg2.setPosition(Vector2f(450, 500));
-    }
+    // if (degg2.getPosition().x < 300 || degg2.getPosition().x > 600) {
+    //     degg2.setPosition(Vector2f(450, 500));
+    // }
 
-    if (devil2sprite.getPosition().x < 200 || devil2sprite.getPosition().x > 500) {
-        devilsprite.setPosition(Vector2f(450, 450));
-    }
+    // if (devil2sprite.getPosition().x < 200 || devil2sprite.getPosition().x > 500) {
+    //     devilsprite.setPosition(Vector2f(450, 450));
+    // }
 
     // Reset clock, recalculate deltatime
     static Clock clock;
@@ -364,214 +356,214 @@ void Update(RenderWindow& window) {
         }
     }
 
-    if (canJump == false) {
-        if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
-            //kill time
-            hangTime++;
-            if (hangTime % 4 == 0) {
-                ballVelocity = { 0.f, ballVelocity.y + 100 };
-            }
-        }
-        else if (ballVelocity.y < 1000.f) {
-            ballVelocity = { 0.f, ballVelocity.y + 100 };
-        }
-    }
+    // if (canJump == false) {
+    //     if (ballVelocity.y > -100.f && ballVelocity.y < 100.f) {
+    //         //kill time
+    //         hangTime++;
+    //         if (hangTime % 4 == 0) {
+    //             ballVelocity = { 0.f, ballVelocity.y + 100 };
+    //         }
+    //     }
+    //     else if (ballVelocity.y < 1000.f) {
+    //         ballVelocity = { 0.f, ballVelocity.y + 100 };
+    //     }
+    // }
 
     // Quit Via ESC Key
     if (Keyboard::isKeyPressed(Keyboard::Escape)) {
         window.close();
     }
 
-    const float dx = degg.getPosition().x;
-    const float dy = degg.getPosition().y;
+    // const float dx = degg.getPosition().x;
+    // const float dy = degg.getPosition().y;
 
-    const float devilX = devilsprite.getPosition().x;
-    //cout << devilX  << endl;
-    const float devilY = devilsprite.getPosition().y;
+    // const float devilX = devilsprite.getPosition().x;
+    // //cout << devilX  << endl;
+    // const float devilY = devilsprite.getPosition().y;
 
-    const float devil2X = devil2sprite.getPosition().x;
-    //cout << devilX << endl;
-    const float devil2Y = devil2sprite.getPosition().y;
+    // const float devil2X = devil2sprite.getPosition().x;
+    // //cout << devilX << endl;
+    // const float devil2Y = devil2sprite.getPosition().y;
 
-    const float d2x = degg2.getPosition().x;
-    const float d2y = degg2.getPosition().y;
+    // const float d2x = degg2.getPosition().x;
+    // const float d2y = degg2.getPosition().y;
 
-    //const float hx = hammer.getPosition().x;
-    //const float hy = hammer.getPosition().y;
+    // //const float hx = hammer.getPosition().x;
+    // //const float hy = hammer.getPosition().y;
 
-    // handle ball movement (horizontal)
-    float direction = 0.0f;
-    if (Keyboard::isKeyPressed(controls[1])) {
-        direction--;
-        player.setState(WALKING_LEFT);
-    }
-    else if (Keyboard::isKeyPressed(controls[2])) {
-        direction++;
-        player.setState(WALKING_RIGHT);
-    }
-    else
-        player.setState(STANDING);
+    // // handle ball movement (horizontal)
+    // float direction = 0.0f;
+    // if (Keyboard::isKeyPressed(controls[1])) {
+    //     direction--;
+    //     player.setState(WALKING_LEFT);
+    // }
+    // else if (Keyboard::isKeyPressed(controls[2])) {
+    //     direction++;
+    //     player.setState(WALKING_RIGHT);
+    // }
+    // else
+    //     player.setState(STANDING);
 
-    eggsprite.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
-
-
-
-    // Check Collision with platform
-
-    const float bx = eggsprite.getPosition().x;
-    //cout << bx << endl;
-    const float by = eggsprite.getPosition().y;
-    /*
-    if (bx > gameWidth - ballRadius) {
-        ballVelocity.x = -ballVelocity.x;
-    }
-    */
-    if (by > gameHeight - 62.5) { //bottom wall
-        ballVelocity.y = 0.f;
-        canJump = true;
-    }
-    else if (by < 0) { //top wall
-        eggsprite.move(Vector2f(0.f, 10.f));
-    }
+    // eggsprite.move(Vector2f(direction * ballHorizontalSpeed * dt, 0.f));
 
 
-    float pL = 0;
-    float pR = 0;
-    float pT = 0;
-    float pB = 0;
 
-    for (int i = 0; i < 12; i++) {
-        pL = platform[i].getPosition().x - 100;
-        pR = platform[i].getPosition().x + 100;
-        pT = platform[i].getPosition().y - 10;
-        pB = platform[i].getPosition().y + 10;
+    // // Check Collision with platform
 
-        //GROUND HITBOX
-        if (i == 0) {
-            pL = platform[i].getPosition().x - 600;
-            pR = platform[i].getPosition().x + 600;
-            pT = platform[i].getPosition().y - 10;
-            pB = platform[i].getPosition().y + 10;
-        }
-
-        //GOAL HITBOX
-        if (i == 6) {
-            pL = platform[i].getPosition().x - 40;
-            pR = platform[i].getPosition().x + 40;
-            pT = platform[i].getPosition().y - 40;
-            pB = platform[i].getPosition().y + 40;
-        }
-
-        if (i == 8) {
-            pL = platform[i].getPosition().x - 150;
-            pR = platform[i].getPosition().x + 150;
-            pT = platform[i].getPosition().y - 10;
-            pB = platform[i].getPosition().y + 10;
-        }
-
-        if ((bx + 41.25) > pL && (bx + 13.75) < pR && by >= pT - ballRadius && by < pB - ballRadius) {
-
-            ballVelocity.y = 0.f;
-            //canJump = true;
-
-            /*if (by <= pB + ballRadius && by > pT + ballRadius) {
-                ballVelocity.y = ballVelocity.y * -1;
-                eggsprite.setPosition(Vector2f(bx, by - 10.f));
-                cout << "hit bottom" << endl;
-            }*/
-            if (i == 4) {
-                GameOver();
-            }
-
-            if (i == 6) {
-                complete = true;
-                GameOver();
-            }
-            eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
-
-            canJump = true;
-        }
-
-        if ((bx + 20) > pL && (bx + 20) < pR && by <= pB + 1 && by > pT + 1) {
-            ballVelocity.y = 0.f;
-            eggsprite.setPosition(Vector2f(bx, by + 10.f));
-        }
-
-    }
+    // const float bx = eggsprite.getPosition().x;
+    // //cout << bx << endl;
+    // const float by = eggsprite.getPosition().y;
+    // /*
+    // if (bx > gameWidth - ballRadius) {
+    //     ballVelocity.x = -ballVelocity.x;
+    // }
+    // */
+    // if (by > gameHeight - 62.5) { //bottom wall
+    //     ballVelocity.y = 0.f;
+    //     canJump = true;
+    // }
+    // else if (by < 0) { //top wall
+    //     eggsprite.move(Vector2f(0.f, 10.f));
+    // }
 
 
-    // handle ball jump
-    if (canJump == true) {
-        if (Keyboard::isKeyPressed(controls[0])) {
-            //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
-            ballVelocity = { 0.f, ballJumpSpeed };
-            jumpTime = 10;
+    // float pL = 0;
+    // float pR = 0;
+    // float pT = 0;
+    // float pB = 0;
 
-            //jumpsound.play();
-            player.setState(RISING);
-        }
-    }
+    // for (int i = 0; i < 12; i++) {
+    //     pL = platform[i].getPosition().x - 100;
+    //     pR = platform[i].getPosition().x + 100;
+    //     pT = platform[i].getPosition().y - 10;
+    //     pB = platform[i].getPosition().y + 10;
 
-    eggsprite.move(ballVelocity * dt);
+    //     //GROUND HITBOX
+    //     if (i == 0) {
+    //         pL = platform[i].getPosition().x - 600;
+    //         pR = platform[i].getPosition().x + 600;
+    //         pT = platform[i].getPosition().y - 10;
+    //         pB = platform[i].getPosition().y + 10;
+    //     }
 
-    if (by > gameHeight) {
-        //ball.move(Vector2f(0.f, -10.f));
-        eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
-    }
+    //     //GOAL HITBOX
+    //     if (i == 6) {
+    //         pL = platform[i].getPosition().x - 40;
+    //         pR = platform[i].getPosition().x + 40;
+    //         pT = platform[i].getPosition().y - 40;
+    //         pB = platform[i].getPosition().y + 40;
+    //     }
 
-    if (dx > (27.5 + bx) && dx > 360) {
-        degg.move(Vector2f(-1 * degg2Horizontalspeed * dt, 0.f));
-    }
-    else if (dx < (27.5 + bx) && dx < 540) {
-        degg.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
-    }
+    //     if (i == 8) {
+    //         pL = platform[i].getPosition().x - 150;
+    //         pR = platform[i].getPosition().x + 150;
+    //         pT = platform[i].getPosition().y - 10;
+    //         pB = platform[i].getPosition().y + 10;
+    //     }
 
-    /*if (devilX >(27.5 + bx) && devilX > 360) {
-        devilsprite.move(Vector2f(-1 * degg2Horizontalspeed * dt, 0.f));
-    }
-    else if (devilX < (27.5 + bx) && devilX < 540) {
-        devilsprite.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
-    }*/
+    //     if ((bx + 41.25) > pL && (bx + 13.75) < pR && by >= pT - ballRadius && by < pB - ballRadius) {
 
-    devilsprite.setPosition(dx -27.5, dy - 49);
+    //         ballVelocity.y = 0.f;
+    //         //canJump = true;
 
-    if (d2x > (27.5 + bx) && d2x > 310) {
-        degg2.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
-    }
-    else if (d2x < (27.5 + bx) && d2x < 590) {
-        degg2.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
-    }
+    //         /*if (by <= pB + ballRadius && by > pT + ballRadius) {
+    //             ballVelocity.y = ballVelocity.y * -1;
+    //             eggsprite.setPosition(Vector2f(bx, by - 10.f));
+    //             cout << "hit bottom" << endl;
+    //         }*/
+    //         if (i == 4) {
+    //             GameOver();
+    //         }
 
-    devil2sprite.setPosition(d2x - 27.5, d2y - 49);
+    //         if (i == 6) {
+    //             complete = true;
+    //             GameOver();
+    //         }
+    //         eggsprite.setPosition(Vector2f(bx, pT - ballRadius));
+
+    //         canJump = true;
+    //     }
+
+    //     if ((bx + 20) > pL && (bx + 20) < pR && by <= pB + 1 && by > pT + 1) {
+    //         ballVelocity.y = 0.f;
+    //         eggsprite.setPosition(Vector2f(bx, by + 10.f));
+    //     }
+
+    // }
 
 
-    ///*
-    float eggCollideX1 = dx - (27.5 + bx);
-    if (eggCollideX1 < 0) {
-        eggCollideX1 = eggCollideX1 * -1;
-    }
+    // // handle ball jump
+    // if (canJump == true) {
+    //     if (Keyboard::isKeyPressed(controls[0])) {
+    //         //ball.move(Vector2f(0.f, ballJumpSpeed * dt));
+    //         ballVelocity = { 0.f, ballJumpSpeed };
+    //         jumpTime = 10;
 
-    float eggCollideY1 = dy - (31.25 + by);
-    if (eggCollideY1 < 0) {
-        eggCollideY1 = eggCollideY1 * -1;
-    }
+    //         //jumpsound.play();
+    //         player.setState(RISING);
+    //     }
+    // }
 
-    float eggCollideX2 = d2x - (27.5 + bx);
-    if (eggCollideX2 < 0) {
-        eggCollideX2 = eggCollideX2 * -1;
-    }
+    // eggsprite.move(ballVelocity * dt);
 
-    float eggCollideY2 = d2y - (31.25 + by);
-    if (eggCollideY2 < 0) {
-        eggCollideY2 = eggCollideY2 * -1;
-    }
+    // if (by > gameHeight) {
+    //     //ball.move(Vector2f(0.f, -10.f));
+    //     eggsprite.setPosition(Vector2f(bx, gameHeight - ballRadius));
+    // }
 
-    // Check for collision with either entity
-    if ((eggCollideX1 <= (13.75 + 9) && eggCollideY1 <= (15.625 + 9)) ||
-        (eggCollideX2 <= (13.75 + 9) && eggCollideY2 <= (15.625 + 9))) {
-        GameOver();
-    }
-    //*/
+    // if (dx > (27.5 + bx) && dx > 360) {
+    //     degg.move(Vector2f(-1 * degg2Horizontalspeed * dt, 0.f));
+    // }
+    // else if (dx < (27.5 + bx) && dx < 540) {
+    //     degg.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
+    // }
+
+    // /*if (devilX >(27.5 + bx) && devilX > 360) {
+    //     devilsprite.move(Vector2f(-1 * degg2Horizontalspeed * dt, 0.f));
+    // }
+    // else if (devilX < (27.5 + bx) && devilX < 540) {
+    //     devilsprite.move(Vector2f(1 * degg2Horizontalspeed * dt, 0.f));
+    // }*/
+
+    // devilsprite.setPosition(dx -27.5, dy - 49);
+
+    // if (d2x > (27.5 + bx) && d2x > 310) {
+    //     degg2.move(Vector2f(-1 * deggHorizontalspeed * dt, 0.f));
+    // }
+    // else if (d2x < (27.5 + bx) && d2x < 590) {
+    //     degg2.move(Vector2f(1 * deggHorizontalspeed * dt, 0.f));
+    // }
+
+    // devil2sprite.setPosition(d2x - 27.5, d2y - 49);
+
+
+    // ///*
+    // float eggCollideX1 = dx - (27.5 + bx);
+    // if (eggCollideX1 < 0) {
+    //     eggCollideX1 = eggCollideX1 * -1;
+    // }
+
+    // float eggCollideY1 = dy - (31.25 + by);
+    // if (eggCollideY1 < 0) {
+    //     eggCollideY1 = eggCollideY1 * -1;
+    // }
+
+    // float eggCollideX2 = d2x - (27.5 + bx);
+    // if (eggCollideX2 < 0) {
+    //     eggCollideX2 = eggCollideX2 * -1;
+    // }
+
+    // float eggCollideY2 = d2y - (31.25 + by);
+    // if (eggCollideY2 < 0) {
+    //     eggCollideY2 = eggCollideY2 * -1;
+    // }
+
+    // // Check for collision with either entity
+    // if ((eggCollideX1 <= (13.75 + 9) && eggCollideY1 <= (15.625 + 9)) ||
+    //     (eggCollideX2 <= (13.75 + 9) && eggCollideY2 <= (15.625 + 9))) {
+    //     GameOver();
+    // }
+    // //*/
 }
 
 
@@ -584,12 +576,12 @@ void Render(RenderWindow& window) {
             window.draw(platform[i]);
         }
     }
-    window.draw(goalsprite);
-    window.draw(eggsprite);
-    //window.draw(degg);
-    window.draw(devilsprite);
-    //window.draw(degg2);
-    window.draw(devil2sprite);
+    // window.draw(goalsprite);
+    // window.draw(eggsprite);
+    // //window.draw(degg);
+    // window.draw(devilsprite);
+    // //window.draw(degg2);
+    // window.draw(devil2sprite);
     //window.draw(hammer);
     window.draw(fpstext);
     window.draw(gameOverText);
@@ -603,7 +595,6 @@ int main() {
 
     window.setFramerateLimit(60);
     Clock clock;
-
 
     if (!backgroundTexture.loadFromFile("./res/background/kitchen.png"))
     {
@@ -660,34 +651,46 @@ int main() {
         goalsprite.setTexture(goalTexture);
     }
 
+    // TODO: Add these later:-
+    //   GOAL: (690.f, 198.f)
+    // ENEMY1: (500.f, 710.f)
+    // ENEMY2: (450.f, 500.f)
 
-    /*
-    if (!buffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/jump.wav"))
-        return -1;
+    FauxPlayer fp(50.f, 825.f);
 
-    jumpsound.setBuffer(buffer);
-    */
+    sf::RectangleShape p0({1200, 20});
+    sf::RectangleShape p1({200, 20});
+    sf::RectangleShape p2({200, 20});
+    sf::RectangleShape p3({200, 20});
+    sf::RectangleShape p4({200, 20});
+    sf::RectangleShape p5({200, 20});
+    sf::RectangleShape p6({300, 20});
+    sf::RectangleShape p7({200, 20});
+    sf::RectangleShape p8({200, 20});
+    sf::RectangleShape p9({200, 20});
 
-    FauxPlayer fp;
-
-    sf::RectangleShape p1;
-    sf::RectangleShape p2;
-    sf::RectangleShape p3;
-    sf::RectangleShape p4;
-
-    p1.setPosition(10, 500);
-    p1.setSize({100, 20});
-    p1.setFillColor(sf::Color::Blue);
-
-    p2.setPosition(150, 400);
-    p2.setSize({50, 20});
-    p2.setFillColor(sf::Color::Blue);
+    p0.setPosition(0, 880);
+    p1.setPosition(100, 770);
+    p2.setPosition(350, 720);
+    p3.setPosition(675, 720);
+    p4.setPosition(960, 640);
+    p5.setPosition(680, 520);
+    p6.setPosition(300, 510);
+    p7.setPosition(70, 440);
+    p8.setPosition(350, 320);
+    p9.setPosition(630, 240);
 
     lm.addEntity(fp);
+    lm.addPlatform(p0);
     lm.addPlatform(p1);
     lm.addPlatform(p2);
-    // lm.addPlatform(p3);
-    // lm.addPlatform(p4);
+    lm.addPlatform(p3);
+    lm.addPlatform(p4);
+    lm.addPlatform(p5);
+    lm.addPlatform(p6);
+    lm.addPlatform(p7);
+    lm.addPlatform(p8);
+    lm.addPlatform(p9);
 
     fp.addPlatforms(lm.getPlatforms());
 

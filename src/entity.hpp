@@ -17,15 +17,14 @@ public:
     virtual void update(sf::RenderWindow &window, float dt) {}
     virtual void render(sf::RenderWindow &window) {}
 
-    virtual std::string collide(std::string object) {} // `object' is the name of whatever has collided with the entity
-                                                       // will return a string to tell whatever called it what to do
+    virtual std::string collide(std::string object) {return "";} /* `object' is the name of whatever has collided with the entity
+                                                                    will return a string to tell whatever called it what to do */
 protected:
     sf::Texture spritesheet;
     sf::Sprite sprite;
     sf::IntRect spriteLocation;
     sf::Clock animationClock;
     sf::RectangleShape collision;
-    sf::Vector2f lastValidPosition;
     sf::Vector2f position;
     sf::Vector2f speed;
     int direction; // Horizontal
@@ -34,19 +33,23 @@ protected:
 
 class FauxPlayer : public Entity {
 public:
-    FauxPlayer() : isGrounded(false) {
+    FauxPlayer(float sx, float sy) {
         speed = {400, 1200};
+        velocity = 0.f;
+
+        position = {sx, sy};
 
         spriteLocation = {1, 1, 110, 125};
         collision.setSize({55, 62.5f});
 
         if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
             std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
-        } else {
-            sprite.setTexture(spritesheet);
-            sprite.setTextureRect(spriteLocation);
-            sprite.setScale(0.5f, 0.5f);
+            exit(-1);
         }
+
+        sprite.setTexture(spritesheet);
+        sprite.setTextureRect(spriteLocation);
+        sprite.setScale(0.5f, 0.5f);
     }
 
     std::string collide(std::string object) override {
@@ -62,6 +65,11 @@ public:
         direction = 0;
         isGrounded = false;
 
+        const float playerX = position.x;
+        const float playerY = position.y;
+        const float playerWidth = collision.getSize().x;
+        const float playerHeight = collision.getSize().y;
+
         // Walking
         if (sf::Keyboard::isKeyPressed(controls[1])) {
             direction = -1;
@@ -73,24 +81,26 @@ public:
             spriteState = STANDING;
         }
 
-        const float bx = position.x;
-        const float by = position.y;
-        const float bw = collision.getSize().x;
-        const float bh = collision.getSize().y;
-
-        // l
+        // Check platform collision
         for (int i = 0; i < platforms.size(); i++) {
             auto p = platforms.at(i);
 
-            float pL = p->getPosition().x;
-            float pR = p->getPosition().x + p->getSize().x;
-            float pT = p->getPosition().y;
-            float pB = p->getPosition().y + p->getSize().y;
+            float platformLeft = p->getPosition().x;
+            float platformRight = p->getPosition().x + p->getSize().x;
+            float platformTop = p->getPosition().y;
+            float platformBottom = p->getPosition().y + p->getSize().y;
 
-            if (bx + bw > pL && bx < pR &&
-                by + bh >= pT && by < pB && !isGrounded) {
+            // Top of platform
+            if (playerX + playerWidth > (platformLeft + 10) && playerX < (platformRight - 10) &&
+                playerY + playerHeight >= platformTop && playerY < (platformBottom - 10) && !isGrounded) {
                 isGrounded = true;
-                position.y = pT - bh;
+                velocity = 0.f;
+            }
+
+            // Bottom of platform
+            if (playerX + playerWidth > platformLeft && playerX < platformRight &&
+                playerY < platformBottom && playerY + playerHeight > (platformTop + 10)) {
+                position.y = platformBottom;
                 velocity = 0;
             }
         }
@@ -101,19 +111,20 @@ public:
             spriteState = FALLING;
         }
 
-        if (this->isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
+        // Jumping
+        if (isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
             velocity -= 700.f;
             spriteState = RISING;
             isGrounded = false;
         }
 
         // Move the player
-        this->lastValidPosition = this->position;
         this->position += {this->direction * this->speed.x * dt, velocity * dt};
         move();
     }
 
     void render(sf::RenderWindow &window) override {
+        // Animate the sprite
         switch (spriteState) {
         case EggState::STANDING:
             spriteLocation.top = 1;
@@ -199,7 +210,7 @@ public:
             break;
         }
 
-        window.draw(this->collision);
+        // window.draw(this->collision);
 
         // Render the sprite
         window.draw(this->sprite);

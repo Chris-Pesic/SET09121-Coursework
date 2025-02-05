@@ -20,6 +20,7 @@ void LevelManager::update(sf::RenderWindow &window, float dt) {
 
     // Platforms
     for (int i = 0; i < this->platforms.size(); i++) {
+        this->platforms.at(i)->setFillColor(sf::Color::Blue);
         window.draw(*this->platforms.at(i));
     }
     // Entities
