@@ -668,6 +668,7 @@ int main() {
     sf::RectangleShape p7({200, 20});
     sf::RectangleShape p8({200, 20});
     sf::RectangleShape p9({200, 20});
+    sf::RectangleShape p10({20, 80});
 
     p0.setPosition(0, 880);
     p1.setPosition(100, 770);
@@ -679,6 +680,7 @@ int main() {
     p7.setPosition(70, 440);
     p8.setPosition(350, 320);
     p9.setPosition(630, 240);
+    p10.setPosition(630, 800);
 
     lm.addEntity(fp);
     lm.addPlatform(p0);
@@ -691,6 +693,7 @@ int main() {
     lm.addPlatform(p7);
     lm.addPlatform(p8);
     lm.addPlatform(p9);
+    lm.addPlatform(p10);
 
     fp.addPlatforms(lm.getPlatforms());
 

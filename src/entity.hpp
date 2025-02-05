@@ -34,7 +34,7 @@ protected:
 class FauxPlayer : public Entity {
 public:
     FauxPlayer(float sx, float sy) {
-        speed = {400, 1200};
+        speed = {300, 1200};
         velocity = 0.f;
 
         position = {sx, sy};
@@ -90,18 +90,23 @@ public:
             float platformTop = p->getPosition().y;
             float platformBottom = p->getPosition().y + p->getSize().y;
 
-            // Top of platform
-            if (playerX + playerWidth > (platformLeft + 10) && playerX < (platformRight - 10) &&
-                playerY + playerHeight >= platformTop && playerY < (platformBottom - 10) && !isGrounded) {
-                isGrounded = true;
+            if ((playerX + playerWidth) > platformLeft && playerX < platformRight && // Top of platform
+                (playerY + playerHeight) >= platformTop && (playerY + playerHeight) < platformBottom && !isGrounded) {
                 velocity = 0.f;
-            }
-
-            // Bottom of platform
-            if (playerX + playerWidth > platformLeft && playerX < platformRight &&
-                playerY < platformBottom && playerY + playerHeight > (platformTop + 10)) {
-                position.y = platformBottom;
-                velocity = 0;
+                position.y = platformTop - playerHeight;
+                isGrounded = true;
+            } else if (((playerX + playerWidth) > platformLeft && playerX < platformLeft) && // Left of platform
+                       ((playerY + playerHeight) > platformTop && playerY < platformBottom)) {
+                direction = 0;
+                position.x = (platformLeft - playerWidth);
+            } else if ((playerX < platformRight && (playerX + playerWidth) > platformRight) && // Right of platform
+                       ((playerY + playerHeight) > platformTop && playerY < platformBottom)) {
+                direction = 0;
+                position.x = platformRight;
+            } else if ((playerX + playerWidth) > platformLeft && (playerX + playerWidth) < platformRight && // Bottom of platform
+                       playerY <= (platformBottom + 1) && playerY > (platformTop + 1)) {
+                velocity = 0.f;
+                position.y = platformBottom + 1;
             }
         }
 
