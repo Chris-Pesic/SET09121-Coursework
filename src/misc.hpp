@@ -5,8 +5,6 @@
 
 #define GRAVITY 24.f
 
-#define isIntersecting(r1, r2) (r1.getGlobalBounds().intersects(r2.getGlobalBounds()))
-
 const sf::Keyboard::Key controls[3] = {
     sf::Keyboard::W,   // Player1 Up
     sf::Keyboard::A,   // Player1 Left

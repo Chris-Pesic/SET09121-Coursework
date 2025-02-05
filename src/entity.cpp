@@ -18,3 +18,10 @@ sf::Vector2f Entity::getPosition() {
 void Entity::setPosition(sf::Vector2f position) {
     this->position = position;
 }
+
+void Entity::setTag(std::string tag) {
+    this->tag = tag;
+}
+std::string Entity::getTag() {
+    return this->tag;
+}

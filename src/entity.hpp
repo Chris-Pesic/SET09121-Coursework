@@ -13,11 +13,13 @@ public:
     void setCollision(sf::RectangleShape collision);
     sf::Vector2f getPosition();
     void setPosition(sf::Vector2f position);
+    std::string getTag();
+    void setTag(std::string tag);
 
     virtual void update(sf::RenderWindow &window, float dt) {}
     virtual void render(sf::RenderWindow &window) {}
 
-    virtual std::string collide(std::string object) {return "";} /* `object' is the name of whatever has collided with the entity
+    virtual std::string collide(std::string object) {return "";} /* `object' is the tag of whatever has collided with the entity
                                                                     will return a string to tell whatever called it what to do */
 protected:
     sf::Texture spritesheet;
@@ -29,6 +31,7 @@ protected:
     sf::Vector2f speed;
     int direction; // Horizontal
     float velocity;  // Vertical
+    std::string tag;
 };
 
 class FauxPlayer : public Entity {
@@ -37,7 +40,10 @@ public:
         speed = {300.f, 700.f};
         velocity = 0.f;
 
+        tag = "Player";
+
         position = {sx, sy};
+        move();
 
         spriteLocation = {1, 1, 110, 125};
         collision.setSize({55, 62.5f});
@@ -53,6 +59,10 @@ public:
     }
 
     std::string collide(std::string object) override {
+        if (object == "Enemy") {
+            std::cout << std::endl << "Player says \"i am kill\"" << std::endl;
+            return "PlayerDeath";
+        }
 
         return "";
     }
@@ -214,8 +224,6 @@ public:
         default:
             break;
         }
-
-        // window.draw(this->collision);
 
         // Render the sprite
         window.draw(this->sprite);

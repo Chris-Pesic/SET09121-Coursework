@@ -1,8 +1,11 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+
 #include "entity.hpp"
 #include "level_manager.hpp"
 #include "player.hpp"
+#include "enemy.hpp"
+#include "level_objects.hpp"
 
 using namespace sf;
 using namespace std;
@@ -657,6 +660,16 @@ int main() {
     // ENEMY2: (450.f, 500.f)
 
     FauxPlayer fp(50.f, 825.f);
+    Enemy e1(450.f, 660.f, 50, -1);
+
+    EnemyMoveRight emr1(310.f, 680.f, 20, 20);
+
+    EnemyMoveLeft eml1(570.f, 680.f, 20, 20);
+
+    lm.addEntity(fp);
+    lm.addEntity(e1);
+    lm.addEntity(emr1);
+    lm.addEntity(eml1);
 
     sf::RectangleShape p0({1200, 20});
     sf::RectangleShape p1({200, 20});
@@ -682,7 +695,6 @@ int main() {
     p9.setPosition(630, 240);
     p10.setPosition(630, 800);
 
-    lm.addEntity(fp);
     lm.addPlatform(p0);
     lm.addPlatform(p1);
     lm.addPlatform(p2);

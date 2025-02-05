@@ -1,5 +1,4 @@
 #include "level_manager.hpp"
-#include "misc.hpp"
 #include <SFML/Graphics.hpp>
 
 void LevelManager::update(sf::RenderWindow &window, float dt) {
@@ -12,8 +11,15 @@ void LevelManager::update(sf::RenderWindow &window, float dt) {
             auto e1 = *this->entities.at(i);
             auto e2 = *this->entities.at(j);
 
-            if (isIntersecting(e1.getCollision(), e2.getCollision())) {
+            if (e1.getCollision().getGlobalBounds().intersects(e2.getCollision().getGlobalBounds())) {
                 // do the collision
+                std::string e1out = this->entities.at(i)->collide(e2.getTag());
+                std::string e2out = this->entities.at(j)->collide(e1.getTag());
+
+                if (e1out == "PlayerDeath" ||
+                    e2out == "PlayerDeath") {
+                    exit(-1);
+                }
             }
         }
     }
