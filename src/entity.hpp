@@ -34,7 +34,7 @@ protected:
 class FauxPlayer : public Entity {
 public:
     FauxPlayer(float sx, float sy) {
-        speed = {300, 1200};
+        speed = {300.f, 700.f};
         velocity = 0.f;
 
         position = {sx, sy};
@@ -118,7 +118,7 @@ public:
 
         // Jumping
         if (isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
-            velocity -= 700.f;
+            velocity -= speed.y;
             spriteState = RISING;
             isGrounded = false;
         }
