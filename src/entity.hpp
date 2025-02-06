@@ -62,6 +62,9 @@ public:
         if (object == "Enemy") {
             std::cout << std::endl << "Player says \"i am kill\"" << std::endl;
             return "PlayerDeath";
+        } else if (object == "Goal") {
+            std::cout << std::endl << "Player says \"i am winner!!!!!\"" << std::endl;
+            return "Goal";
         }
 
         return "";

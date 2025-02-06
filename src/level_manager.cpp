@@ -20,6 +20,10 @@ void LevelManager::update(sf::RenderWindow &window, float dt) {
                     e2out == "PlayerDeath") {
                     sleep(sf::seconds(1));
                     exit(-1);
+                } else if (e1out == "Goal" ||
+                           e2out == "Goal") {
+                    sleep(sf::seconds(2));
+                    exit(0);
                 }
             }
         }

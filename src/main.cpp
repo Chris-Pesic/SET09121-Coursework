@@ -6,6 +6,7 @@
 #include "player.hpp"
 #include "enemy.hpp"
 #include "level_objects.hpp"
+#include "goal.hpp"
 
 using namespace sf;
 using namespace std;
@@ -668,6 +669,8 @@ int main() {
     EnemyMoveLeft eml1(570.f, 680.f, 20, 20);
     EnemyMoveLeft eml2(620.f, 470.f, 20, 20);
 
+    Goal g(690.f, 198.f);
+
     lm.addEntity(fp);
     lm.addEntity(e1);
     lm.addEntity(e2);
@@ -675,6 +678,7 @@ int main() {
     lm.addEntity(emr2);
     lm.addEntity(eml1);
     lm.addEntity(eml2);
+    lm.addEntity(g);
 
     sf::RectangleShape p0({1200, 20});
     sf::RectangleShape p1({200, 20});
@@ -733,13 +737,6 @@ int main() {
             fpstext.setFont(font);
             fpstext.setString(str_Header);
             fpstext.setPosition(0, 25);
-
-            //112 223
-
-            window.clear();
-            window.draw(eggsprite);
-            window.draw(devilsprite);
-            window.draw(devil2sprite);
 
             Update(window);
             Render(window);
