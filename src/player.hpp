@@ -3,28 +3,22 @@
 
 #include <SFML/Graphics.hpp>
 #include "misc.hpp"
+#include "entity.hpp"
 
-class Player {
+class Player : public Entity {
 public:
-    // Constructor to initialize the player state
-    Player() : state(STANDING), frameCounter(0), animationSpeed(10) {}
+    Player(float sx, float sy);
 
-    // Method to set the player's state
-    void setState(EggState newState);
+    std::string collide(std::string object) override;
 
-    // Method to get the current player's state
-    EggState getState() const;
+    void addPlatforms(std::vector<sf::RectangleShape*> platforms);
 
-    void updateState(sf::Sprite &eggsprite, sf::IntRect &eggSourceSprite);
+    void update(sf::RenderWindow &window, float dt) override;
+    void render(sf::RenderWindow &window) override;
 private:
-    int frameCounter;    // Tracks which frame of the animation to show
-    int animationSpeed;  // Controls animation speed (higher = slower animation)
-    EggState state;      // Stores the current state of the player
-
-    sf::Clock animateClock;
-
-    sf::Texture spritesheet;
-    sf::Sprite eggsprite;
+    bool isGrounded;
+    EggState spriteState;
+    std::vector<sf::RectangleShape*> platforms;
 };
 
 #endif /* PLAYER_HPP */

@@ -3,100 +3,196 @@
 #include "player.hpp"
 #include "misc.hpp"
 
-void Player::setState(EggState newState) {
-    state = newState;
+Player::Player(float sx, float sy) {
+    speed = {300.f, 700.f};
+    velocity = 0.f;
+
+    tag = "Player";
+
+    position = {sx, sy};
+    move();
+
+    spriteLocation = {1, 1, 110, 125};
+    collision.setSize({55, 62.5f});
+
+    if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
+        std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
+        exit(-1);
+    }
+
+    sprite.setTexture(spritesheet);
+    sprite.setTextureRect(spriteLocation);
+    sprite.setScale(0.5f, 0.5f);
 }
 
-EggState Player::getState() const {
-    return state;
+std::string Player::collide(std::string object) {
+    if (object == "Enemy") {
+        return "PlayerDeath";
+    } else if (object == "Goal") {
+        return "Goal";
+    }
+
+    return "";
 }
 
-void Player::updateState(sf::Sprite &eggsprite, sf::IntRect &eggSourceSprite) {
-    switch (getState()) {
-    case EggState::STANDING:
-        eggSourceSprite.top = 1;
-        // Animate grids 1-3
-        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (eggSourceSprite.left == 223)
-                eggSourceSprite.left = 1;
-            else
-            {
-                eggSourceSprite.left += 111;
-            }
+void Player::addPlatforms(std::vector<sf::RectangleShape*> platforms) {
+    this->platforms = platforms;
+}
 
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
+void Player::update(sf::RenderWindow &window, float dt) {
+    direction = 0;
+    isGrounded = false;
+
+    const float playerX = position.x;
+    const float playerY = position.y;
+    const float playerWidth = collision.getSize().x;
+    const float playerHeight = collision.getSize().y;
+
+    // Walking
+    if (sf::Keyboard::isKeyPressed(controls[1])) {
+        direction = -1;
+        spriteState = WALKING_LEFT;
+    } else if (sf::Keyboard::isKeyPressed(controls[2])) {
+        direction = 1;
+        spriteState = WALKING_RIGHT;
+    } else {
+        spriteState = STANDING;
+    }
+
+    // Check platform collision
+    for (int i = 0; i < platforms.size(); i++) {
+        auto p = platforms.at(i);
+
+        float platformLeft = p->getPosition().x;
+        float platformRight = p->getPosition().x + p->getSize().x;
+        float platformTop = p->getPosition().y;
+        float platformBottom = p->getPosition().y + p->getSize().y;
+
+        if ((playerX + playerWidth) > platformLeft && playerX < platformRight && // Top of platform
+            (playerY + playerHeight) >= platformTop && (playerY + playerHeight) < platformBottom && !isGrounded) {
+            velocity = 0.f;
+            position.y = platformTop - playerHeight;
+            isGrounded = true;
+        } else if (((playerX + playerWidth) > platformLeft && playerX < platformLeft) && // Left of platform
+                   ((playerY + playerHeight) > platformTop && playerY < platformBottom)) {
+            direction = 0;
+            position.x = (platformLeft - playerWidth);
+        } else if ((playerX < platformRight && (playerX + playerWidth) > platformRight) && // Right of platform
+                   ((playerY + playerHeight) > platformTop && playerY < platformBottom)) {
+            direction = 0;
+            position.x = platformRight;
+        } else if ((playerX + playerWidth) > platformLeft && (playerX + playerWidth) < platformRight && // Bottom of platform
+                   playerY <= (platformBottom + 1) && playerY > (platformTop + 1)) {
+            velocity = 0.f;
+            position.y = platformBottom + 1;
         }
-        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
-        eggsprite.setOrigin(0, 0);      // Reset origin
+    }
+
+    // Gravity
+    if (!isGrounded) {
+        velocity += GRAVITY;
+        spriteState = FALLING;
+    }
+
+    // Jumping
+    if (isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
+        velocity -= speed.y;
+        spriteState = RISING;
+        isGrounded = false;
+    }
+
+    // Move the player
+    this->position += {this->direction * this->speed.x * dt, velocity * dt};
+    move();
+}
+
+void Player::render(sf::RenderWindow &window) {
+    // Animate the sprite
+    switch (spriteState) {
+    case EggState::STANDING:
+        spriteLocation.top = 1;
+        // Animate grids 1-3
+        if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (spriteLocation.left == 223)
+                spriteLocation.left = 1;
+            else
+                {
+                    spriteLocation.left += 111;
+                }
+
+            sprite.setTextureRect(spriteLocation);
+            animationClock.restart();
+        }
+        sprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        sprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::WALKING_LEFT:
         // Animate grids 4-6 (left-facing)
-        eggSourceSprite.top = 126;
-        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (eggSourceSprite.left == 223)
-                eggSourceSprite.left = 1;
+        spriteLocation.top = 126;
+        if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (spriteLocation.left == 223)
+                spriteLocation.left = 1;
             else
-            {
-                eggSourceSprite.left += 111;
-            }
+                {
+                    spriteLocation.left += 111;
+                }
 
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
+            sprite.setTextureRect(spriteLocation);
+            animationClock.restart();
         }
-        eggsprite.setScale(-0.5f, 0.5f); // Flipped horizontally
-        eggsprite.setOrigin(110, 0);     // Adjust origin for flipping
+        sprite.setScale(-0.5f, 0.5f); // Flipped horizontally
+        sprite.setOrigin(110, 0);     // Adjust origin for flipping
         break;
-
     case EggState::WALKING_RIGHT:
-        eggSourceSprite.top = 126;
+        spriteLocation.top = 126;
         // Animate grids 4-6 (right-facing)
-        if (animateClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (eggSourceSprite.left == 223)
-                eggSourceSprite.left = 1;
+        if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
+            if (spriteLocation.left == 223)
+                spriteLocation.left = 1;
             else
-                eggSourceSprite.left += 111;
+                spriteLocation.left += 111;
 
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
+            sprite.setTextureRect(spriteLocation);
+            animationClock.restart();
         }
-        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
-        eggsprite.setOrigin(0, 0);      // Reset origin
+        sprite.setScale(0.5f, 0.5f); // Normal orientation
+        sprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::RISING:
         // Static frame for RISING
-        eggsprite.setTextureRect(sf::IntRect(223, 2, 110, 125)); // Grid 3
-        eggsprite.setScale(0.5f, 0.5f); // Ensure normal scale
-        eggsprite.setOrigin(0, 0);      // Reset origin
+        sprite.setTextureRect(sf::IntRect(223, 2, 110, 125)); // Grid 3
+        sprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        sprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::FALLING:
         // Static frame for FALLING
-        eggsprite.setTextureRect(sf::IntRect(111, 253, 110, 125)); // Grid 8
-        eggsprite.setScale(0.5f, 0.5f);
-        eggsprite.setOrigin(0, 0);
+        sprite.setTextureRect(sf::IntRect(111, 253, 110, 125)); // Grid 8
+        sprite.setScale(0.5f, 0.5f);
+        sprite.setOrigin(0, 0);
         break;
 
     case EggState::DYING:
-        eggSourceSprite.top = 379;
+        spriteLocation.top = 379;
         // Animate grids 4-6 (right-facing)
-        if (animateClock.getElapsedTime().asSeconds() > 0.4f) {
-            if (eggSourceSprite.left == 223)
+        if (animationClock.getElapsedTime().asSeconds() > 0.4f) {
+            if (spriteLocation.left == 223)
                 break;
             else
-                eggSourceSprite.left += 111;
+                spriteLocation.left += 111;
 
-            eggsprite.setTextureRect(eggSourceSprite);
-            animateClock.restart();
+            sprite.setTextureRect(spriteLocation);
+            animationClock.restart();
         }
-        eggsprite.setScale(0.5f, 0.5f); // Normal orientation
-        eggsprite.setOrigin(0, 0);      // Reset origin
+        sprite.setScale(0.5f, 0.5f); // Normal orientation
+        sprite.setOrigin(0, 0);      // Reset origin
         break;
-        eggsprite.setTextureRect(sf::IntRect(1, 379, 110, 125)); // Grid 10
-
     default:
         break;
     }
+
+    // Render the sprite
+    window.draw(this->sprite);
 }
