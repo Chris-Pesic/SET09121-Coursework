@@ -574,11 +574,11 @@ void Render(RenderWindow& window) {
     // Draw Everything
 
     window.draw(background);
-    for (int i = 0; i < 12; i++) {
-        if (i != 6) {
-            window.draw(platform[i]);
-        }
-    }
+    // for (int i = 0; i < 12; i++) {
+    //     if (i != 6) {
+    //         window.draw(platform[i]);
+    //     }
+    // }
     // window.draw(goalsprite);
     // window.draw(eggsprite);
     // //window.draw(degg);
@@ -661,15 +661,20 @@ int main() {
 
     FauxPlayer fp(50.f, 825.f);
     Enemy e1(450.f, 660.f, 50, -1);
+    Enemy e2(400.f, 450.f, 80, -1);
 
     EnemyMoveRight emr1(310.f, 680.f, 20, 20);
-
+    EnemyMoveRight emr2(270.f, 470.f, 20, 20);
     EnemyMoveLeft eml1(570.f, 680.f, 20, 20);
+    EnemyMoveLeft eml2(620.f, 470.f, 20, 20);
 
     lm.addEntity(fp);
     lm.addEntity(e1);
+    lm.addEntity(e2);
     lm.addEntity(emr1);
+    lm.addEntity(emr2);
     lm.addEntity(eml1);
+    lm.addEntity(eml2);
 
     sf::RectangleShape p0({1200, 20});
     sf::RectangleShape p1({200, 20});
@@ -681,7 +686,6 @@ int main() {
     sf::RectangleShape p7({200, 20});
     sf::RectangleShape p8({200, 20});
     sf::RectangleShape p9({200, 20});
-    sf::RectangleShape p10({20, 80});
 
     p0.setPosition(0, 880);
     p1.setPosition(100, 770);
@@ -693,7 +697,6 @@ int main() {
     p7.setPosition(70, 440);
     p8.setPosition(350, 320);
     p9.setPosition(630, 240);
-    p10.setPosition(630, 800);
 
     lm.addPlatform(p0);
     lm.addPlatform(p1);
@@ -705,7 +708,6 @@ int main() {
     lm.addPlatform(p7);
     lm.addPlatform(p8);
     lm.addPlatform(p9);
-    lm.addPlatform(p10);
 
     fp.addPlatforms(lm.getPlatforms());
 

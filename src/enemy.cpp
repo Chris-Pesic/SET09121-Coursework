@@ -10,7 +10,7 @@ Enemy::Enemy(float sx, float sy, float xspeed, int sdirection) {
     tag = "Enemy";
 
     spriteLocation = {223, 1, 110, 125};
-    collision.setSize({55, 62.5f});
+    collision.setSize({35.f, 45.f});
 
     if (!spritesheet.loadFromFile("./res/sprite/enemy.png")) {
         std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load enemy spritesheet!" << std::endl;
@@ -36,6 +36,7 @@ void Enemy::update(sf::RenderWindow &window, float dt) {
     // Move the player
     this->position += {this->direction * this->speed.x * dt, velocity * dt};
     move();
+    this->collision.setPosition({collision.getPosition().x + 10, collision.getPosition().y + 15});
 }
 
 void Enemy::render(sf::RenderWindow &window) {
