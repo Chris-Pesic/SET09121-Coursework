@@ -124,6 +124,9 @@ void Player::update(sf::RenderWindow &window, float dt) {
         isGrounded = false;
     }
 
+    // Clamp velocity
+    clamp(velocity, -2000.f, 1000.f);
+
     // Move the player
     this->position += {this->direction * this->speed.x * dt, velocity * dt};
     collision.setPosition(position);
