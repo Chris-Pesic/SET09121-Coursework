@@ -50,7 +50,7 @@ void Load() {
     deathsText.setPosition(0, 0);
 
     // Entities
-    Player* p = new Player(50.f, 825.f);
+    Player* p = new Player(50.f, 800.f);
     Enemy* e1 = new Enemy(450.f, 660.f, 50, -1);
     Enemy* e2 = new Enemy(400.f, 450.f, 80, -1);
 
