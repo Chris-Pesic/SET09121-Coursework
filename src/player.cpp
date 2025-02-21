@@ -59,8 +59,6 @@ void Player::update(sf::RenderWindow &window, float dt) {
     const float playerWidth = collision.getSize().x;
     const float playerHeight = collision.getSize().y;
 
-    std::cout << "X: "<<playerX<<" Y: "<<playerY << std::endl;
-
     // Walking
     if (sf::Keyboard::isKeyPressed(controls[1])) {
         direction = -1;
