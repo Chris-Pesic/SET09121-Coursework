@@ -2,6 +2,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include "player.hpp"
 #include "misc.hpp"
+#include "sound_manager.hpp"
 
 Player::Player(float sx, float sy) {
     speed = {300.f, 700.f};
@@ -15,7 +16,7 @@ Player::Player(float sx, float sy) {
     spriteLocation = {1, 1, 110, 125};
     collision.setSize({55, 62.5f});
 
-    if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
+    if (!spritesheet.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sprite/player.png")) {
         std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
         exit(-1);
     }
@@ -97,6 +98,7 @@ void Player::update(sf::RenderWindow &window, float dt) {
     // Jumping
     if (isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
         velocity -= speed.y;
+        SoundManager::getInstance().playJumpSound();
         spriteState = RISING;
         isGrounded = false;
     }

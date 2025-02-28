@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <memory>
 
 #include "level_manager.hpp"
@@ -7,12 +8,17 @@
 #include "enemy.hpp"
 #include "level_objects.hpp"
 #include "goal.hpp"
+#include "sound_manager.hpp"
 
 using namespace sf;
 using namespace std;
 
 Texture backgroundTexture;
 Sprite background;
+
+SoundBuffer buffer;
+Sound jumpsound;
+
 
 LevelManager lm;
 
@@ -37,7 +43,7 @@ bool complete = false;
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("./res/font/RobotoMono-Regular.ttf");
+    font.loadFromFile("C:/Users/angus/SET09121-Coursework/res/font/RobotoMono-Regular.ttf");
 
     //TEXT DISPLAYS
     gameOverText.setFillColor(Color::Black);
@@ -149,7 +155,7 @@ int main() {
     window.setFramerateLimit(60);
     Clock clock;
 
-    if (!backgroundTexture.loadFromFile("./res/background/kitchen.png")) {
+    if (!backgroundTexture.loadFromFile("C:/Users/angus/SET09121-Coursework/res/background/kitchen.png")) {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
     } else {
         background.setTexture(backgroundTexture);
