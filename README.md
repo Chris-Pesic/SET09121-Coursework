@@ -17,7 +17,7 @@ Code Documentation: [Here](Code_Documentation.md)
 
 ## Notes:
 
-1. Due to issues with CMAKE, all PATHs are hardcoded
+
    
 ## Gameplay Summary:
 
