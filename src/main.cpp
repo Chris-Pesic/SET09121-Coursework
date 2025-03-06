@@ -19,6 +19,12 @@ Sprite background;
 SoundBuffer buffer;
 Sound jumpsound;
 
+enum ScreenState {
+    MainMenuState = 0,
+    GameState
+};
+
+ScreenState state;
 
 LevelManager lm;
 
@@ -154,6 +160,10 @@ int main() {
 
     window.setFramerateLimit(60);
     Clock clock;
+    Clock time;
+    time.restart();
+
+    state = MainMenuState;
 
     if (!backgroundTexture.loadFromFile("./res/background/kitchen.png")) {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
@@ -164,67 +174,78 @@ int main() {
 
     while (window.isOpen()) {
         elapsedTime = clock.restart();
-        if (freeze != true && complete != true) {
-            /*      FPS DISPLAY     */
 
-            fps = 0.f;
-            loops = 0;
-            // set the character size to 24 pixels
-            fpstext.setCharacterSize(20);
-
-            if (elapsedTime.asSeconds() < 1) {
-                loops++;
-            }
-            if (elapsedTime.asSeconds() > 0.0f) {
-                fps = loops / elapsedTime.asSeconds();
-            }
-            String str_fps = to_string(fps);
-            String str_Header = "FPS: " + str_fps;
-            fpstext.setFont(font);
-            fpstext.setString(str_Header);
-            fpstext.setPosition(0, 25);
-
+        if (state == MainMenuState) {
             Update(window);
             Render(window);
 
-            std::string s = lm.update(window, dt);
-
-            if (s == "PlayerDeath") {
-                freeze = true;
-                complete = false;
-                gameOverText.setCharacterSize(40);
-                gameOverText.setFont(font);
-                gameOverText.setFillColor(Color::Red);
-                gameOverText.setString("GAME OVER");
-                deaths++;
-                gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f),
-                                         static_cast<float>(gameHeight) / 2);
-                window.draw(gameOverText);
-            } else if (s == "Goal") {
-                freeze = true;
-                complete = true;
-                gameOverText.setCharacterSize(40);
-                gameOverText.setFont(font);
-                gameOverText.setFillColor(Color::Green);
-                gameOverText.setString("LEVEL COMPLETE");
-                gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f),
-                                         static_cast<float>(gameHeight) / 2);
-                window.draw(gameOverText);
+            if (time.getElapsedTime().asSeconds() >= 3.f) {
+                state = GameState;
             }
 
             window.display();
+        } else if (state == GameState) {
+            if (freeze != true && complete != true) {
+                /*      FPS DISPLAY     */
 
-            loops++;
-        } else if (freeze == true && complete != true) {
-            sleep(seconds(2));
-            gameOverText.setString("");
-            freeze = false;
-            Reset(window);
-        } else {
-            sleep(seconds(2));
-            window.close();
+                fps = 0.f;
+                loops = 0;
+                // set the character size to 24 pixels
+                fpstext.setCharacterSize(20);
+
+                if (elapsedTime.asSeconds() < 1) {
+                    loops++;
+                }
+                if (elapsedTime.asSeconds() > 0.0f) {
+                    fps = loops / elapsedTime.asSeconds();
+                }
+                String str_fps = to_string(fps);
+                String str_Header = "FPS: " + str_fps;
+                fpstext.setFont(font);
+                fpstext.setString(str_Header);
+                fpstext.setPosition(0, 25);
+
+                Update(window);
+                Render(window);
+
+                std::string s = lm.update(window, dt);
+
+                if (s == "PlayerDeath") {
+                    freeze = true;
+                    complete = false;
+                    gameOverText.setCharacterSize(40);
+                    gameOverText.setFont(font);
+                    gameOverText.setFillColor(Color::Red);
+                    gameOverText.setString("GAME OVER");
+                    deaths++;
+                    gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f),
+                                             static_cast<float>(gameHeight) / 2);
+                    window.draw(gameOverText);
+                } else if (s == "Goal") {
+                    freeze = true;
+                    complete = true;
+                    gameOverText.setCharacterSize(40);
+                    gameOverText.setFont(font);
+                    gameOverText.setFillColor(Color::Green);
+                    gameOverText.setString("LEVEL COMPLETE");
+                    gameOverText.setPosition((gameWidth * .5f) - (gameOverText.getLocalBounds().width * .5f),
+                                             static_cast<float>(gameHeight) / 2);
+                    window.draw(gameOverText);
+                }
+
+                window.display();
+
+                loops++;
+            } else if (freeze == true && complete != true) {
+                sleep(seconds(2));
+                gameOverText.setString("");
+                freeze = false;
+                Reset(window);
+            } else {
+                sleep(seconds(2));
+                window.close();
+            }
         }
-
     }
     return 0;
 }
