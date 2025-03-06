@@ -12,7 +12,7 @@ Enemy::Enemy(float sx, float sy, float xspeed, int sdirection) {
     spriteLocation = {223, 1, 110, 125};
     collision.setSize({35.f, 45.f});
 
-    if (!spritesheet.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sprite/enemy.png")) {
+    if (!spritesheet.loadFromFile("./res/sprite/enemy.png")) {
         std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load enemy spritesheet!" << std::endl;
         exit(-1);
     }

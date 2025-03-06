@@ -43,7 +43,7 @@ bool complete = false;
 
 void Load() {
     // Load font-face from res dir
-    font.loadFromFile("C:/Users/angus/SET09121-Coursework/res/font/RobotoMono-Regular.ttf");
+    font.loadFromFile("./res/font/RobotoMono-Regular.ttf");
 
     //TEXT DISPLAYS
     gameOverText.setFillColor(Color::Black);
@@ -155,7 +155,7 @@ int main() {
     window.setFramerateLimit(60);
     Clock clock;
 
-    if (!backgroundTexture.loadFromFile("C:/Users/angus/SET09121-Coursework/res/background/kitchen.png")) {
+    if (!backgroundTexture.loadFromFile("./res/background/kitchen.png")) {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
     } else {
         background.setTexture(backgroundTexture);
