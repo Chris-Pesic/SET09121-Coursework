@@ -16,10 +16,6 @@ using namespace std;
 Texture backgroundTexture;
 Sprite background;
 
-SoundBuffer buffer;
-Sound jumpsound;
-
-
 LevelManager lm;
 
 Font font;
@@ -151,6 +147,8 @@ void Render(RenderWindow& window) {
 int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
+
+    SoundManager::getInstance().playBGM1();
 
     window.setFramerateLimit(60);
     Clock clock;

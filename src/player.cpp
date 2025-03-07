@@ -39,8 +39,10 @@ Player::~Player() {
 
 std::string Player::collide(std::string object) {
     if (object == "Enemy") {
+        SoundManager::getInstance().playDeathSound();
         return "PlayerDeath";
     } else if (object == "Goal") {
+        SoundManager::getInstance().playGoalSound();
         return "Goal";
     }
 
