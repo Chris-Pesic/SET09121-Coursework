@@ -1,19 +1,22 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include "player.hpp"
+#include "debug.hpp"
 #include "misc.hpp"
+#include "sound_manager.hpp"
 
 Player::Player(float sx, float sy) {
     speed = {300.f, 700.f};
     velocity = 0.f;
+    direction = 0;
 
     tag = "Player";
 
     position = {sx, sy};
-    move();
 
     spriteLocation = {1, 1, 110, 125};
-    collision.setSize({55, 62.5f});
+    collision.setSize({45.f, 45.f});
 
     if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
         std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
@@ -23,6 +26,15 @@ Player::Player(float sx, float sy) {
     sprite.setTexture(spritesheet);
     sprite.setTextureRect(spriteLocation);
     sprite.setScale(0.5f, 0.5f);
+
+    move();
+}
+
+Player::~Player() {
+    for (int i = platforms.size(); i > 0; i--) {
+        delete platforms.at(i);
+        platforms.pop_back();
+    }
 }
 
 std::string Player::collide(std::string object) {
@@ -63,29 +75,39 @@ void Player::update(sf::RenderWindow &window, float dt) {
     for (int i = 0; i < platforms.size(); i++) {
         auto p = platforms.at(i);
 
-        float platformLeft = p->getPosition().x;
-        float platformRight = p->getPosition().x + p->getSize().x;
-        float platformTop = p->getPosition().y;
-        float platformBottom = p->getPosition().y + p->getSize().y;
+        sf::RectangleShape top({p->getSize().x - 4, 5});
+        top.setPosition({p->getPosition().x + 2, p->getPosition().y});
+        sf::RectangleShape bottom({p->getSize().x - 4, 5});
+        bottom.setPosition({p->getPosition().x + 2, (p->getPosition().y + p->getSize().y)});
+        sf::RectangleShape left({5, p->getSize().y - 10});
+        left.setPosition({p->getPosition().x, p->getPosition().y + 5});
+        sf::RectangleShape right({5, p->getSize().y - 10});
+        right.setPosition({(p->getPosition().x + p->getSize().x) - 5, p->getPosition().y + 5});
 
-        if ((playerX + playerWidth) > platformLeft && playerX < platformRight && // Top of platform
-            (playerY + playerHeight) >= platformTop && (playerY + playerHeight) < platformBottom && !isGrounded) {
+        if (collision.getGlobalBounds().intersects(left.getGlobalBounds())) {
+            position.x = left.getPosition().x - playerWidth;
+        } else if (collision.getGlobalBounds().intersects(right.getGlobalBounds())) {
+            position.x = right.getPosition().x;
+        } else if (collision.getGlobalBounds().intersects(bottom.getGlobalBounds())) {
             velocity = 0.f;
-            position.y = platformTop - playerHeight;
+            position.y = (bottom.getPosition().y + bottom.getSize().y) + 1;
+        } else if (collision.getGlobalBounds().intersects(top.getGlobalBounds())) {
+            velocity = 0.f;
+            position.y = top.getPosition().y - (playerHeight - 5);
             isGrounded = true;
-        } else if (((playerX + playerWidth) > platformLeft && playerX < platformLeft) && // Left of platform
-                   ((playerY + playerHeight) > platformTop && playerY < platformBottom)) {
-            direction = 0;
-            position.x = (platformLeft - playerWidth);
-        } else if ((playerX < platformRight && (playerX + playerWidth) > platformRight) && // Right of platform
-                   ((playerY + playerHeight) > platformTop && playerY < platformBottom)) {
-            direction = 0;
-            position.x = platformRight;
-        } else if ((playerX + playerWidth) > platformLeft && (playerX + playerWidth) < platformRight && // Bottom of platform
-                   playerY <= (platformBottom + 1) && playerY > (platformTop + 1)) {
-            velocity = 0.f;
-            position.y = platformBottom + 1;
         }
+
+        #ifdef D_SHOW_WALL_COLLISION
+        left.setFillColor(sf::Color::Magenta);
+        right.setFillColor(sf::Color::Black);
+        top.setFillColor(sf::Color::Blue);
+        bottom.setFillColor(sf::Color::Red);
+
+        window.draw(top);
+        window.draw(bottom);
+        window.draw(left);
+        window.draw(right);
+        #endif
     }
 
     // Gravity
@@ -97,13 +119,18 @@ void Player::update(sf::RenderWindow &window, float dt) {
     // Jumping
     if (isGrounded && sf::Keyboard::isKeyPressed(controls[0])) {
         velocity -= speed.y;
+        SoundManager::getInstance().playJumpSound();
         spriteState = RISING;
         isGrounded = false;
     }
 
+    // Clamp velocity
+    clamp(velocity, -2000.f, 1000.f);
+
     // Move the player
     this->position += {this->direction * this->speed.x * dt, velocity * dt};
-    move();
+    collision.setPosition(position);
+    sprite.setPosition({position.x-5, position.y-15});
 }
 
 void Player::render(sf::RenderWindow &window) {

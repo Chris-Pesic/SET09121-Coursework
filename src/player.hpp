@@ -8,6 +8,7 @@
 class Player : public Entity {
 public:
     Player(float sx, float sy);
+    ~Player();
 
     std::string collide(std::string object) override;
 

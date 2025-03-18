@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <memory>
 
 #include "level_manager.hpp"
@@ -7,12 +8,17 @@
 #include "enemy.hpp"
 #include "level_objects.hpp"
 #include "goal.hpp"
+#include "sound_manager.hpp"
 
 using namespace sf;
 using namespace std;
 
 Texture backgroundTexture;
 Sprite background;
+
+SoundBuffer buffer;
+Sound jumpsound;
+
 
 LevelManager lm;
 
@@ -50,7 +56,7 @@ void Load() {
     deathsText.setPosition(0, 0);
 
     // Entities
-    Player* p = new Player(50.f, 825.f);
+    Player* p = new Player(50.f, 800.f);
     Enemy* e1 = new Enemy(450.f, 660.f, 50, -1);
     Enemy* e2 = new Enemy(400.f, 450.f, 80, -1);
 
