@@ -155,6 +155,10 @@ void Render(RenderWindow& window) {
     window.draw(deathsText);
 }
 
+/**
+ * @brief Runs first when program is ran
+ * @return Returns error code
+ */
 int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
