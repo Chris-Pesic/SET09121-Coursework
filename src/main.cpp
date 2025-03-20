@@ -9,6 +9,7 @@
 #include "level_objects.hpp"
 #include "goal.hpp"
 #include "sound_manager.hpp"
+#include "button.hpp"
 
 using namespace sf;
 using namespace std;
@@ -172,6 +173,8 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
+    StartButton* sb = new StartButton("Start", 12, {100, 100}, {230, 80}, font);
+
     while (window.isOpen()) {
         elapsedTime = clock.restart();
 
@@ -179,7 +182,12 @@ int main() {
             Update(window);
             Render(window);
 
-            if (time.getElapsedTime().asSeconds() >= 3.f) {
+            // if (time.getElapsedTime().asSeconds() >= 3.f) {
+            //     state = GameState;
+            // }
+
+            sb->render(window);
+            if (sb->update(window, dt) == "pressed") {
                 state = GameState;
             }
 
