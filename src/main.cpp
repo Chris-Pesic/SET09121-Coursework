@@ -177,7 +177,8 @@ int main() {
         background.setScale(1.2f, 1.2f);
     }
 
-    StartButton* sb = new StartButton("Start", 12, {100, 100}, {230, 80}, font);
+    StartButton* sb = new StartButton(20, {100, 100}, {230, 80}, font);
+    ExitButton* eb = new ExitButton(20, {100, 200}, {200, 80}, font);
 
     while (window.isOpen()) {
         elapsedTime = clock.restart();
@@ -191,8 +192,13 @@ int main() {
             // }
 
             sb->render(window);
+            eb->render(window);
+
             if (sb->update(window, dt) == "pressed") {
                 state = GameState;
+            }
+            if (eb->update(window, dt) == "pressed") {
+                exit(0);
             }
 
             window.display();
