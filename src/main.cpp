@@ -3,6 +3,8 @@
 #include <SFML/Audio.hpp>
 #include <memory>
 
+#include <tinyxml2.h>
+
 #include "level_manager.hpp"
 #include "player.hpp"
 #include "enemy.hpp"
@@ -49,6 +51,12 @@ bool freeze = false;
 bool complete = false;
 
 void Load() {
+    // !! TEST, REMOVE SOON !!
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile("./res/test.xml");
+    string lol = doc.FirstChildElement("InsuranceCompanies")->FirstChildElement("Top_Insurance_Companies")->FirstChildElement("Name")->GetText();
+    std::cout << lol << std::endl;
+
     // Load font-face from res dir
     font.loadFromFile("./res/font/RobotoMono-Regular.ttf");
 
