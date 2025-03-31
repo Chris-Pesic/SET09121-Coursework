@@ -1,5 +1,8 @@
 #include "level_manager.hpp"
 #include "player.hpp"
+#include "goal.hpp"
+#include "enemy.hpp"
+#include "level_objects.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <memory>
@@ -112,6 +115,32 @@ void LevelManager::loadLevel(std::string path) {
             Player* p = new Player(x, y);
             p->addPlatforms(getPlatforms());
             addEntity(p);
+        } else if (strcmp(object->ToElement()->Name(), "goal") == 0) {
+            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
+            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+            Goal* g = new Goal(x, y);
+            addEntity(g);
+        } else if (strcmp(object->ToElement()->Name(), "enemy") == 0) {
+            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
+            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+            auto xSpeed = object->ToElement()->FindAttribute("x_speed")->FloatValue();
+            auto startDirection = object->ToElement()->FindAttribute("start_direction")->FloatValue();
+            Enemy* e = new Enemy(x, y, xSpeed, startDirection);
+            addEntity(e);
+        } else if (strcmp(object->ToElement()->Name(), "enemymove") == 0) {
+            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
+            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+            auto width = object->ToElement()->FindAttribute("width")->FloatValue();
+            auto height = object->ToElement()->FindAttribute("height")->FloatValue();
+            auto type = object->ToElement()->FindAttribute("type")->Value();
+
+            if (strcmp(type, "right") == 0) {
+                EnemyMoveRight* em = new EnemyMoveRight(x, y, width, height);
+                addEntity(em);
+            } else if (strcmp(type, "left") == 0) {
+                EnemyMoveLeft* em = new EnemyMoveLeft(x, y, width, height);
+                addEntity(em);
+            }
         }
 
         object = object->NextSibling();

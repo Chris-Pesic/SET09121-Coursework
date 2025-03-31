@@ -62,25 +62,6 @@ void Load() {
     deathsText.setString("Deaths: " + strdeaths);
     deathsText.setPosition(0, 0);
 
-    // Entities
-    Enemy* e1 = new Enemy(450.f, 660.f, 50, -1);
-    Enemy* e2 = new Enemy(400.f, 450.f, 80, -1);
-
-    EnemyMoveRight* emr1 = new EnemyMoveRight(310.f, 680.f, 20, 20);
-    EnemyMoveRight* emr2 = new EnemyMoveRight(270.f, 470.f, 20, 20);
-    EnemyMoveLeft* eml1 = new EnemyMoveLeft(570.f, 680.f, 20, 20);
-    EnemyMoveLeft* eml2 = new EnemyMoveLeft(620.f, 470.f, 20, 20);
-
-    Goal* g = new Goal(690.f, 198.f);
-
-    lm.addEntity(e1);
-    lm.addEntity(e2);
-    lm.addEntity(emr1);
-    lm.addEntity(emr2);
-    lm.addEntity(eml1);
-    lm.addEntity(eml2);
-    lm.addEntity(g);
-
     lm.loadLevel("./res/levels/level1.xml");
 }
 

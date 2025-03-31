@@ -14,5 +14,12 @@
   </platforms>
   <objects>
     <player x="50" y="800" />
+    <goal x="690" y="198" />
+    <enemy x="450" y="660" x_speed="50" start_direction="-1" />
+    <enemy x="400" y="450" x_speed="80" start_direction="-1" />
+    <enemymove type="right" x="310" y="680" width="20" height="20" />
+    <enemymove type="right" x="270" y="470" width="20" height="20" />
+    <enemymove type="left" x="570" y="680" width="20" height="20" />
+    <enemymove type="left" x="620" y="470" width="20" height="20" />
   </objects>
 </level>
