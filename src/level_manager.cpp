@@ -1,4 +1,5 @@
 #include "level_manager.hpp"
+#include "misc.hpp"
 #include "player.hpp"
 #include "goal.hpp"
 #include "enemy.hpp"
@@ -109,38 +110,38 @@ void LevelManager::loadLevel(std::string path) {
     tinyxml2::XMLNode* object = doc.FirstChildElement("level")->FirstChildElement("objects")->FirstChildElement();
 
     while (object != NULL) {
-        if (strcmp(object->ToElement()->Name(), "player") == 0) {
-            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
-            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+        std::string objectName = object->ToElement()->Name();
+        auto x = object->ToElement()->FindAttribute("x")->FloatValue();
+        auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+
+        if (objectName == "player") {
             Player* p = new Player(x, y);
             p->addPlatforms(getPlatforms());
             addEntity(p);
-        } else if (strcmp(object->ToElement()->Name(), "goal") == 0) {
-            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
-            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+        } else if (objectName == "goal") {
             Goal* g = new Goal(x, y);
             addEntity(g);
-        } else if (strcmp(object->ToElement()->Name(), "enemy") == 0) {
-            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
-            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+        } else if (objectName == "enemy") {
             auto xSpeed = object->ToElement()->FindAttribute("x_speed")->FloatValue();
             auto startDirection = object->ToElement()->FindAttribute("start_direction")->FloatValue();
             Enemy* e = new Enemy(x, y, xSpeed, startDirection);
             addEntity(e);
-        } else if (strcmp(object->ToElement()->Name(), "enemymove") == 0) {
-            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
-            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+        } else if (objectName == "enemymove") {
             auto width = object->ToElement()->FindAttribute("width")->FloatValue();
             auto height = object->ToElement()->FindAttribute("height")->FloatValue();
-            auto type = object->ToElement()->FindAttribute("type")->Value();
+            std::string type = object->ToElement()->FindAttribute("type")->Value();
 
-            if (strcmp(type, "right") == 0) {
+            if (type == "right") {
                 EnemyMoveRight* em = new EnemyMoveRight(x, y, width, height);
                 addEntity(em);
-            } else if (strcmp(type, "left") == 0) {
+            } else if (type == "left") {
                 EnemyMoveLeft* em = new EnemyMoveLeft(x, y, width, height);
                 addEntity(em);
+            } else {
+                die(1, "Unkown type \"" + type + "\"");
             }
+        } else {
+            die(1, "Unkown object \"" + objectName + "\"");
         }
 
         object = object->NextSibling();
