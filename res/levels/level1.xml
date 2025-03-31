@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<level>
+  <platforms>
+    <platform x="0" y="880" width="1200" height="20" />
+    <platform x="100" y="770" width="200" height="20" />
+    <platform x="350" y="720" width="200" height="20" />
+    <platform x="675" y="720" width="200" height="20" />
+    <platform x="960" y="640" width="200" height="20" />
+    <platform x="680" y="520" width="200" height="20" />
+    <platform x="300" y="510" width="300" height="20" />
+    <platform x="70" y="440" width="200" height="20" />
+    <platform x="350" y="320" width="200" height="20" />
+    <platform x="630" y="240" width="200" height="20" />
+  </platforms>
+  <objects>
+    <player x="50" y="800" />
+  </objects>
+</level>

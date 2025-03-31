@@ -1,6 +1,9 @@
 #include "level_manager.hpp"
+#include "player.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <memory>
+#include <tinyxml2.h>
 
 std::string LevelManager::update(sf::RenderWindow &window, float dt) {
     // Check collision
@@ -68,4 +71,49 @@ void LevelManager::clearPlatforms() {
         delete p;
     }
     this->platforms.clear();
+}
+
+void LevelManager::resetLevel() {
+    clearPlatforms();
+    clearEntities();
+}
+
+void LevelManager::loadLevel(std::string path) {
+    // Load XML file
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(path.c_str());
+
+    // Get Platforms
+    tinyxml2::XMLNode* platform = doc.FirstChildElement("level")->FirstChildElement("platforms")->FirstChildElement("platform");
+
+    while (platform != NULL) {
+        sf::RectangleShape* platformRect = new sf::RectangleShape();
+
+        auto x = platform->ToElement()->FindAttribute("x")->FloatValue();
+        auto y = platform->ToElement()->FindAttribute("y")->FloatValue();
+        auto width = platform->ToElement()->FindAttribute("width")->FloatValue();
+        auto height = platform->ToElement()->FindAttribute("height")->FloatValue();
+
+        platformRect->setPosition({x, y});
+        platformRect->setSize({width, height});
+
+        addPlatform(platformRect);
+
+        platform = platform->NextSibling();
+    }
+
+    // Get entities/objects
+    tinyxml2::XMLNode* object = doc.FirstChildElement("level")->FirstChildElement("objects")->FirstChildElement();
+
+    while (object != NULL) {
+        if (strcmp(object->ToElement()->Name(), "player") == 0) {
+            auto x = object->ToElement()->FindAttribute("x")->FloatValue();
+            auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+            Player* p = new Player(x, y);
+            p->addPlatforms(getPlatforms());
+            addEntity(p);
+        }
+
+        object = object->NextSibling();
+    }
 }
