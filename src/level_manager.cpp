@@ -1,4 +1,5 @@
 #include "level_manager.hpp"
+#include "entity.hpp"
 #include "misc.hpp"
 #include "player.hpp"
 #include "goal.hpp"
@@ -16,8 +17,8 @@ std::string LevelManager::update(sf::RenderWindow &window, float dt) {
             if (i == j)
                 continue;
 
-            auto e1 = *this->entities.at(i);
-            auto e2 = *this->entities.at(j);
+            Entity e1 = *this->entities.at(i);
+            Entity e2 = *this->entities.at(j);
 
             if (e1.getCollision().getGlobalBounds().intersects(e2.getCollision().getGlobalBounds())) {
                 // do the collision
@@ -55,7 +56,7 @@ void LevelManager::removeEntity(int index) {
     this->entities.erase(this->entities.begin() + index);
 }
 void LevelManager::clearEntities() {
-    for (auto e : this->entities) {
+    for (Entity* e : this->entities) {
         delete e;
     }
     this->entities.clear();
@@ -71,7 +72,7 @@ std::vector<sf::RectangleShape*> LevelManager::getPlatforms() {
     return this->platforms;
 }
 void LevelManager::clearPlatforms() {
-    for (auto p : this->platforms) {
+    for (sf::RectangleShape* p : this->platforms) {
         delete p;
     }
     this->platforms.clear();
@@ -87,16 +88,18 @@ void LevelManager::loadLevel(std::string path) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path.c_str());
 
-    // Get Platforms
-    tinyxml2::XMLNode* platform = doc.FirstChildElement("level")->FirstChildElement("platforms")->FirstChildElement("platform");
+    // Get platforms and entities/objects
+    tinyxml2::XMLNode* platform = doc.FirstChildElement("level")->FirstChildElement("platforms")->FirstChildElement();
+    tinyxml2::XMLNode* object = doc.FirstChildElement("level")->FirstChildElement("objects")->FirstChildElement();
 
     while (platform != NULL) {
         sf::RectangleShape* platformRect = new sf::RectangleShape();
+        tinyxml2::XMLElement* platformElement = platform->ToElement();
 
-        auto x = platform->ToElement()->FindAttribute("x")->FloatValue();
-        auto y = platform->ToElement()->FindAttribute("y")->FloatValue();
-        auto width = platform->ToElement()->FindAttribute("width")->FloatValue();
-        auto height = platform->ToElement()->FindAttribute("height")->FloatValue();
+        float x = platformElement->FindAttribute("x")->FloatValue();
+        float y = platformElement->FindAttribute("y")->FloatValue();
+        float width = platformElement->FindAttribute("width")->FloatValue();
+        float height = platformElement->FindAttribute("height")->FloatValue();
 
         platformRect->setPosition({x, y});
         platformRect->setSize({width, height});
@@ -106,13 +109,10 @@ void LevelManager::loadLevel(std::string path) {
         platform = platform->NextSibling();
     }
 
-    // Get entities/objects
-    tinyxml2::XMLNode* object = doc.FirstChildElement("level")->FirstChildElement("objects")->FirstChildElement();
-
     while (object != NULL) {
         std::string objectName = object->ToElement()->Name();
-        auto x = object->ToElement()->FindAttribute("x")->FloatValue();
-        auto y = object->ToElement()->FindAttribute("y")->FloatValue();
+        float x = object->ToElement()->FindAttribute("x")->FloatValue();
+        float y = object->ToElement()->FindAttribute("y")->FloatValue();
 
         if (objectName == "player") {
             Player* p = new Player(x, y);
@@ -122,13 +122,13 @@ void LevelManager::loadLevel(std::string path) {
             Goal* g = new Goal(x, y);
             addEntity(g);
         } else if (objectName == "enemy") {
-            auto xSpeed = object->ToElement()->FindAttribute("x_speed")->FloatValue();
-            auto startDirection = object->ToElement()->FindAttribute("start_direction")->FloatValue();
+            float xSpeed = object->ToElement()->FindAttribute("x_speed")->FloatValue();
+            float startDirection = object->ToElement()->FindAttribute("start_direction")->FloatValue();
             Enemy* e = new Enemy(x, y, xSpeed, startDirection);
             addEntity(e);
         } else if (objectName == "enemymove") {
-            auto width = object->ToElement()->FindAttribute("width")->FloatValue();
-            auto height = object->ToElement()->FindAttribute("height")->FloatValue();
+            float width = object->ToElement()->FindAttribute("width")->FloatValue();
+            float height = object->ToElement()->FindAttribute("height")->FloatValue();
             std::string type = object->ToElement()->FindAttribute("type")->Value();
 
             if (type == "right") {

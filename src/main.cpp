@@ -1,20 +1,20 @@
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <memory>
 
 #include "level_manager.hpp"
-#include "player.hpp"
-#include "enemy.hpp"
-#include "level_objects.hpp"
-#include "goal.hpp"
-#include "sound_manager.hpp"
 #include "button.hpp"
+#include "checkbox.hpp"
+#include "sound_manager.hpp"
 
 using namespace sf;
 using namespace std;
 
-Texture backgroundTexture;
+Texture gameBackgroundTexture;
+Texture menuBackgroundTexture;
 Sprite background;
 
 SoundBuffer buffer;
@@ -22,10 +22,13 @@ Sound jumpsound;
 
 enum ScreenState {
     MainMenuState = 0,
-    GameState
+    GameState,
+    SettingsState
 };
 
 ScreenState state;
+
+bool fullscreen;
 
 LevelManager lm;
 
@@ -62,7 +65,8 @@ void Load() {
     deathsText.setString("Deaths: " + strdeaths);
     deathsText.setPosition(0, 0);
 
-    lm.loadLevel("./res/levels/level1.xml");
+    // Reset level
+    lm.resetLevel();
 }
 
 void Reset(RenderWindow& window) {
@@ -95,9 +99,11 @@ void Update(RenderWindow& window) {
 
 void Render(RenderWindow& window) {
     window.draw(background);
-    window.draw(fpstext);
-    window.draw(gameOverText);
-    window.draw(deathsText);
+    if (state == GameState) {
+        window.draw(fpstext);
+        window.draw(gameOverText);
+        window.draw(deathsText);
+    }
 }
 
 /**
@@ -108,6 +114,8 @@ int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
 
+    fullscreen = false;
+
     window.setFramerateLimit(60);
     Clock clock;
     Clock time;
@@ -115,15 +123,25 @@ int main() {
 
     state = MainMenuState;
 
-    if (!backgroundTexture.loadFromFile("./res/background/kitchen.png")) {
+    if (!gameBackgroundTexture.loadFromFile("./res/background/kitchen.png")) {
+        cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
+    }
+    if (!menuBackgroundTexture.loadFromFile("./res/background/mainmenu.png")) {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
     } else {
-        background.setTexture(backgroundTexture);
-        background.setScale(1.2f, 1.2f);
+        background.setTexture(menuBackgroundTexture);
+        background.setScale(1.5f, 1.5f);
     }
 
-    StartButton* sb = new StartButton(20, {100, 100}, {230, 80}, font);
-    ExitButton* eb = new ExitButton(20, {100, 200}, {200, 80}, font);
+    // Main menu buttons
+    std::unique_ptr<Button> start_button(new Button("Start", 20, {413, 500}, {374, 73}, font));
+    std::unique_ptr<Button> settings_button(new Button("Settings", 20, {413, 600}, {374, 73}, font));
+    std::unique_ptr<Button> exit_button(new Button("Exit", 20, {413, 700}, {374, 73}, font));
+
+    // Settings buttons
+    std::unique_ptr<Button> back_button(new Button("Back", 20, {10, 817}, {374, 73}, font));
+    std::unique_ptr<Checkbox> mute_checkbox(new Checkbox("Mute", 20, {500, 430}, {25, 25}, font));
+    std::unique_ptr<Checkbox> fullscreen_checkbox(new Checkbox("Fullscreen", 20, {500, 500}, {25, 25}, font));
 
     while (window.isOpen()) {
         elapsedTime = clock.restart();
@@ -132,18 +150,48 @@ int main() {
             Update(window);
             Render(window);
 
-            // if (time.getElapsedTime().asSeconds() >= 3.f) {
-            //     state = GameState;
-            // }
+            start_button->render(window);
+            settings_button->render(window);
+            exit_button->render(window);
 
-            sb->render(window);
-            eb->render(window);
-
-            if (sb->update(window, dt) == "pressed") {
+            if (start_button->update(window, dt) == "pressed") {
+                background.setTexture(gameBackgroundTexture);
+                background.setScale(1.2f, 1.2f);
                 state = GameState;
             }
-            if (eb->update(window, dt) == "pressed") {
+            if (settings_button->update(window, dt) == "pressed") {
+                state = SettingsState;
+            }
+            if (exit_button->update(window, dt) == "pressed") {
                 exit(0);
+            }
+
+            window.display();
+        } else if (state == SettingsState) {
+            Update(window);
+            Render(window);
+
+            back_button->render(window);
+
+            mute_checkbox->render(window);
+            fullscreen_checkbox->render(window);
+
+            if (mute_checkbox->update(window, dt) == "true") {
+                SoundManager::getInstance().setVolume(0.f);
+            } else {
+                SoundManager::getInstance().setVolume(5.f);
+            }
+
+            if (fullscreen_checkbox->update(window, dt) == "true" && !fullscreen) {
+                window.create(sf::VideoMode::getFullscreenModes()[0], "EGG WITH LEGG", sf::Style::Fullscreen);
+                fullscreen = true;
+            } else if (fullscreen_checkbox->update(window, dt) == "false" && fullscreen) {
+                window.create(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
+                fullscreen = false;
+            }
+
+            if (back_button->update(window, dt) == "pressed") {
+                state = MainMenuState;
             }
 
             window.display();
