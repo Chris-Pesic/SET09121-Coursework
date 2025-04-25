@@ -1,6 +1,14 @@
 #include "level_manager.hpp"
+#include "entity.hpp"
+#include "misc.hpp"
+#include "player.hpp"
+#include "goal.hpp"
+#include "enemy.hpp"
+#include "level_objects.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <memory>
+#include <tinyxml2.h>
 
 std::string LevelManager::update(sf::RenderWindow &window, float dt) {
     // Check collision
@@ -9,8 +17,8 @@ std::string LevelManager::update(sf::RenderWindow &window, float dt) {
             if (i == j)
                 continue;
 
-            auto e1 = *this->entities.at(i);
-            auto e2 = *this->entities.at(j);
+            Entity e1 = *this->entities.at(i);
+            Entity e2 = *this->entities.at(j);
 
             if (e1.getCollision().getGlobalBounds().intersects(e2.getCollision().getGlobalBounds())) {
                 // do the collision
@@ -48,7 +56,7 @@ void LevelManager::removeEntity(int index) {
     this->entities.erase(this->entities.begin() + index);
 }
 void LevelManager::clearEntities() {
-    for (auto e : this->entities) {
+    for (Entity* e : this->entities) {
         delete e;
     }
     this->entities.clear();
@@ -64,8 +72,78 @@ std::vector<sf::RectangleShape*> LevelManager::getPlatforms() {
     return this->platforms;
 }
 void LevelManager::clearPlatforms() {
-    for (auto p : this->platforms) {
+    for (sf::RectangleShape* p : this->platforms) {
         delete p;
     }
     this->platforms.clear();
+}
+
+void LevelManager::resetLevel() {
+    clearPlatforms();
+    clearEntities();
+}
+
+void LevelManager::loadLevel(std::string path) {
+    // Load XML file
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(path.c_str());
+
+    // Get platforms and entities/objects
+    tinyxml2::XMLNode* platform = doc.FirstChildElement("level")->FirstChildElement("platforms")->FirstChildElement();
+    tinyxml2::XMLNode* object = doc.FirstChildElement("level")->FirstChildElement("objects")->FirstChildElement();
+
+    while (platform != NULL) {
+        sf::RectangleShape* platformRect = new sf::RectangleShape();
+        tinyxml2::XMLElement* platformElement = platform->ToElement();
+
+        float x = platformElement->FindAttribute("x")->FloatValue();
+        float y = platformElement->FindAttribute("y")->FloatValue();
+        float width = platformElement->FindAttribute("width")->FloatValue();
+        float height = platformElement->FindAttribute("height")->FloatValue();
+
+        platformRect->setPosition({x, y});
+        platformRect->setSize({width, height});
+
+        addPlatform(platformRect);
+
+        platform = platform->NextSibling();
+    }
+
+    while (object != NULL) {
+        std::string objectName = object->ToElement()->Name();
+        float x = object->ToElement()->FindAttribute("x")->FloatValue();
+        float y = object->ToElement()->FindAttribute("y")->FloatValue();
+
+        if (objectName == "player") {
+            Player* p = new Player(x, y);
+            p->addPlatforms(getPlatforms());
+            addEntity(p);
+        } else if (objectName == "goal") {
+            Goal* g = new Goal(x, y);
+            addEntity(g);
+        } else if (objectName == "enemy") {
+            float xSpeed = object->ToElement()->FindAttribute("x_speed")->FloatValue();
+            float startDirection = object->ToElement()->FindAttribute("start_direction")->FloatValue();
+            Enemy* e = new Enemy(x, y, xSpeed, startDirection);
+            addEntity(e);
+        } else if (objectName == "enemymove") {
+            float width = object->ToElement()->FindAttribute("width")->FloatValue();
+            float height = object->ToElement()->FindAttribute("height")->FloatValue();
+            std::string type = object->ToElement()->FindAttribute("type")->Value();
+
+            if (type == "right") {
+                EnemyMoveRight* em = new EnemyMoveRight(x, y, width, height);
+                addEntity(em);
+            } else if (type == "left") {
+                EnemyMoveLeft* em = new EnemyMoveLeft(x, y, width, height);
+                addEntity(em);
+            } else {
+                die(1, "Unkown type \"" + type + "\"");
+            }
+        } else {
+            die(1, "Unkown object \"" + objectName + "\"");
+        }
+
+        object = object->NextSibling();
+    }
 }
