@@ -7,7 +7,8 @@ SoundManager& SoundManager::getInstance() {
 
 SoundManager::SoundManager() {
     //load jump sound
-    if (!jumpBuffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/jump.wav")) {
+    if (!jumpBuffer.loadFromFile(".res/sound/jump.wav")) {
+
         std::cerr << "Error: Could not load jump.wav" << std::endl;
     }
     jumpSound.setBuffer(jumpBuffer);
@@ -43,11 +44,11 @@ SoundManager::SoundManager() {
 }
 
 void SoundManager::playJumpSound() {
-    jumpSound.setVolume(50.f);
+    jumpSound.setVolume(volume);
 
     currentPitch += 0.2f;
     if (currentPitch > 1.2f) {
-        currentPitch = 0.8f; 
+        currentPitch = 0.8f;
     }
 
     jumpSound.setPitch(currentPitch);

@@ -18,7 +18,7 @@ Player::Player(float sx, float sy) {
     spriteLocation = {1, 1, 110, 125};
     collision.setSize({45.f, 45.f});
 
-    if (!spritesheet.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sprite/player.png")) {
+    if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
         std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
         exit(-1);
     }

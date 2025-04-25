@@ -5,6 +5,9 @@
 #include "misc.hpp"
 #include "entity.hpp"
 
+/**
+ * @brief The player class.
+ */
 class Player : public Entity {
 public:
     Player(float sx, float sy);

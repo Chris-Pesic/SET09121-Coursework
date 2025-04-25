@@ -2,6 +2,9 @@
 #define MISC_HPP
 
 #include <SFML/Graphics.hpp>
+#include <cstdint>
+#include <cstdlib>
+#include <iostream>
 
 #define GRAVITY 24.f
 
@@ -22,5 +25,7 @@ enum EggState {
     FALLING,
     DYING
 };
+
+void die(uint8_t errorNum, std::string errorMsg);
 
 #endif /* MISC_HPP */

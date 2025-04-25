@@ -4,6 +4,7 @@
 #include "entity.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <tinyxml2.h>
 
 class LevelManager {
 public:
@@ -17,6 +18,9 @@ public:
     void removePlatform(int index);
     std::vector<sf::RectangleShape*> getPlatforms();
     void clearPlatforms();
+
+    void resetLevel();
+    void loadLevel(std::string path);
 private:
     std::vector<Entity*> entities;
     std::vector<sf::RectangleShape*> platforms;

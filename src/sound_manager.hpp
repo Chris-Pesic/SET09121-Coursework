@@ -6,7 +6,7 @@
 
 class SoundManager {
 public:
-    static SoundManager& getInstance(); 
+    static SoundManager& getInstance();
 
     void playJumpSound();
     void playBounceSound();
@@ -17,6 +17,7 @@ public:
     void playBGM1();
     void stopBGM1();
 
+    void setVolume(float volume);
 private:
     SoundManager();
     float currentPitch = 0.8f;
@@ -26,6 +27,7 @@ private:
 
     //jump sound
     sf::SoundBuffer jumpBuffer;
+
     sf::Sound jumpSound;
 
     //bounce pad sound
