@@ -45,6 +45,7 @@ SoundManager::SoundManager() {
 
 void SoundManager::setVolume(float volume) {
     this->volume = volume;
+    bgm1.setVolume(volume);
 }
 
 void SoundManager::playJumpSound() {
@@ -81,7 +82,7 @@ void SoundManager::playGoalSound() {
 
 void SoundManager::playBGM1() {
     bgm1.setLoop(true);
-    bgm1.setVolume(0.8f);
+    bgm1.setVolume(volume);
     bgm1.play();
 }
 

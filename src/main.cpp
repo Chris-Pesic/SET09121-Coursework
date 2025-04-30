@@ -141,7 +141,7 @@ int main() {
 
     // Settings buttons
     std::unique_ptr<Button> back_button(new Button("Back", 20, {10, 817}, {374, 73}, font));
-    std::unique_ptr<Checkbox> mute_checkbox(new Checkbox("Mute SFX", 20, {500, 430}, {25, 25}, font));
+    std::unique_ptr<Checkbox> mute_checkbox(new Checkbox("Mute Audio", 20, {500, 430}, {25, 25}, font));
     std::unique_ptr<Checkbox> fullscreen_checkbox(new Checkbox("Fullscreen", 20, {500, 500}, {25, 25}, font));
 
     while (window.isOpen()) {
@@ -180,7 +180,7 @@ int main() {
             if (mute_checkbox->update(window, dt) == "true") {
                 SoundManager::getInstance().setVolume(0.0f);
             } else {
-                SoundManager::getInstance().setVolume(0.8f);
+                SoundManager::getInstance().setVolume(1.0f);
             }
 
             if (fullscreen_checkbox->update(window, dt) == "true" && !fullscreen) {
