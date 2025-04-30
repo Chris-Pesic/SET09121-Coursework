@@ -17,6 +17,7 @@ Texture gameBackgroundTexture;
 Texture menuBackgroundTexture;
 Sprite background;
 
+
 SoundBuffer buffer;
 Sound jumpsound;
 
@@ -114,9 +115,10 @@ int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
 
+    SoundManager::getInstance().playBGM1();
     lm.loadLevel("./res/levels/level1.xml");
-
     fullscreen = false;
+
 
     window.setFramerateLimit(60);
     Clock clock;
