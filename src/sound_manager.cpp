@@ -13,7 +13,7 @@ SoundManager::SoundManager() {
 }
 
 void SoundManager::playJumpSound() {
-    jumpSound.setVolume(50.f);
+    jumpSound.setVolume(volume);
 
     currentPitch += 0.2f;
     if (currentPitch > 1.2f) {
@@ -22,4 +22,8 @@ void SoundManager::playJumpSound() {
 
     jumpSound.setPitch(currentPitch);
     jumpSound.play();
+}
+
+void SoundManager::setVolume(float volume) {
+    volume = volume;
 }

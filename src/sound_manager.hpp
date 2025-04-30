@@ -6,13 +6,16 @@
 
 class SoundManager {
 public:
-    static SoundManager& getInstance(); 
+    static SoundManager& getInstance();
 
-    void playJumpSound(); 
+    void playJumpSound();
 
+    void setVolume(float volume);
 private:
     SoundManager();
     float currentPitch = 0.8f;
+
+    float volume = 50.f;
 
     sf::SoundBuffer buffer;
     sf::Sound jumpSound;
