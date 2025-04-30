@@ -152,9 +152,14 @@ int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "EGG WITH LEGG");
     Load();
 
+    /*
+    std::cout << "Current path is " << fs::current_path() << '\n'; // (1)
+    fs::current_path(fs::temp_directory_path()); // (3)
+    std::cout << "Current path is " << fs::current_path() << '\n';
+    */
+
     window.setFramerateLimit(60);
     Clock clock;
-
     if (!backgroundTexture.loadFromFile("./res/background/kitchen.png")) {
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
     } else {
