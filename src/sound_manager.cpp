@@ -7,40 +7,44 @@ SoundManager& SoundManager::getInstance() {
 
 SoundManager::SoundManager() {
     //load jump sound
-    if (!jumpBuffer.loadFromFile(".res/sound/jump.wav")) {
+    if (!jumpBuffer.loadFromFile("./res/sound/jump.wav")) {
 
         std::cerr << "Error: Could not load jump.wav" << std::endl;
     }
     jumpSound.setBuffer(jumpBuffer);
 
     //load bounce sound
-    if (!bounceBuffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/bouncePad.ogg")) {
+    if (!bounceBuffer.loadFromFile("./res/sound/bouncePad.ogg")) {
         std::cerr << "Error: Could not load bouncePad.ogg" << std::endl;
     }
     bounceSound.setBuffer(bounceBuffer);
 
     //load alert sound
-    if (!alertBuffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/deggAlert.ogg")) {
+    if (!alertBuffer.loadFromFile("./res/sound/deggAlert.ogg")) {
         std::cerr << "Error: Could not load deggAlert.ogg" << std::endl;
     }
     alertSound.setBuffer(alertBuffer);
 
     //load death sound (egg cracking)
-    if (!deathBuffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/eggyCrack.ogg")) {
+    if (!deathBuffer.loadFromFile("./res/sound/eggyCrack.ogg")) {
         std::cerr << "Error: Could not load eggyCrack.ogg" << std::endl;
     }
     deathSound.setBuffer(deathBuffer);
 
     //load level clear sound
-    if (!goalBuffer.loadFromFile("C:/Users/angus/SET09121-Coursework/res/sound/levelComplete.ogg")) {
+    if (!goalBuffer.loadFromFile("./res/sound/levelComplete.ogg")) {
         std::cerr << "Error: Could not load levelComplete.ogg" << std::endl;
     }
     goalSound.setBuffer(goalBuffer);
 
     //load background music
-    if (!bgm1.openFromFile("C:/Users/angus/SET09121-Coursework/res/sound/kevinMacleod.ogg")) {
+    if (!bgm1.openFromFile("./res/sound/kevinMacleod.ogg")) {
         std::cerr << "Error: Could not load background music." << std::endl;
     }
+}
+
+void SoundManager::setVolume(float volume) {
+    this->volume = volume;
 }
 
 void SoundManager::playJumpSound() {
