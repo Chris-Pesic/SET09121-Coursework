@@ -116,6 +116,7 @@ int main() {
     Load();
 
     SoundManager::getInstance().playBGM1();
+    lm.loadLevel("./res/levels/level1.xml");
     fullscreen = false;
 
 
@@ -159,7 +160,7 @@ int main() {
 
             if (start_button->update(window, dt) == "pressed") {
                 background.setTexture(gameBackgroundTexture);
-                background.setScale(1.2f, 1.2f);
+                background.setScale(1.5f, 1.5f);
                 state = GameState;
             }
             if (settings_button->update(window, dt) == "pressed") {
