@@ -22,7 +22,7 @@ private:
     SoundManager();
     float currentPitch = 0.8f;
 
-    float volume = 0.5f;
+    float volume = 1.0f;
 
     //background music
     sf::Music bgm1;

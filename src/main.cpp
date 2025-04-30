@@ -66,8 +66,7 @@ void Load() {
     deathsText.setString("Deaths: " + strdeaths);
     deathsText.setPosition(0, 0);
 
-    // Reset level
-    lm.resetLevel();
+    lm.loadLevel("./res/levels/level1.xml");
 }
 
 void Reset(RenderWindow& window) {
@@ -116,9 +115,7 @@ int main() {
     Load();
 
     SoundManager::getInstance().playBGM1();
-    lm.loadLevel("./res/levels/level1.xml");
     fullscreen = false;
-
 
     window.setFramerateLimit(60);
     Clock clock;
@@ -144,7 +141,7 @@ int main() {
 
     // Settings buttons
     std::unique_ptr<Button> back_button(new Button("Back", 20, {10, 817}, {374, 73}, font));
-    std::unique_ptr<Checkbox> mute_checkbox(new Checkbox("Mute", 20, {500, 430}, {25, 25}, font));
+    std::unique_ptr<Checkbox> mute_checkbox(new Checkbox("Mute SFX", 20, {500, 430}, {25, 25}, font));
     std::unique_ptr<Checkbox> fullscreen_checkbox(new Checkbox("Fullscreen", 20, {500, 500}, {25, 25}, font));
 
     while (window.isOpen()) {
@@ -181,9 +178,9 @@ int main() {
             fullscreen_checkbox->render(window);
 
             if (mute_checkbox->update(window, dt) == "true") {
-                SoundManager::getInstance().setVolume(0.f);
+                SoundManager::getInstance().setVolume(0.0f);
             } else {
-                SoundManager::getInstance().setVolume(5.f);
+                SoundManager::getInstance().setVolume(0.8f);
             }
 
             if (fullscreen_checkbox->update(window, dt) == "true" && !fullscreen) {

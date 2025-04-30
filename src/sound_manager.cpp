@@ -60,28 +60,28 @@ void SoundManager::playJumpSound() {
 }
 
 void SoundManager::playBounceSound() {
-    bounceSound.setVolume(50.f);
+    bounceSound.setVolume(volume);
     bounceSound.play();
 }
 
 void SoundManager::playAlertSound() {
-    alertSound.setVolume(50.f);
+    alertSound.setVolume(volume);
     alertSound.play();
 }
 
 void SoundManager::playDeathSound() {
-    deathSound.setVolume(50.f);
+    deathSound.setVolume(volume);
     deathSound.play();
 }
 
 void SoundManager::playGoalSound() {
-    goalSound.setVolume(50.f);
+    goalSound.setVolume(volume);
     goalSound.play();
 }
 
 void SoundManager::playBGM1() {
     bgm1.setLoop(true);
-    bgm1.setVolume(50.f);
+    bgm1.setVolume(0.8f);
     bgm1.play();
 }
 
