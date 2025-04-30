@@ -15,10 +15,19 @@ Player::Player(float sx, float sy) {
 
     position = {sx, sy};
 
-    spriteLocation = {1, 1, 110, 125};
+    spriteLocation = {1, 1, 290, 334};
     collision.setSize({45.f, 45.f});
 
-    if (!spritesheet.loadFromFile("./res/sprite/player.png")) {
+    if (skinNum == 0) {
+        spritePath = "./res/sprite/playerNew.png";
+    } else if (skinNum == 1) {
+        spritePath = "./res/sprite/playerNeg.png";
+    } else {
+        std::cerr << "Invalid sprite choice!" << std::endl;
+        exit(-1);
+    }
+
+    if (!spritesheet.loadFromFile(spritePath)) {
         std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load player spritesheet!" << std::endl;
         exit(-1);
     }
@@ -135,87 +144,127 @@ void Player::update(sf::RenderWindow &window, float dt) {
     sprite.setPosition({position.x-5, position.y-15});
 }
 
-void Player::render(sf::RenderWindow &window) {
+void Player::render(sf::RenderWindow &window) { //290, 334
     // Animate the sprite
     switch (spriteState) {
     case EggState::STANDING:
         spriteLocation.top = 1;
+        spriteLocation.left = 1;
+        sprite.setTextureRect(spriteLocation);
+        // sprite.setTextureRect(sf::IntRect(1, 1, 290, 334));
         // Animate grids 1-3
+        /*
         if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (spriteLocation.left == 223)
+            if (spriteLocation.left == (290*)
                 spriteLocation.left = 1;
             else
                 {
-                    spriteLocation.left += 111;
+                    spriteLocation.left += 290;
                 }
 
             sprite.setTextureRect(spriteLocation);
             animationClock.restart();
         }
-        sprite.setScale(0.5f, 0.5f); // Ensure normal scale
+        */
+        sprite.setScale(0.2f, 0.2f); // Ensure normal scale
         sprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::WALKING_LEFT:
         // Animate grids 4-6 (left-facing)
-        spriteLocation.top = 126;
-        if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (spriteLocation.left == 223)
+        spriteLocation.top = 1;
+        if (animationClock.getElapsedTime().asSeconds() > 0.03f) {
+            if (spriteLocation.left == (1 + (290 * 12)))
+            {
                 spriteLocation.left = 1;
+            }
             else
                 {
-                    spriteLocation.left += 111;
+                    spriteLocation.left += 290;
                 }
 
             sprite.setTextureRect(spriteLocation);
             animationClock.restart();
         }
-        sprite.setScale(-0.5f, 0.5f); // Flipped horizontally
-        sprite.setOrigin(110, 0);     // Adjust origin for flipping
+        sprite.setScale(-0.2f, 0.2f); // Flipped horizontally
+        sprite.setOrigin(290, 0);     // Adjust origin for flipping
         break;
     case EggState::WALKING_RIGHT:
-        spriteLocation.top = 126;
+        spriteLocation.top = 1;
         // Animate grids 4-6 (right-facing)
-        if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
-            if (spriteLocation.left == 223)
+        if (animationClock.getElapsedTime().asSeconds() > 0.03f) {
+            if (spriteLocation.left == (1 + 290*12))
                 spriteLocation.left = 1;
             else
-                spriteLocation.left += 111;
+                spriteLocation.left += 290;
 
             sprite.setTextureRect(spriteLocation);
             animationClock.restart();
         }
-        sprite.setScale(0.5f, 0.5f); // Normal orientation
+        sprite.setScale(0.2f, 0.2f); // Normal orientation
         sprite.setOrigin(0, 0);      // Reset origin
         break;
 
     case EggState::RISING:
-        // Static frame for RISING
-        sprite.setTextureRect(sf::IntRect(223, 2, 110, 125)); // Grid 3
-        sprite.setScale(0.5f, 0.5f); // Ensure normal scale
-        sprite.setOrigin(0, 0);      // Reset origin
-        break;
+        spriteLocation.top = 334; //second row
+        spriteLocation.left = 290 * 6;
+        sprite.setTextureRect(spriteLocation);
 
-    case EggState::FALLING:
-        // Static frame for FALLING
-        sprite.setTextureRect(sf::IntRect(111, 253, 110, 125)); // Grid 8
-        sprite.setScale(0.5f, 0.5f);
-        sprite.setOrigin(0, 0);
-        break;
-
-    case EggState::DYING:
-        spriteLocation.top = 379;
-        // Animate grids 4-6 (right-facing)
-        if (animationClock.getElapsedTime().asSeconds() > 0.4f) {
-            if (spriteLocation.left == 223)
-                break;
-            else
-                spriteLocation.left += 111;
+        /*
+        if (animationClock.getElapsedTime().asSeconds() > 0.03f) {
+            if (spriteLocation.left == (1 + 290*5))
+                    spriteLocation.left += 0;
+                else
+                    spriteLocation.left += 290;
 
             sprite.setTextureRect(spriteLocation);
             animationClock.restart();
         }
-        sprite.setScale(0.5f, 0.5f); // Normal orientation
+        */
+
+        //sprite.setTextureRect(sf::IntRect(223, 2, 110, 125)); // Grid 3
+        sprite.setScale(0.2f, 0.2f); // Ensure normal scale
+        sprite.setOrigin(0, 0);      // Reset origin
+        break;
+
+    case EggState::FALLING:
+        spriteLocation.top = 1;
+        spriteLocation.left = 1;
+        sprite.setTextureRect(spriteLocation);
+        /*
+        spriteLocation.top = 334;
+        spriteLocation.left = (1 + 290*5);
+
+        if (animationClock.getElapsedTime().asSeconds() > 0.04f) {
+            if (spriteLocation.left == (1 + 290*10))
+                    spriteLocation.left += 0;
+                else
+                    spriteLocation.left += 290;
+
+            sprite.setTextureRect(spriteLocation);
+            animationClock.restart();
+        }
+        */
+        //sprite.setTextureRect(sf::IntRect(111, 253, 110, 125)); // Grid 8
+        sprite.setScale(0.2f, 0.2f);
+        sprite.setOrigin(0, 0);
+        break;
+
+    case EggState::DYING:
+        spriteLocation.top = 668; //334*2 (third row)
+        //animates third row grids 1-12
+        if (animationClock.getElapsedTime().asSeconds() > 0.4f) {
+            if (spriteLocation.left == (1 + 290*11)) {
+                spriteLocation.left += 0;
+                break;
+            }
+            else
+                spriteLocation.left += 290;
+
+            sprite.setTextureRect(spriteLocation);
+            animationClock.restart();
+        }
+        sprite.setScale(0.2f, 0.2f); // Normal orientation
         sprite.setOrigin(0, 0);      // Reset origin
         break;
     default:

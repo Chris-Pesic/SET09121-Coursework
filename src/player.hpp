@@ -20,6 +20,8 @@ public:
     void update(sf::RenderWindow &window, float dt) override;
     void render(sf::RenderWindow &window) override;
 private:
+    int skinNum = 0;
+    std::string spritePath;
     bool isGrounded;
     EggState spriteState;
     std::vector<sf::RectangleShape*> platforms;
