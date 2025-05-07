@@ -13,7 +13,7 @@ Goal::Goal(float sx, float sy) {
     collision.setPosition({collision.getPosition().x - 25,
             collision.getPosition().y - 30});
 
-    if (!spritesheet.loadFromFile("./res/sprite/goal.png")) {
+    if (!spritesheet.loadFromFile("./res/sprite/goalNew.png")) {
         std::cerr << __FILE__ << ":" << __LINE__ << ": ERROR: Coudn't load enemy spritesheet!" << std::endl;
         exit(-1);
     }

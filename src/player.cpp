@@ -138,6 +138,7 @@ void Player::render(sf::RenderWindow &window) {
     switch (spriteState) {
     case EggState::STANDING:
         spriteLocation.top = 1;
+<<<<<<< Updated upstream
         // Animate grids 1-3
         if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
             if (spriteLocation.left == 223)
@@ -146,11 +147,42 @@ void Player::render(sf::RenderWindow &window) {
                 {
                     spriteLocation.left += 111;
                 }
+=======
+        spriteLocation.left = 1;
+        //animate grid 1 on 1st row, then 1-2 on the 2nd row
+        
+        // sprite.setTextureRect(sf::IntRect(1, 1, 290, 334));
+
+        if (animationClock.getElapsedTime().asSeconds() > 0.2f) {
+            // First frame: (1, 1)
+            if (spriteLocation.left == 1 && spriteLocation.top == 1) {
+                spriteLocation.left = 1;
+                spriteLocation.top = 334;
+            }
+            // Second frame: (1, 334)
+            else if (spriteLocation.left == 1 && spriteLocation.top == 334) {
+                spriteLocation.left = 291;
+                spriteLocation.top = 334;
+            }
+            // Third frame: (291, 334)
+            else {
+                spriteLocation.left = 1;
+                spriteLocation.top = 1;
+            }
+
+            spriteLocation.width = 290;
+            spriteLocation.height = 334;
+>>>>>>> Stashed changes
 
             sprite.setTextureRect(spriteLocation);
             animationClock.restart();
         }
+<<<<<<< Updated upstream
         sprite.setScale(0.5f, 0.5f); // Ensure normal scale
+=======
+        
+        sprite.setScale(0.2f, 0.2f); // Ensure normal scale
+>>>>>>> Stashed changes
         sprite.setOrigin(0, 0);      // Reset origin
         break;
 

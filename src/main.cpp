@@ -155,7 +155,16 @@ int main() {
     window.setFramerateLimit(60);
     Clock clock;
 
+<<<<<<< Updated upstream
     if (!backgroundTexture.loadFromFile("./res/background/kitchen.png")) {
+=======
+    state = MainMenuState;
+
+    if (!gameBackgroundTexture.loadFromFile("./res/background/backgroundL1.png")) {
+        cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
+    }
+    if (!menuBackgroundTexture.loadFromFile("./res/background/mainmenu.png")) {
+>>>>>>> Stashed changes
         cerr << __FILE__ << ":" << __LINE__ << ": ERROR: loading background " << endl;
     } else {
         background.setTexture(backgroundTexture);

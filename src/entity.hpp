@@ -26,6 +26,7 @@ protected:
     sf::Sprite sprite;
     sf::IntRect spriteLocation;
     sf::Clock animationClock;
+    sf::Clock animationClockEnemy;
     sf::RectangleShape collision;
     sf::Vector2f position;
     sf::Vector2f speed;

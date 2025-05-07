@@ -10,6 +10,8 @@ public:
     std::string collide(std::string object) override;
     void update(sf::RenderWindow &window, float dt) override;
     void render(sf::RenderWindow &window) override;
+private:
+    DeggState spriteState2;
 };
 
 #endif /* ENEMY_HPP */

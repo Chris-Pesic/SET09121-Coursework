@@ -23,4 +23,16 @@ enum EggState {
     DYING
 };
 
+<<<<<<< Updated upstream
+=======
+// Define an enum for player states
+enum DeggState {
+    SEEKING = 0,
+    ALERT,
+    CHASING
+};
+
+void die(uint8_t errorNum, std::string errorMsg);
+
+>>>>>>> Stashed changes
 #endif /* MISC_HPP */
